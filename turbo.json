@@ -12,6 +12,16 @@
 		},
 		"lint": {},
 		"test": {},
-		"test:e2e": {}
+		"test:e2e": {},
+
+		"db:generate": {
+			"cache": false
+		},
+		"db:migrate": {
+			"cache": false
+		},
+		"db:deploy": {
+			"cache": false
+		}
 	}
 }
