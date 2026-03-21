@@ -1,0 +1,10 @@
+import type { Prisma } from '../../../../../apps/backend/src/generated/prisma/client';
+import * as z from 'zod';
+import { WithdrawalRequestOrderByWithRelationInputObjectSchema as WithdrawalRequestOrderByWithRelationInputObjectSchema } from './objects/WithdrawalRequestOrderByWithRelationInput.schema';
+import { WithdrawalRequestWhereInputObjectSchema as WithdrawalRequestWhereInputObjectSchema } from './objects/WithdrawalRequestWhereInput.schema';
+import { WithdrawalRequestWhereUniqueInputObjectSchema as WithdrawalRequestWhereUniqueInputObjectSchema } from './objects/WithdrawalRequestWhereUniqueInput.schema';
+import { WithdrawalRequestCountAggregateInputObjectSchema as WithdrawalRequestCountAggregateInputObjectSchema } from './objects/WithdrawalRequestCountAggregateInput.schema';
+
+export const WithdrawalRequestCountSchema: z.ZodType<Prisma.WithdrawalRequestCountArgs> = z.object({ orderBy: z.union([WithdrawalRequestOrderByWithRelationInputObjectSchema, WithdrawalRequestOrderByWithRelationInputObjectSchema.array()]).optional(), where: WithdrawalRequestWhereInputObjectSchema.optional(), cursor: WithdrawalRequestWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), select: z.union([ z.literal(true), WithdrawalRequestCountAggregateInputObjectSchema ]).optional() }).strict() as unknown as z.ZodType<Prisma.WithdrawalRequestCountArgs>;
+
+export const WithdrawalRequestCountZodSchema = z.object({ orderBy: z.union([WithdrawalRequestOrderByWithRelationInputObjectSchema, WithdrawalRequestOrderByWithRelationInputObjectSchema.array()]).optional(), where: WithdrawalRequestWhereInputObjectSchema.optional(), cursor: WithdrawalRequestWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), select: z.union([ z.literal(true), WithdrawalRequestCountAggregateInputObjectSchema ]).optional() }).strict();

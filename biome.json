@@ -18,6 +18,9 @@
 			"recommended": true,
 			"correctness": {
 				"noUnusedFunctionParameters": "off"
+			},
+			"style": {
+				"useImportType": "off"
 			}
 		}
 	},

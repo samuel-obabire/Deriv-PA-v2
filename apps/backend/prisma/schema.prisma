@@ -1,7 +1,13 @@
 generator client {
   provider     = "prisma-client"
-  output       = "./../generated/prisma"
+  output       = "../src/generated/prisma"
   moduleFormat = "cjs"
+}
+
+generator zod {
+  provider = "prisma-zod-generator"
+  output   = "../../../packages/zod/src/generated"
+  // optional config = "./zod-generator.config.json" (relative to schema file)
 }
 
 datasource db {
