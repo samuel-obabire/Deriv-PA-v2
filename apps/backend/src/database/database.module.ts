@@ -2,9 +2,9 @@ import { Module } from "@nestjs/common";
 import * as schema from "@repo/db";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
+import { DRIZZLE } from "./constant";
 import { DatabaseController } from "./database.controller";
 import { DatabaseService } from "./database.service";
-import { DRIZZLE } from "./constant";
 
 @Module({
 	controllers: [DatabaseController],

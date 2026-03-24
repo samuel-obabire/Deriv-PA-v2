@@ -24,6 +24,8 @@
 		"node": ">=18"
 	},
 	"dependencies": {
-		"@types/node": "^25.5.0"
+		"drizzle-kit": "^0.31.10",
+		"drizzle-orm": "^0.45.1",
+		"postgres": "^3.4.8"
 	}
 }

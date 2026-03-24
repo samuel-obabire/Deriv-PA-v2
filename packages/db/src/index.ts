@@ -1,1 +1,2 @@
-export * from "./db/schema";
+export * from "./db/schema/index";
+export * from "./db/schema/relations";

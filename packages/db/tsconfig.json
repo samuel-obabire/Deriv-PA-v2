@@ -5,8 +5,10 @@
 		"module": "commonjs",
 		"target": "es2020",
 		"declaration": true,
+		"declarationMap": true,
 		"outDir": "./dist",
 		"rootDir": "./src"
 	},
+	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist", "drizzle.config.ts"]
 }
