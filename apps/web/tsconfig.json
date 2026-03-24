@@ -9,7 +9,7 @@
 		"strictNullChecks": true,
 		"baseUrl": "./",
 		"paths": {
-			"@repo/db": ["../../packages/db/src"]
+			"@/*": ["./*"]
 		}
 	},
 	"include": [

@@ -6,7 +6,15 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"ignoreUnknown": false
+		"ignoreUnknown": false,
+		"includes": [
+			"**",
+			"!node_modules",
+			"!.next",
+			"!dist",
+			"!build",
+			"!**/*.css"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -15,6 +23,9 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
+			"nursery": {
+				"useSortedClasses": "off"
+			},
 			"recommended": true,
 			"correctness": {
 				"noUnusedFunctionParameters": "off"
