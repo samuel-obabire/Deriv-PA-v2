@@ -1,0 +1,33 @@
+{
+	"name": "@repo/db",
+	"version": "1.0.0",
+	"type": "commonjs",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"db:push": "drizzle-kit push",
+		"db:migrate": "tsx scripts/migrate.ts",
+		"db:studio": "drizzle-kit studio",
+		"generate": "drizzle-kit generate"
+	},
+	"devDependencies": {
+		"drizzle-kit": "^0.31.10",
+		"typescript": "^5.9.3"
+	},
+	"dependencies": {
+		"@types/pg": "^8.20.0",
+		"dotenv": "^17.3.1",
+		"drizzle-orm": "^0.45.1",
+		"pg": "^8.20.0"
+	}
+}

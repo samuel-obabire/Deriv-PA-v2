@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"module": "commonjs",
+		"target": "es2020",
+		"declaration": true,
+		"outDir": "./dist",
+		"rootDir": "./src"
+	},
+	"exclude": ["node_modules", "dist", "drizzle.config.ts"]
+}
