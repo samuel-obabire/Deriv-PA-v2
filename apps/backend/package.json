@@ -29,6 +29,7 @@
 		"@prisma/adapter-pg": "^7.5.0",
 		"@prisma/client": "^7.5.0",
 		"@repo/db": "workspace:^",
+		"@repo/utils": "workspace:^",
 		"@types/pg": "^8.20.0",
 		"dotenv": "^17.3.1",
 		"pg": "^8.20.0",
