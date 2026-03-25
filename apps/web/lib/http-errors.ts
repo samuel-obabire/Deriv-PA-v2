@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import logger from "@/utils/logger";
 import { RequestError } from "./errors";
 
 export type ResponseType = "api" | "server";
@@ -22,6 +23,8 @@ const formatResponse = (
 };
 
 const handleError = (error: unknown, responseType: ResponseType = "server") => {
+	logger.error(error);
+
 	if (error instanceof RequestError) {
 		return formatResponse(responseType, error.statusCode, error.message);
 	}

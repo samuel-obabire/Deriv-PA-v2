@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	allowedDevOrigins: ["http://localhost:3000"],
 	transpilePackages: ["@repo/db"],
+	serverExternalPackages: ["pino, pino-pretty"],
 };
 
 export default nextConfig;
