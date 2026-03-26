@@ -1,12 +1,9 @@
-import { withdrawalRequest } from "@repo/db";
-import { tryCatch } from "@repo/utils";
-import { db } from "lib/db";
+import { verifySession } from "@/lib/session";
 
-export default async function Home() {
-	const [data, error] = await tryCatch(db.select().from(withdrawalRequest));
+const HomePage = async () => {
+	await verifySession();
 
-	if (error)
-		return <div className="text-2xl  text-primary">{error.message}</div>;
+	return <div className="text-2xl  text-primary">CR2091245</div>;
+};
 
-	return <div className="text-2xl  text-primary">{data[0]?.derivId}</div>;
-}
+export default HomePage;

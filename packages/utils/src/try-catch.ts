@@ -1,5 +1,5 @@
-type Success<T> = readonly [T, null];
-type Failure<E> = readonly [null, E];
+type Success<T> = { data: T; error: null };
+type Failure<E> = { data: null; error: E };
 
 type Result<T, E = Error> = Success<T> | Failure<E>;
 
@@ -9,8 +9,8 @@ export const tryCatch = async <T, E = Error>(
 	try {
 		const data = await promise;
 
-		return [data, null];
+		return { data, error: null };
 	} catch (err: unknown) {
-		return [null, err as E];
+		return { data: null, error: err as E };
 	}
 };
