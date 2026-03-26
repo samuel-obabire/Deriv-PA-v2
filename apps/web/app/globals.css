@@ -6,6 +6,13 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --color-success: #4ade80;
+  --color-pending: #f0c040;
+  --color-error: #ffb4ab;
+  --color-flagged: #f9abff;
+}
+
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: var(--font-sans);
@@ -50,9 +57,9 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* ── Light mode (kept minimal — app is dark-first) ── */
+
 :root {
-    --background:            oklch(0.98 0.005 85);       /* near white with warm tint */
+    --background:            oklch(0.98 0.005 85);      
     --foreground:            oklch(0.14 0.005 85);
 
     --card:                  oklch(0.96 0.006 85);
@@ -61,9 +68,8 @@
     --popover:               oklch(0.98 0.005 85);
     --popover-foreground:    oklch(0.14 0.005 85);
 
-    /* primary = gold #f0c040 */
     --primary:               oklch(0.82 0.165 88);
-    --primary-foreground:    oklch(0.10 0.02  88);       /* near-black on gold */
+    --primary-foreground:    oklch(0.10 0.02  88);       
 
     --secondary:             oklch(0.92 0.008 85);
     --secondary-foreground:  oklch(0.20 0.005 85);
@@ -71,17 +77,15 @@
     --muted:                 oklch(0.93 0.005 85);
     --muted-foreground:      oklch(0.50 0.005 85);
 
-    /* accent = gold tint surface */
     --accent:                oklch(0.92 0.04  88);
     --accent-foreground:     oklch(0.20 0.02  88);
 
-    --destructive:           oklch(0.58 0.22  27);       /* red #ef4444 */
+    --destructive:           oklch(0.58 0.22  27);       
 
     --border:                oklch(0.88 0.006 85);
     --input:                 oklch(0.88 0.006 85);
-    --ring:                  oklch(0.82 0.165 88);       /* gold focus ring */
+    --ring:                  oklch(0.82 0.165 88);       
 
-    /* charts: gold → amber → green → blue → purple */
     --chart-1:               oklch(0.82 0.165 88);
     --chart-2:               oklch(0.76 0.16  60);
     --chart-3:               oklch(0.70 0.18  145);
@@ -100,52 +104,44 @@
     --sidebar-ring:          oklch(0.82 0.165 88);
 }
 
-/* ── Dark mode — DerivPay theme ── */
-.dark {
-    /* backgrounds: #07080b → #0d0f14 → #111318 → #1a1d24 */
-    --background:            oklch(0.11 0.008 265);      /* #07080b */
-    --foreground:            oklch(0.94 0.004 85);       /* #f0f0f0 */
 
-    --card:                  oklch(0.15 0.010 265);      /* #0d0f14 */
+.dark {
+
+    --background:            #121317;      
+    --foreground:            oklch(0.94 0.004 85);       
+
+    --card:                  oklch(0.15 0.010 265);      
     --card-foreground:       oklch(0.94 0.004 85);
 
-    --popover:               oklch(0.17 0.010 265);      /* #111318 */
+    --popover:               oklch(0.17 0.010 265);     
     --popover-foreground:    oklch(0.94 0.004 85);
 
-    /* primary = gold #f0c040 */
-    --primary:               oklch(0.82 0.165 88);
-    --primary-foreground:    oklch(0.10 0.02  88);       /* dark text on gold button */
+    --primary:               oklch(68.901% 0.03904 93.471);
+    --primary-foreground:    oklch(0.10 0.02  88);       
 
-    /* secondary = surface2 #111318 */
     --secondary:             oklch(0.17 0.010 265);
     --secondary-foreground:  oklch(0.94 0.004 85);
 
-    /* muted = border-level surface #1a1d24 */
     --muted:                 oklch(0.21 0.012 265);
-    --muted-foreground:      oklch(0.56 0.005 265);      /* #888 */
+    --muted-foreground:      oklch(0.56 0.005 265);     
 
-    /* accent = subtle gold tint surface */
     --accent:                oklch(0.21 0.025 88);
-    --accent-foreground:     oklch(0.82 0.165 88);       /* gold text on accent bg */
+    --accent-foreground:     oklch(76.571% 0.08257 92.788);       
 
-    /* destructive = red #ef4444 */
     --destructive:           oklch(0.64 0.22  27);
 
-    /* border = #1a1d24 */
     --border:                oklch(0.21 0.012 265);
-    /* input = slightly lighter #222530 */
+
     --input:                 oklch(0.24 0.013 265);
-    /* ring = gold */
+
     --ring:                  oklch(0.82 0.165 88);
 
-    /* charts: gold, amber, green, blue, purple */
-    --chart-1:               oklch(0.82 0.165 88);       /* gold   — total/primary */
-    --chart-2:               oklch(0.76 0.16  60);       /* amber  — pending       */
-    --chart-3:               oklch(0.70 0.18  145);      /* green  — matched       */
-    --chart-4:               oklch(0.60 0.19  264);      /* blue                   */
-    --chart-5:               oklch(0.62 0.19  293);      /* purple — missing       */
+    --chart-1:               oklch(0.82 0.165 88);       
+    --chart-2:               oklch(0.76 0.16  60);       
+    --chart-3:               oklch(0.70 0.18  145);      
+    --chart-4:               oklch(0.60 0.19  264);      
+    --chart-5:               oklch(0.62 0.19  293);      
 
-    /* sidebar matches card */
     --sidebar:               oklch(0.15 0.010 265);
     --sidebar-foreground:    oklch(0.94 0.004 85);
     --sidebar-primary:       oklch(0.82 0.165 88);
