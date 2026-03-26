@@ -9,6 +9,16 @@ export class RequestError extends Error {
 	}
 }
 
+export class ValidationError extends RequestError {
+	constructor(pretifiedError: string, message?: string) {
+		const msg = message ?? pretifiedError;
+
+		super(400, msg);
+
+		this.name = "ValidationError";
+	}
+}
+
 export class NotFoundError extends RequestError {
 	constructor(resource: string, message?: string) {
 		const msg = message ? message : `${resource} not found`;
@@ -20,7 +30,7 @@ export class NotFoundError extends RequestError {
 }
 
 export class UnauthorizedError extends RequestError {
-	constructor(resource: string, message: string = "Unauthorized") {
+	constructor(message: string = "Unauthorized") {
 		super(401, message);
 
 		this.name = "UnauthorizedError";

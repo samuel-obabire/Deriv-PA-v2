@@ -1,5 +1,5 @@
 import pino from "pino";
-import { serverEnv } from "@/lib/validations/server";
+import { serverEnv } from "@/lib/validations/env/server";
 
 const isProduction = serverEnv.NODE_ENV === "production";
 

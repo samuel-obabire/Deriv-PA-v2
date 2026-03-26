@@ -1,6 +1,6 @@
-type SuccessResponse<T = unknown> = {
+type SuccessResponse<T = undefined> = {
 	success: true;
-	data: T;
+	data?: T;
 };
 
 type ErrorResponse = {
@@ -11,4 +11,4 @@ type ErrorResponse = {
 	};
 };
 
-type ActionResponse<T = unknown> = SuccessResponse<T> | ErrorResponse;
+type ActionResponse<T = undefined> = SuccessResponse<T> | ErrorResponse;
