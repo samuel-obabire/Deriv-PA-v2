@@ -1,13 +1,8 @@
-import { PayoutStatus } from "@repo/db";
 import { Suspense } from "react";
 import Stats from "@/components/dashboard/Stats";
 import StatsSkeleton from "@/components/skeletons/StatsSkeleton";
 import { verifySession } from "@/lib/session";
-
-export type StatsType = {
-	type: PayoutStatus | "TOTAL";
-	value: number | string;
-};
+import { StatsType } from "@/lib/types/stats";
 
 const stats: StatsType[] = [
 	{

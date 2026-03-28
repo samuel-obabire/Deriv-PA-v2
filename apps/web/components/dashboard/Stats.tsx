@@ -7,26 +7,17 @@ import {
 	TriangleAlert,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ReactNode } from "react";
-import { StatsType } from "@/app/(auditing)/dashboard/page";
-import ROUTES from "@/lib/constants/routes";
-import StatCard from "./StatsCard";
 
-type StatItem = {
-	title: string;
-	type: StatsType["type"];
-	value: string | number;
-	icon: ReactNode;
-	badgeText: string;
-	badgeClass: string;
-	valueClass: string;
-};
+import ROUTES from "@/lib/constants/routes";
+import { StatConfig, StatsType } from "@/lib/types/stats";
+import { buildStatItems } from "@/utils/stats";
+import StatCard from "./StatsCard";
 
 type StatsProps = {
 	stats: StatsType[];
 };
 
-const STAT_CONFIG = [
+const STAT_CONFIG: StatConfig = [
 	{
 		title: "Total paid out",
 		type: "TOTAL",
@@ -61,22 +52,10 @@ const STAT_CONFIG = [
 	},
 ];
 
-const buildStatItems = (stats: StatsType[]) => {
-	const statItems = stats.reduceRight((acc, curr) => {
-		const config = STAT_CONFIG.find(({ type }) => type === curr.type);
-
-		if (config) acc.push({ ...config, ...curr });
-
-		return acc;
-	}, [] as StatItem[]);
-
-	return statItems;
-};
-
 const Stats = ({ stats }: StatsProps) => {
 	const router = useRouter();
 
-	const statItems = buildStatItems(stats);
+	const statItems = buildStatItems(stats, STAT_CONFIG);
 
 	const handleCardClick = (type: StatsType["type"]) => {
 		router.push(`${ROUTES.AUDIT}`);
