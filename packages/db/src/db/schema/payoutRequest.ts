@@ -14,9 +14,7 @@ export const PayoutStatusEnum = pgEnum("payout_status", [
 	"FLAGGED",
 ]);
 
-export type PayoutStatus = (typeof PayoutStatusEnum.enumValues)[number];
-
-export const payoutRequest = pgTable("withdrawal_request", {
+export const payoutRequest = pgTable("payout_request", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	withdrawalId: uuid("withdrawal_id").references(() => withdrawalRequest.id),
 	amountNgn: numeric("amount_ngn", { precision: 12, scale: 2 }).notNull(),
@@ -29,3 +27,6 @@ export const payoutRequest = pgTable("withdrawal_request", {
 	status: PayoutStatusEnum("status").default("UNMATCHED").notNull(),
 	flagReason: text("flag_reason"),
 });
+
+export type PayoutStatus = (typeof PayoutStatusEnum.enumValues)[number];
+export type PayoutRequest = typeof payoutRequest.$inferSelect;

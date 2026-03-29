@@ -36,6 +36,13 @@
       "when": 1774539475333,
       "tag": "0004_curious_vivisector",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1774700638548,
+      "tag": "0005_magical_the_enforcers",
+      "breakpoints": true
     }
   ]
 }

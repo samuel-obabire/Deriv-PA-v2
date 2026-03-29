@@ -26,21 +26,17 @@ const stats: StatsType[] = [
 const DashboardStats = async () => {
 	await verifySession();
 
-	await new Promise((resolve) => setTimeout(resolve, 5000));
+	await new Promise((resolve) => setTimeout(resolve, 1000));
 
 	return <Stats stats={stats} />;
 };
 
 const DashBoardPage = () => {
 	return (
-		<div className="container space-y-6 mt-28 mb-10">
+		<div className="container space-y-6 mt-12 mb-10">
 			<header>
-				<h2 className="font-space text-4xl font-bold tracking-tight">
-					Reconciliation Monitor
-				</h2>
-				<p className="mt-1 text-lg text-primary font-medium tracking-wide">
-					The Sovereign Ledger | Terminal View
-				</p>
+				<h2 className="title">Reconciliation Monitor</h2>
+				<p className="title-subtext">The Sovereign Ledger | Terminal View</p>
 			</header>
 
 			<Suspense fallback={<StatsSkeleton />}>
