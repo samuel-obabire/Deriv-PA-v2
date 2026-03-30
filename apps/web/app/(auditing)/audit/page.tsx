@@ -23,7 +23,7 @@ const AuditPage = async () => {
 				<p className="title-subtext text-xs font-bold uppercase">
 					Monitor console
 				</p>
-				<h2 className="title">Transactions</h2>
+				<h2 className="title">Payouts</h2>
 
 				<AuditFilters />
 			</section>

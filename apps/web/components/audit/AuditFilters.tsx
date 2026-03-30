@@ -12,7 +12,7 @@ const AuditFilters = () => {
 					<Input
 						className="input-class font-bold flex-1 h-full"
 						name="query"
-						placeholder="Search CR, name, or amount"
+						placeholder="Search CR, name"
 					/>
 					<Button className="h-full" type="submit">
 						Search

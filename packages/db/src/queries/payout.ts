@@ -1,9 +1,10 @@
-import { and, desc, eq, gt, lt, or } from "drizzle-orm";
+import { and, desc, eq, lt, or } from "drizzle-orm";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import { PayoutRequest, payoutRequest } from "../db/schema/payoutRequest";
+import { PAGE_LIMIT } from "./pagination";
 
-export const PAGE_LIMIT = 20;
+export type Cursor = Pick<PayoutRequest, "createdAt" | "id">;
 
 export const getPayouts = async ({
 	db,
@@ -13,7 +14,7 @@ export const getPayouts = async ({
 	// biome-ignore lint/suspicious/noExplicitAny: type any needed in this case
 	db: PostgresJsDatabase<any>;
 	limit?: number;
-	cursor?: PayoutRequest;
+	cursor?: Cursor;
 }) => {
 	const payouts = await db
 		.select()
@@ -23,7 +24,7 @@ export const getPayouts = async ({
 		.where(
 			cursor
 				? or(
-						gt(payoutRequest.createdAt, cursor.createdAt),
+						lt(payoutRequest.createdAt, cursor.createdAt),
 
 						and(
 							eq(payoutRequest.createdAt, cursor.createdAt),

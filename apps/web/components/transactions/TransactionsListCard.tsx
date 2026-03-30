@@ -1,5 +1,4 @@
 import { PayoutStatus } from "@repo/db";
-import { formatNaira } from "@/utils/formatNaira";
 import { Badge } from "../ui/badge";
 import {
 	Card,
@@ -8,6 +7,7 @@ import {
 	CardDescription,
 	CardHeader,
 } from "../ui/card";
+import { formatNaira } from "@/utils/formatNaira";
 
 type TransactionsListCardProps = {
 	amountNgn: string;
@@ -33,7 +33,9 @@ const TransactionsListCard = ({
 						{recipientName}
 					</CardDescription>
 
-					<p className="text-primary font-medium">{createdAt.toUTCString()}</p>
+					<p className="text-primary font-medium">
+						{new Date(createdAt).toUTCString()}
+					</p>
 				</div>
 
 				<CardAction>

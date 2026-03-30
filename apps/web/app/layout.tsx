@@ -3,6 +3,7 @@ import "./globals.css";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
+import TanstackClientProvider from "@/components/providers/QueryClientProvider";
 
 const space = Space_Grotesk({
 	subsets: ["latin"],
@@ -39,7 +40,9 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					<div>{children}</div>
+					<TanstackClientProvider>
+						<div>{children}</div>
+					</TanstackClientProvider>
 
 					<Toaster richColors />
 				</ThemeProvider>
