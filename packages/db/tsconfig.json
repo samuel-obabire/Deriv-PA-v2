@@ -1,8 +1,10 @@
 {
+	"extends": "@repo/typescript-config/base.json",
 	"compilerOptions": {
 		"esModuleInterop": true,
 		"skipLibCheck": true,
-		"module": "commonjs",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
 		"target": "es2020",
 		"declaration": true,
 		"declarationMap": true,
