@@ -1,8 +1,10 @@
 {
+	"extends": "@repo/typescript-config/base.json",
 	"compilerOptions": {
 		"esModuleInterop": true,
 		"skipLibCheck": true,
-		"module": "commonjs",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
 		"target": "es2020",
 		"declaration": true,
 		"declarationMap": true,
@@ -10,5 +12,5 @@
 		"rootDir": "./src"
 	},
 	"include": ["src/**/*.ts"],
-	"exclude": ["node_modules", "dist", "drizzle.config.ts"]
+	"exclude": ["node_modules", "dist", "drizzle.config.ts", "scripts"]
 }
