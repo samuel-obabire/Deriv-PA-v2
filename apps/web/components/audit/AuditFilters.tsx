@@ -7,7 +7,7 @@ import { Input } from "../ui/input";
 const AuditFilters = () => {
 	return (
 		<div className="flex flex-col">
-			<Form action={ROUTES.AUDIT}>
+			<Form action={ROUTES.PAYOUTS}>
 				<div className="flex h-10 gap-2">
 					<Input
 						className="input-class font-bold flex-1 h-full"

@@ -11,7 +11,7 @@ const formatResponse = (
 	statusCode: number,
 	message: string,
 ) => {
-	const errorResponse = {
+	const errorResponse: ErrorResponse = {
 		success: false,
 		error: {
 			statusCode,
@@ -24,7 +24,10 @@ const formatResponse = (
 		: NextResponse.json(errorResponse, { status: statusCode });
 };
 
-const handleError = (error: unknown, responseType: ResponseType = "server") => {
+function handleError(error: unknown, responseType: "api"): ApiResponse;
+function handleError(error: unknown, responseType?: "server"): ErrorResponse;
+
+function handleError(error: unknown, responseType: ResponseType = "server") {
 	logger.error(error);
 
 	if (error instanceof ZodError) {
@@ -50,6 +53,6 @@ const handleError = (error: unknown, responseType: ResponseType = "server") => {
 	}
 
 	return formatResponse(responseType, 500, "An unknown error occured");
-};
+}
 
 export default handleError;
