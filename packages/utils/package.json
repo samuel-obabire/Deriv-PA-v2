@@ -12,9 +12,7 @@
 		}
 	},
 	"devDependencies": {
+		"typescript": "^5.9.3",
 		"@repo/typescript-config": "workspace:*"
-	},
-	"dependencies": {
-		"typescript": "^5.9.3"
 	}
 }
