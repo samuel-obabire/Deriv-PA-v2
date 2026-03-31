@@ -1,18 +1,21 @@
+import { isProduction } from "better-auth";
 import pino from "pino";
 import { serverEnv } from "@/lib/validations/env/server";
 
-const isProduction = serverEnv.NODE_ENV === "production";
+const isDevelopment = serverEnv.NODE_ENV === "development";
 
 const logger = pino({
 	level: isProduction ? "info" : "debug",
-	transport: {
-		target: isProduction ? "pino" : "pino-pretty",
-		options: {
-			colorize: !isProduction,
-			translateTime: "SYS:standard",
-			ignore: "pid,hostname",
-		},
-	},
+	transport: isDevelopment
+		? {
+				target: "pino-pretty",
+				options: {
+					colorize: true,
+					ignore: "pid,hostname",
+					translateTime: "SYS:standard",
+				},
+			}
+		: undefined,
 });
 
 export default logger;
