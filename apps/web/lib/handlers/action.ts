@@ -4,7 +4,7 @@ import { UnauthorizedError } from "../errors";
 import { getSession } from "../session";
 
 type ActionProps<T> = {
-	params: T;
+	params: unknown;
 	schema: ZodType<T>;
 	authorise?: boolean;
 };

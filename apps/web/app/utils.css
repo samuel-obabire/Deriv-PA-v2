@@ -78,3 +78,17 @@
   @apply cursor-pointer   !rounded-lg  !text-16-bold !p-5 transition-transform duration-200 active:scale-[97%];
 }
 
+@layer components {
+  .title {
+    @apply font-space text-4xl font-bold tracking-tight;
+  }
+
+  .title-subtext {
+    @apply mt-1 text-lg text-primary font-medium tracking-wide;
+  }
+
+  .input-class {
+    @apply no-ring;
+  }
+}
+

@@ -1,9 +1,8 @@
-import { verifySession } from "@/lib/session";
+import { redirect } from "next/navigation";
+import ROUTES from "@/lib/constants/routes";
 
 const HomePage = async () => {
-	await verifySession();
-
-	return <div className="text-2xl  text-primary">CR2091245</div>;
+	return redirect(ROUTES.DASHBOARD);
 };
 
 export default HomePage;

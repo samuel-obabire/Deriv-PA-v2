@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Space_Grotesk } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
+import TanstackClientProvider from "@/components/providers/QueryClientProvider";
 
 const space = Space_Grotesk({
 	subsets: ["latin"],
+	weight: ["300", "400", "500", "600", "700"],
+	variable: "--font-space",
+});
+
+const inter = Inter({
+	subsets: ["vietnamese"],
 	weight: ["300", "400", "500", "600", "700"],
 	variable: "--font-sans",
 });
@@ -21,15 +28,22 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" className={space.className} suppressHydrationWarning>
-			<body>
+		<html
+			lang="en"
+			suppressHydrationWarning
+			className={`${inter.className} ${space.variable}`}
+		>
+			<body className="antialiased">
 				<ThemeProvider
 					attribute="class"
-					defaultTheme="system"
+					defaultTheme="dark"
 					enableSystem
 					disableTransitionOnChange
 				>
-					<main>{children}</main>
+					<TanstackClientProvider>
+						<div>{children}</div>
+					</TanstackClientProvider>
+
 					<Toaster richColors />
 				</ThemeProvider>
 			</body>

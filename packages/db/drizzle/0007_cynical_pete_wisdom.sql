@@ -1,0 +1,1 @@
+ALTER TABLE "withdrawal_request" ADD COLUMN "client_name" text NOT NULL;

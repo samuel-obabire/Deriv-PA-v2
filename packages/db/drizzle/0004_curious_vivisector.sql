@@ -1,0 +1,1 @@
+CREATE TYPE "public"."payout_status" AS ENUM('UNMATCHED', 'MATCHED', 'FLAGGED');

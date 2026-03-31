@@ -15,4 +15,6 @@ export const verifySession = async () => {
 	const session = await getSession();
 
 	if (!session) redirect(ROUTES.SIGN_IN);
+
+	return session;
 };

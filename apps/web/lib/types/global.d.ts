@@ -12,3 +12,5 @@ type ErrorResponse = {
 };
 
 type ActionResponse<T = undefined> = SuccessResponse<T> | ErrorResponse;
+
+type ApiResponse<T = undefined> = NextResponse<ActionResponse<T>>;
