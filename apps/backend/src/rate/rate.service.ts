@@ -1,18 +1,19 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
-import { rate } from "@repo/db";
-import { RATE_ID } from "@repo/utils";
-import { eq } from "drizzle-orm";
-import { DatabaseService } from "src/database/database.service";
+import {
+	Inject,
+	Injectable,
+	InternalServerErrorException,
+} from "@nestjs/common";
+import type { DB } from "@repo/db";
+import { getCurrentRate } from "@repo/db/queries";
+
+import { DRIZZLE } from "src/database/constant";
 
 @Injectable()
 export class RateService {
-	constructor(private readonly databaseService: DatabaseService) {}
+	constructor(@Inject(DRIZZLE) private readonly db: DB) {}
 
 	async getCurrentRate() {
-		const [currentRate] = await this.databaseService.client
-			.select()
-			.from(rate)
-			.where(eq(rate.id, RATE_ID));
+		const currentRate = await getCurrentRate(this.db);
 
 		if (!currentRate) throw new InternalServerErrorException();
 

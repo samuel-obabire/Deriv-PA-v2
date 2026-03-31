@@ -58,7 +58,7 @@ const Stats = ({ stats }: StatsProps) => {
 	const statItems = buildStatItems(stats, STAT_CONFIG);
 
 	const handleCardClick = (type: StatsType["type"]) => {
-		router.push(`${ROUTES.AUDIT}`);
+		router.push(`${ROUTES.PAYOUTS}`);
 	};
 
 	return (

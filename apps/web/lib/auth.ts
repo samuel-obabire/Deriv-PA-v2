@@ -30,3 +30,6 @@ export const auth = betterAuth({
 	experimental: { joins: true },
 	plugins: [nextCookies()],
 });
+
+export type User = typeof auth.$Infer.Session.user;
+export type Session = typeof auth.$Infer.Session;

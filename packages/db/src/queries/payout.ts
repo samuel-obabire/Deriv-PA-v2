@@ -1,7 +1,7 @@
 import { and, desc, eq, lt, or } from "drizzle-orm";
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import { PayoutRequest, payoutRequest } from "../db/schema/payoutRequest";
+import { DB } from "../types";
 import { PAGE_LIMIT } from "./pagination";
 
 export type Cursor = Pick<PayoutRequest, "createdAt" | "id">;
@@ -11,8 +11,7 @@ export const getPayouts = async ({
 	limit = PAGE_LIMIT,
 	cursor,
 }: {
-	// biome-ignore lint/suspicious/noExplicitAny: type any needed in this case
-	db: PostgresJsDatabase<any>;
+	db: DB;
 	limit?: number;
 	cursor?: Cursor;
 }) => {

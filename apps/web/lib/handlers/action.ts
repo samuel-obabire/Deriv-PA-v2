@@ -1,11 +1,11 @@
-import z, { type ZodType } from "zod";
+import { type ZodType } from "zod";
 import { auth } from "../auth";
 import { UnauthorizedError } from "../errors";
 import { getSession } from "../session";
 
 type ActionProps<T> = {
-	params: T;
-	schema: ZodType<any>;
+	params: unknown;
+	schema: ZodType<T>;
 	authorise?: boolean;
 };
 const action = async <T>({
@@ -25,7 +25,7 @@ const action = async <T>({
 		throw new UnauthorizedError("You are not authorised");
 	}
 
-	return { params: parsedResult as z.infer<typeof schema>, session };
+	return { params: parsedResult, session };
 };
 
 export default action;

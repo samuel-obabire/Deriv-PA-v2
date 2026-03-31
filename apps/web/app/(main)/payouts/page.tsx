@@ -6,7 +6,7 @@ import TransactionsList from "@/components/transactions/TransactionsList";
 import { db } from "@/lib/db";
 import { verifySession } from "@/lib/session";
 
-const AuditList = async () => {
+const Transactions = async () => {
 	const transactions = await getPayouts({
 		db,
 	});
@@ -29,7 +29,7 @@ const AuditPage = async () => {
 			</section>
 
 			<Suspense fallback={<TransactionsListSkeleton />}>
-				<AuditList />
+				<Transactions />
 			</Suspense>
 		</div>
 	);
