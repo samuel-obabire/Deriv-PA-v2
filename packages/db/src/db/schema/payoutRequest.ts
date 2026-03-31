@@ -19,8 +19,9 @@ export const payoutRequest = pgTable("payout_request", {
 	withdrawalId: uuid("withdrawal_id").references(() => withdrawalRequest.id),
 	amountNgn: numeric("amount_ngn", { precision: 12, scale: 2 }).notNull(),
 	recipientName: text("reciepient_name").notNull(),
-	recipientAccount: text("reciepient_account").notNull(),
-	recipientBank: text("reciepient_bank").notNull(),
+	recipientAccount: text("reciepient_account"),
+	recipientBank: text("reciepient_bank"),
+	clientCR: text("client_cr"),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
 		.defaultNow()
 		.notNull(),

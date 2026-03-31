@@ -1,0 +1,1 @@
+ALTER TABLE "withdrawal_request" DROP CONSTRAINT "withdrawal_request_deriv_id_unique";

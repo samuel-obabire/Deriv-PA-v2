@@ -18,7 +18,8 @@ export type WithdrawalStatus = (typeof WithdrawalStatusEnum.enumValues)[number];
 
 export const withdrawalRequest = pgTable("withdrawal_request", {
 	id: uuid("id").primaryKey().defaultRandom(),
-	derivId: text("deriv_id").notNull().unique(),
+	clientName: text("client_name").notNull(),
+	derivId: text("deriv_id").notNull(),
 	amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
 	amountNgn: numeric("amount_ngn", { precision: 12, scale: 2 }).notNull(),
 	currency: text("currency").notNull(),

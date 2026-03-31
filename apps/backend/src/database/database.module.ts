@@ -3,11 +3,10 @@ import * as schema from "@repo/db";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { DRIZZLE } from "./constant";
-import { DatabaseController } from "./database.controller";
+
 import { DatabaseService } from "./database.service";
 
 @Module({
-	controllers: [DatabaseController],
 	providers: [
 		DatabaseService,
 		{
@@ -19,6 +18,6 @@ import { DatabaseService } from "./database.service";
 			},
 		},
 	],
-	exports: [DRIZZLE],
+	exports: [DRIZZLE, DatabaseService],
 })
 export class DatabaseModule {}
