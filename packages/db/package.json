@@ -27,7 +27,8 @@
 		"push": "drizzle-kit push"
 	},
 	"devDependencies": {
-		"drizzle-kit": "^0.31.10"
+		"drizzle-kit": "^0.31.10",
+		"@repo/typescript-config": "workspace:*"
 	},
 	"dependencies": {
 		"typescript": "^5.9.3",
