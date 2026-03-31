@@ -14,7 +14,7 @@ export class PayoutService {
 
 	async moniepointPayout(createPayoutDto: CreatePayoutDto) {
 		const parsed = this.parserService.moniepointParser(
-			createPayoutDto.body.text.body,
+			createPayoutDto.body.plain,
 		);
 
 		const bestMatchingDerivWithdrawal =
