@@ -4,7 +4,7 @@ import {
 	InternalServerErrorException,
 } from "@nestjs/common";
 import type { DB } from "@repo/db";
-import { getCurrentRate } from "@repo/db/queries";
+import { getCurrentRate } from "@repo/db";
 
 import { DRIZZLE } from "src/database/constant";
 
