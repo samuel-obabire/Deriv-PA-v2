@@ -24,11 +24,11 @@
 		"db:migrate": "tsx scripts/migrate.ts",
 		"db:studio": "drizzle-kit studio",
 		"generate": "drizzle-kit generate",
-		"push": "drizzle-kit push",
-		"typescript": "^5.9.3"
+		"push": "drizzle-kit push"
 	},
 	"devDependencies": {
-		"drizzle-kit": "^0.31.10"
+		"drizzle-kit": "^0.31.10",
+		"typescript": "catalog:"
 	},
 	"dependencies": {
 		"@types/pg": "^8.20.0",
