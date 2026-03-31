@@ -18,7 +18,7 @@
 		"dist"
 	],
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc --verbose",
 		"db:seed": "tsx ./seed.ts",
 		"db:push": "drizzle-kit push",
 		"db:migrate": "tsx scripts/migrate.ts",
