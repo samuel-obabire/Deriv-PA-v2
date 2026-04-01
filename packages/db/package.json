@@ -21,7 +21,7 @@
 		"build": "tsc",
 		"db:seed": "tsx ./seed.ts",
 		"db:push": "drizzle-kit push",
-		"db:migrate": "tsx scripts/migrate.ts",
+		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
 		"generate": "drizzle-kit generate",
 		"push": "drizzle-kit push"
