@@ -21,10 +21,10 @@ export const updateRate = async (
 
 	if (error) return handleError(error) as ErrorResponse;
 
-	const { deposit, withdrawal } = validated.params;
+	const { deposit, withdrawal, charge, smallAmount } = validated.params;
 
 	const { error: updateError } = await tryCatch(
-		updateCurrentRate(db, { deposit, withdrawal }),
+		updateCurrentRate(db, { deposit, withdrawal, charge, smallAmount }),
 	);
 
 	if (updateError) return handleError(updateError) as ErrorResponse;

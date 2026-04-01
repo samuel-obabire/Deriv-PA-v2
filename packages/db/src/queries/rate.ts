@@ -19,13 +19,15 @@ export const getCurrentRate = async (db: DB) => {
 
 export const updateCurrentRate = async (
 	db: DB,
-	values: Pick<Rate, "deposit" | "withdrawal">,
+	values: Pick<Rate, "deposit" | "withdrawal" | "charge" | "smallAmount">,
 ) => {
 	const [updated] = await db
 		.update(rate)
 		.set({
 			deposit: values.deposit,
 			withdrawal: values.withdrawal,
+			charge: values.charge,
+			smallAmount: values.smallAmount,
 		})
 		.where(eq(rate.id, RATE_ID))
 		.returning();
