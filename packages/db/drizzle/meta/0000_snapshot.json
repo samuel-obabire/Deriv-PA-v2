@@ -1,5 +1,5 @@
 {
-  "id": "86cecd77-5d5f-4759-8344-47ca64fee7e1",
+  "id": "c23fe795-deb4-411d-9839-cfbc8e5e74a9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -215,6 +215,18 @@
         },
         "deposit": {
           "name": "deposit",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "charge": {
+          "name": "charge",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "small_amount": {
+          "name": "small_amount",
           "type": "integer",
           "primaryKey": false,
           "notNull": true

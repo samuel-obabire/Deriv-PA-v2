@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { withdrawalRequest } from "@repo/db";
+import { Rate, withdrawalRequest } from "@repo/db";
 
-import { mul } from "src/common/utils/decimal";
+import { mul, sub } from "src/common/utils/decimal";
 import { DatabaseService } from "src/database/database.service";
 import { ParserService } from "src/parser/parser.service";
 import { RateService } from "src/rate/rate.service";
@@ -24,7 +24,7 @@ export class WithdrawalRequestService {
 
 		const currentRate = await this.rateService.getCurrentRate();
 
-		const amountNgn = mul(currentRate.withdrawal, amount);
+		const amountNgn = this.computeNgnAmount(amount, currentRate);
 
 		await this.databaseService.client.insert(withdrawalRequest).values({
 			amount: amount.toFixed(2),
@@ -33,5 +33,16 @@ export class WithdrawalRequestService {
 			derivId: cr,
 			clientName: name,
 		});
+	}
+
+	computeNgnAmount(amount: number, currentRate: Rate) {
+		if (amount < currentRate.smallAmount) {
+			const amountNgn = mul(currentRate.withdrawal, amount);
+			const amountNgnMinusCharge = sub(amountNgn, currentRate.charge);
+
+			return amountNgnMinusCharge;
+		}
+
+		return mul(currentRate.withdrawal, amount);
 	}
 }

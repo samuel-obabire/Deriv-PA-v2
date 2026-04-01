@@ -1,4 +1,4 @@
-import { getCurrentRate } from "@repo/db/queries";
+import { getCurrentRate } from "@repo/db";
 import { Suspense } from "react";
 import AccountSection from "@/components/settings/AccountSection";
 import RateSection from "@/components/settings/RateSection";

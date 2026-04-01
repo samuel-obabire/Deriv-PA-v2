@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Rate } from "@repo/db";
+import { Rate } from "@repo/db";
 import { tryCatch } from "@repo/utils";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -27,6 +27,8 @@ const RateForm = ({ onSubmit, rate }: SignInProps) => {
 		defaultValues: {
 			deposit: rate.deposit,
 			withdrawal: rate.withdrawal,
+			charge: rate.charge,
+			smallAmount: rate.smallAmount,
 		},
 	});
 
@@ -76,7 +78,7 @@ const RateForm = ({ onSubmit, rate }: SignInProps) => {
 									</FieldLabel>
 									<Input
 										{...field}
-										id="password"
+										id="withdrawal"
 										aria-invalid={fieldState.invalid}
 										className="no-ring"
 									/>
@@ -87,6 +89,47 @@ const RateForm = ({ onSubmit, rate }: SignInProps) => {
 										Rates are used to calculate expected payout amounts during
 										reconciliation. Updates apply to all pending batches.
 									</FieldDescription>
+								</Field>
+							)}
+						/>
+
+						<Controller
+							name="smallAmount"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor="smallAmount">Small amount</FieldLabel>
+									<Input
+										{...field}
+										id="smallAmount"
+										aria-invalid={fieldState.invalid}
+										className="no-ring"
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)}
+						/>
+
+						<Controller
+							name="charge"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor="charge">
+										Charge for orders less then small amount
+									</FieldLabel>
+									<Input
+										{...field}
+										id="charge"
+										aria-invalid={fieldState.invalid}
+										className="no-ring"
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+									<FieldDescription>Charge for small amounts</FieldDescription>
 								</Field>
 							)}
 						/>

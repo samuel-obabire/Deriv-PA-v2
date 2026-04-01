@@ -4,6 +4,8 @@ export const RateUpdateSchema = z
 	.object({
 		deposit: z.coerce.number<number>().int().nonnegative(),
 		withdrawal: z.coerce.number<number>().int().nonnegative(),
+		charge: z.coerce.number<number>().int().nonnegative(),
+		smallAmount: z.coerce.number<number>().int().nonnegative(),
 	})
 	.refine(
 		(data) =>
