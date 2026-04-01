@@ -1,8 +1,8 @@
 {
 	"extends": "@repo/typescript-config/nestjs.json",
 	"compilerOptions": {
-		"module": "commonjs",
-		"moduleResolution": "node",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"baseUrl": "./",
 		"outDir": "./dist",
 		"strictNullChecks": false,
