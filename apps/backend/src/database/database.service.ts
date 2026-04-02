@@ -14,7 +14,7 @@ export class DatabaseService implements OnModuleDestroy {
 	) {}
 
 	async onModuleDestroy() {
-		this.db.$client.end();
+		await this.db.$client.end();
 	}
 
 	get client() {
