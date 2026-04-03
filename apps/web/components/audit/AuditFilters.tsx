@@ -13,6 +13,7 @@ const AuditFilters = () => {
 		setStatus,
 		onSearchSubmit,
 		clearFilters,
+		hasFilter,
 	} = useFilters();
 
 	const hasSearch = Boolean(query);
@@ -29,7 +30,7 @@ const AuditFilters = () => {
 
 			<StatusFilter onSelect={setStatus} />
 
-			<ClearFilters onClear={clearFilters} />
+			<ClearFilters hasFilter={hasFilter} onClear={clearFilters} />
 		</div>
 	);
 };

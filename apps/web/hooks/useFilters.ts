@@ -3,6 +3,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Options, parseAsString, useQueryStates } from "nuqs";
 import { useState } from "react";
 import { useDebounce } from "react-use";
+import { notAllNull } from "@/utils";
 
 const queryStateOptions: Options = {
 	history: "replace",
@@ -26,6 +27,7 @@ const useFilters = () => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
+	const hasFilter = notAllNull(filters);
 
 	// debounce updates to query state to prevent multiple reloads
 	useDebounce(
@@ -35,7 +37,7 @@ const useFilters = () => {
 				searchQuery: query || null,
 			});
 		},
-		1000,
+		700,
 		[query],
 	);
 
@@ -74,6 +76,7 @@ const useFilters = () => {
 		setStatus,
 		onSearchSubmit,
 		clearFilters,
+		hasFilter,
 	};
 };
 
