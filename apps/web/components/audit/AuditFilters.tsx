@@ -1,31 +1,35 @@
-import { ListFilter } from "lucide-react";
-import Form from "next/form";
-import ROUTES from "@/lib/constants/routes";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+"use client";
+
+import useFilters from "@/hooks/useFilters";
+import ClearFilters from "./ClearFilters";
+import SearchBar from "./SearchBar";
+import StatusFilter from "./StatusFilter";
 
 const AuditFilters = () => {
-	return (
-		<div className="flex flex-col">
-			<Form action={ROUTES.PAYOUTS}>
-				<div className="flex h-10 gap-2">
-					<Input
-						className="input-class font-bold flex-1 h-full"
-						name="query"
-						placeholder="Search CR, name"
-					/>
-					<Button className="h-full" type="submit">
-						Search
-					</Button>
-				</div>
-			</Form>
+	const {
+		onSearchClear,
+		query,
+		setQuery,
+		setStatus,
+		onSearchSubmit,
+		clearFilters,
+	} = useFilters();
 
-			<button
-				type="button"
-				className="self-end bg-primary/20 mt-5 p-2 rounded-md"
-			>
-				<ListFilter className="text-accent-foreground" />
-			</button>
+	const hasSearch = Boolean(query);
+
+	return (
+		<div className="flex flex-col gap-2">
+			<SearchBar
+				query={query || ""}
+				setQuery={setQuery}
+				onSearchSubmit={onSearchSubmit}
+				onSearchClear={onSearchClear}
+				hasSearch={hasSearch}
+			/>
+
+			<StatusFilter onSelect={setStatus} />
+
+			<ClearFilters onClear={clearFilters} />
 		</div>
 	);
 };

@@ -3,6 +3,7 @@
 import { type PayoutRequest } from "@repo/db";
 import { Cursor } from "@repo/db/queries";
 import { InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { api } from "@/lib/api";
@@ -24,10 +25,11 @@ const TransactionsList = ({ transactions }: TransactionsListProp) => {
 
 		rootMargin: "0px 0px 10px 0px",
 	});
+	const existingSearchParams = useSearchParams().toString();
 
 	const { data, error, hasNextPage, fetchNextPage, isFetchingNextPage } =
 		useInfiniteQuery<Res, Error, InfiniteData<Res>, string[], Cursor | null>({
-			queryKey: ["payouts"],
+			queryKey: ["payouts", existingSearchParams],
 
 			initialPageParam: null,
 
@@ -42,7 +44,10 @@ const TransactionsList = ({ transactions }: TransactionsListProp) => {
 			},
 
 			queryFn: async ({ pageParam }) => {
-				const res = await api.fetchPayouts<FetchPayoutResponse>(pageParam);
+				const res = await api.fetchPayouts<FetchPayoutResponse>(
+					existingSearchParams,
+					pageParam,
+				);
 
 				if (!res.success) {
 					throw new Error(res.error?.message);
