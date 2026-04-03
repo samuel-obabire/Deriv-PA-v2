@@ -4,8 +4,8 @@ export const parseDerivEmail = (text: string) => {
 		/received\s+([\d,]+(?:\.\d+)?)\s+([A-Z]{3,})/i,
 	);
 
-	// 🔹 Sender + CR
-	const senderMatch = text.match(/completed by\s+([A-Za-z\s]+),\s*(CR\d+)/i);
+	// 🔹 Sender + CR (robust)
+	const senderMatch = text.match(/completed by\s+(.+?),\s*(CR\d+)/i);
 
 	if (!amountMatch || !senderMatch) {
 		throw new Error("Failed to parse transaction info from email text");
