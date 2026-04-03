@@ -2,14 +2,14 @@ import { Cursor } from "@repo/db/queries";
 import fetchHandler from "./handlers/fetchHandler";
 import { clientEnv } from "./validations/env/client";
 
-const getPayoutUrl = (cursor?: Cursor | null) => {
+const getPayoutUrl = (searchParams: string, cursor?: Cursor | null) => {
 	return cursor
-		? `${clientEnv.NEXT_PUBLIC_URL}/api/payouts?cursorId=${cursor.id}&cursorDate=${new Date(cursor.createdAt).toISOString()}`
-		: `${clientEnv.NEXT_PUBLIC_URL}/api/payouts`;
+		? `${clientEnv.NEXT_PUBLIC_URL}/api/payouts?cursorId=${cursor.id}&cursorDate=${new Date(cursor.createdAt).toISOString()}&${searchParams}`
+		: `${clientEnv.NEXT_PUBLIC_URL}/api/payouts?${searchParams}`;
 };
 
 export const api = {
-	fetchPayouts: async <T>(cursor?: Cursor | null) => {
-		return await fetchHandler<T>(getPayoutUrl(cursor));
+	fetchPayouts: async <T>(searchParams: string, cursor?: Cursor | null) => {
+		return await fetchHandler<T>(getPayoutUrl(searchParams, cursor));
 	},
 };

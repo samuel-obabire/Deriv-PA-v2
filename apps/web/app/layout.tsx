@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 import TanstackClientProvider from "@/components/providers/QueryClientProvider";
 
@@ -41,7 +42,9 @@ export default function RootLayout({
 					disableTransitionOnChange
 				>
 					<TanstackClientProvider>
-						<div>{children}</div>
+						<NuqsAdapter>
+							<div>{children}</div>
+						</NuqsAdapter>
 					</TanstackClientProvider>
 
 					<Toaster richColors />

@@ -1,37 +1,63 @@
-import { and, desc, eq, lt, or } from "drizzle-orm";
-
-import { PayoutRequest, payoutRequest } from "../db/schema/payoutRequest";
+import { and, desc, eq, gte, lt, lte, or, sql } from "drizzle-orm";
+import { payoutRequest } from "../db/schema";
 import { DB } from "../types";
 import { PAGE_LIMIT } from "./pagination";
-
-export type Cursor = Pick<PayoutRequest, "createdAt" | "id">;
+import { PayoutOptions } from "./types";
 
 export const getPayouts = async ({
 	db,
-	limit = PAGE_LIMIT,
-	cursor,
+	options,
 }: {
 	db: DB;
-	limit?: number;
-	cursor?: Cursor;
+	options?: PayoutOptions;
 }) => {
+	const {
+		limit = PAGE_LIMIT,
+		cursor,
+		date,
+		searchQuery,
+		status,
+	} = options ?? {};
+
+	const conditions = [];
+
+	if (status) {
+		conditions.push(eq(payoutRequest.status, status));
+	}
+
+	if (cursor) {
+		conditions.push(
+			or(
+				lt(payoutRequest.createdAt, cursor.createdAt),
+				and(
+					eq(payoutRequest.createdAt, cursor.createdAt),
+					lt(payoutRequest.id, cursor.id),
+				),
+			),
+		);
+	}
+
+	if (date?.from && date?.to) {
+		conditions.push(
+			and(
+				gte(payoutRequest.createdAt, date.from),
+				lte(payoutRequest.createdAt, date.to),
+			),
+		);
+	}
+
+	if (searchQuery) {
+		conditions.push(
+			sql`word_similarity(${payoutRequest.recipientName}, ${searchQuery}) > 0.3`,
+		);
+	}
+
 	const payouts = await db
 		.select()
 		.from(payoutRequest)
+		.where(conditions.length ? and(...conditions) : undefined)
 		.orderBy(desc(payoutRequest.createdAt), desc(payoutRequest.id))
-		.limit(limit)
-		.where(
-			cursor
-				? or(
-						lt(payoutRequest.createdAt, cursor.createdAt),
-
-						and(
-							eq(payoutRequest.createdAt, cursor.createdAt),
-							lt(payoutRequest.id, cursor.id),
-						),
-					)
-				: undefined,
-		);
+		.limit(limit);
 
 	return payouts;
 };

@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/http-errors";
-import { FetchPayoutSchema } from "@/lib/validations/api";
+import { FetchPaginatedPayoutSchema } from "@/lib/validations/api";
 import { getSearchParamsFromRequest } from "@/utils/getSearchParamsFromRequest";
 
 export const GET = async (req: NextRequest) => {
@@ -13,25 +13,41 @@ export const GET = async (req: NextRequest) => {
 	const result = await tryCatch(
 		action({
 			params: searchParams,
-			schema: FetchPayoutSchema,
+			schema: FetchPaginatedPayoutSchema,
 			authorise: true,
 		}),
 	);
 
 	if (result.error) return handleError(result.error, "api");
 
-	const { cursorDate, cursorId, limit = PAGE_LIMIT } = result.data.params;
+	const {
+		cursorDate,
+		cursorId,
+		limit = PAGE_LIMIT,
+		searchQuery,
+		status,
+		from,
+		to,
+	} = result.data.params;
 
 	const fn = getPayouts({
 		db,
-		limit,
-		...(cursorDate &&
-			cursorId && {
-				cursor: {
-					createdAt: cursorDate,
-					id: cursorId,
-				},
-			}),
+		options: {
+			searchQuery,
+			status,
+			limit,
+			...(cursorDate &&
+				cursorId && {
+					cursor: {
+						createdAt: cursorDate,
+						id: cursorId,
+					},
+				}),
+			...(from &&
+				to && {
+					date: { from, to },
+				}),
+		},
 	});
 
 	const { data: transactions, error: getPayoutError } = await tryCatch(fn);
