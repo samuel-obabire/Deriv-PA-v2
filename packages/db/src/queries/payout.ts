@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, lt, lte, or, sql } from "drizzle-orm";
+import { and, desc, eq, gte, ilike, lt, lte, or } from "drizzle-orm";
 import { payoutRequest } from "../db/schema";
 import { DB } from "../types";
 import { PAGE_LIMIT } from "./pagination";
@@ -48,7 +48,7 @@ export const getPayouts = async ({
 
 	if (searchQuery) {
 		conditions.push(
-			sql`word_similarity(${payoutRequest.recipientName}, ${searchQuery}) > 0.3`,
+			ilike(payoutRequest.recipientName, `%${searchQuery}%`),
 		);
 	}
 
