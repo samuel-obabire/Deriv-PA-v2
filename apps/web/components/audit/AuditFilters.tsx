@@ -13,23 +13,26 @@ const AuditFilters = () => {
 		setStatus,
 		onSearchSubmit,
 		clearFilters,
+		hasFilter,
 	} = useFilters();
 
 	const hasSearch = Boolean(query);
 
 	return (
 		<div className="flex flex-col gap-2">
-			<SearchBar
-				query={query || ""}
-				setQuery={setQuery}
-				onSearchSubmit={onSearchSubmit}
-				onSearchClear={onSearchClear}
-				hasSearch={hasSearch}
-			/>
+			<div className="flex gap-3">
+				<SearchBar
+					query={query || ""}
+					setQuery={setQuery}
+					onSearchSubmit={onSearchSubmit}
+					onSearchClear={onSearchClear}
+					hasSearch={hasSearch}
+				/>
 
-			<StatusFilter onSelect={setStatus} />
+				<StatusFilter onSelect={setStatus} />
+			</div>
 
-			<ClearFilters onClear={clearFilters} />
+			<ClearFilters hasFilter={hasFilter} onClear={clearFilters} />
 		</div>
 	);
 };

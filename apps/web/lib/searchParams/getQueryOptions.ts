@@ -1,8 +1,8 @@
 import { ZodType } from "zod";
 import { buildQueryOptions } from "@/utils/buildQueryOptions";
-import { TransactionsQueryParamSchemaType } from "./payout";
+import { TransactionQuerySchemaType } from "../validations/pagination.schema";
 
-export const getQueryOptions = <T extends TransactionsQueryParamSchemaType>({
+export const getQueryOptions = <T extends TransactionQuerySchemaType>({
 	query,
 	schema,
 }: {

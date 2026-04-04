@@ -1,8 +1,8 @@
 import { PayoutOptions } from "@repo/db/queries";
-import { TransactionsQueryParamSchemaType } from "@/lib/searchParams/payout";
+import { TransactionQuerySchemaType } from "@/lib/validations/pagination.schema";
 
 export const buildQueryOptions = (
-	data: TransactionsQueryParamSchemaType,
+	data: TransactionQuerySchemaType,
 ): PayoutOptions => ({
 	...(data.from &&
 		data.to && {

@@ -7,11 +7,9 @@ import TransactionsList from "@/components/transactions/TransactionsList";
 import { db } from "@/lib/db";
 import { PageProps } from "@/lib/searchParams";
 import { getQueryOptions } from "@/lib/searchParams/getQueryOptions";
-import {
-	payoutSearchParamsCache,
-	TransactionsQueryParamSchema,
-} from "@/lib/searchParams/payout";
+import { payoutSearchParamsCache } from "@/lib/searchParams/payout";
 import { verifySession } from "@/lib/session";
+import { TransactionQuerySchema } from "@/lib/validations/pagination.schema";
 
 const Payouts = async ({ searchParams }: PageProps) => {
 	await verifySession();
@@ -20,7 +18,7 @@ const Payouts = async ({ searchParams }: PageProps) => {
 
 	const queryOptions = getQueryOptions({
 		query,
-		schema: TransactionsQueryParamSchema,
+		schema: TransactionQuerySchema,
 	});
 
 	const transactions = queryOptions

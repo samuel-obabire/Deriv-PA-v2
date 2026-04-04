@@ -1,7 +1,13 @@
 import { Button } from "../ui/button";
 
-const ClearFilters = ({ onClear }: { onClear: () => void }) => {
-	return (
+const ClearFilters = ({
+	onClear,
+	hasFilter,
+}: {
+	onClear: () => void;
+	hasFilter?: boolean;
+}) => {
+	return hasFilter ? (
 		<div className="flex justify-end">
 			<Button
 				type="button"
@@ -12,7 +18,7 @@ const ClearFilters = ({ onClear }: { onClear: () => void }) => {
 				Clear filters
 			</Button>
 		</div>
-	);
+	) : null;
 };
 
 export default ClearFilters;

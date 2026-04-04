@@ -19,11 +19,8 @@ const StatusFilter = ({
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button
-					type="button"
-					className="self-end bg-primary/20 mt-3 p-2 rounded-md"
-				>
-					<ListFilter className="text-accent-foreground" />
+				<Button type="button" className="h-10 bg-primary/20 p-2 rounded-md">
+					<ListFilter className="text-accent-foreground h-full" />
 				</Button>
 			</DropdownMenuTrigger>
 

@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/http-errors";
-import { FetchPaginatedPayoutSchema } from "@/lib/validations/api";
+import { TransactionQuerySchema } from "@/lib/validations/pagination.schema";
 import { getSearchParamsFromRequest } from "@/utils/getSearchParamsFromRequest";
 
 export const GET = async (req: NextRequest) => {
@@ -13,7 +13,7 @@ export const GET = async (req: NextRequest) => {
 	const result = await tryCatch(
 		action({
 			params: searchParams,
-			schema: FetchPaginatedPayoutSchema,
+			schema: TransactionQuerySchema,
 			authorise: true,
 		}),
 	);

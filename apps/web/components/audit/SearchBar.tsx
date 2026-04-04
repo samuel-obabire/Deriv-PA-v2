@@ -1,4 +1,3 @@
-import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import ClearSearchButton from "./ClearSearchButton";
 
@@ -16,9 +15,9 @@ const SearchBar = ({
 	hasSearch: boolean;
 }) => {
 	return (
-		<div className="flex h-10 gap-2 relative">
+		<div className="flex w-full h-10 gap-2 relative">
 			<Input
-				className="input-class font-bold flex-1 h-full pr-10"
+				className="input-class font-bold flex-1 h-full"
 				name="searchQuery"
 				value={query ?? ""}
 				onChange={(e) => setQuery(e.target.value)}
@@ -26,10 +25,6 @@ const SearchBar = ({
 			/>
 
 			{hasSearch && <ClearSearchButton onClick={onSearchClear} />}
-
-			<Button onClick={onSearchSubmit} className="h-full" type="submit">
-				Search
-			</Button>
 		</div>
 	);
 };
