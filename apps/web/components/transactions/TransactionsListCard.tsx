@@ -1,4 +1,6 @@
 import { PayoutStatus } from "@repo/db";
+import { getTZDate } from "@/utils/date";
+import { formatNaira } from "@/utils/formatNaira";
 import { Badge } from "../ui/badge";
 import {
 	Card,
@@ -7,7 +9,6 @@ import {
 	CardDescription,
 	CardHeader,
 } from "../ui/card";
-import { formatNaira } from "@/utils/formatNaira";
 
 type TransactionsListCardProps = {
 	amountNgn: string;
@@ -22,6 +23,8 @@ const TransactionsListCard = ({
 	recipientName,
 	status,
 }: TransactionsListCardProps) => {
+	const formatedDate = getTZDate(createdAt);
+
 	return (
 		<Card className="bg-muted">
 			<CardHeader>
@@ -33,9 +36,7 @@ const TransactionsListCard = ({
 						{recipientName}
 					</CardDescription>
 
-					<p className="text-primary font-medium">
-						{new Date(createdAt).toUTCString()}
-					</p>
+					<p className="text-primary font-medium">{formatedDate}</p>
 				</div>
 
 				<CardAction>
