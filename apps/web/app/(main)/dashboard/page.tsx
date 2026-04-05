@@ -1,3 +1,4 @@
+import { PAYOUT_STATUS } from "@repo/db/enums";
 import { Suspense } from "react";
 import Stats from "@/components/dashboard/Stats";
 import StatsSkeleton from "@/components/skeletons/StatsSkeleton";
@@ -6,15 +7,15 @@ import { StatsType } from "@/lib/types/stats";
 
 const stats: StatsType[] = [
 	{
-		type: "MATCHED",
+		type: PAYOUT_STATUS.MATCHED,
 		value: 20,
 	},
 	{
-		type: "UNMATCHED",
+		type: PAYOUT_STATUS.UNMATCHED,
 		value: 14,
 	},
 	{
-		type: "FLAGGED",
+		type: PAYOUT_STATUS.FLAGGED,
 		value: 16,
 	},
 	{

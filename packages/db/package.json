@@ -10,6 +10,10 @@
 		"./queries": {
 			"default": "./dist/queries/index.js",
 			"types": "./dist/queries/index.d.ts"
+		},
+		"./enums": {
+			"default": "./dist/enums/index.js",
+			"types": "./dist/enums/index.d.ts"
 		}
 	},
 	"files": [
