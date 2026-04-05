@@ -1,10 +1,6 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
-import {
-	payoutRequest,
-	WithdrawalRequest,
-	WithdrawalStatusEnum,
-	withdrawalRequest,
-} from "@repo/db";
+import { payoutRequest, WithdrawalRequest, withdrawalRequest } from "@repo/db";
+import { PAYOUT_STATUS, WITHDRAWAL_STATUS } from "@repo/db/enums";
 import { and, eq } from "drizzle-orm";
 import { ParsedDerivEmail } from "src/common/types/parser";
 import { DatabaseService } from "src/database/database.service";
@@ -21,12 +17,12 @@ export class ProcessorService {
 			const result = await tx
 				.update(withdrawalRequest)
 				.set({
-					status: WithdrawalStatusEnum.enumValues[1],
+					status: WITHDRAWAL_STATUS.MATCHED,
 				})
 				.where(
 					and(
 						eq(withdrawalRequest.id, matchedWithdrawal.id),
-						eq(withdrawalRequest.status, "PENDING"),
+						eq(withdrawalRequest.status, WITHDRAWAL_STATUS.PENDING),
 					),
 				)
 				.returning();
@@ -38,7 +34,7 @@ export class ProcessorService {
 				amountNgn: parsed.amount.toString(),
 				recipientName: parsed.narration,
 				clientCR: parsed.cr,
-				status: WithdrawalStatusEnum.enumValues.find((v) => v === "MATCHED"),
+				status: PAYOUT_STATUS.MATCHED,
 				withdrawalId: matchedWithdrawal.id,
 			});
 		});
@@ -49,7 +45,7 @@ export class ProcessorService {
 			amountNgn: parsed.amount.toString(),
 			recipientName: parsed.narration,
 			clientCR: parsed.cr,
-			status: WithdrawalStatusEnum.enumValues[2],
+			status: PAYOUT_STATUS.FLAGGED,
 		});
 	}
 }

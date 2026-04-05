@@ -1,5 +1,6 @@
 "use client";
 
+import { PAYOUT_STATUS } from "@repo/db/enums";
 import {
 	BadgeCheck,
 	BanknoteArrowUp,
@@ -7,7 +8,6 @@ import {
 	TriangleAlert,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-
 import ROUTES from "@/lib/constants/routes";
 import { StatConfig, StatsType } from "@/lib/types/stats";
 import { buildStatItems } from "@/utils/stats";
@@ -28,7 +28,7 @@ const STAT_CONFIG: StatConfig = [
 	},
 	{
 		title: "Flagged",
-		type: "FLAGGED",
+		type: PAYOUT_STATUS.FLAGGED,
 		icon: <TriangleAlert className="text-error" />,
 		badgeText: "Requires Action",
 		badgeClass: "bg-error/10 text-error",
@@ -36,7 +36,7 @@ const STAT_CONFIG: StatConfig = [
 	},
 	{
 		title: "Pending/Missing",
-		type: "UNMATCHED",
+		type: PAYOUT_STATUS.UNMATCHED,
 		icon: <Timer className="text-pending" />,
 		badgeText: "Awaiting Match",
 		badgeClass: "bg-pending/10 text-pending",
@@ -44,7 +44,7 @@ const STAT_CONFIG: StatConfig = [
 	},
 	{
 		title: "Matched",
-		type: "MATCHED",
+		type: PAYOUT_STATUS.MATCHED,
 		icon: <BadgeCheck className="text-success" />,
 		badgeText: "Fully Reconciled",
 		badgeClass: "bg-success/10 text-success",

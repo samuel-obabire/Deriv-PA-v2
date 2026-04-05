@@ -6,15 +6,14 @@ import {
 	timestamp,
 	uuid,
 } from "drizzle-orm/pg-core";
+import { WITHDRAWAL_STATUS } from "../../enums";
 
-export const WithdrawalStatusEnum = pgEnum("withdrawal_status", [
-	"PENDING",
-	"MATCHED",
-	"FLAGGED",
-	"MISSING",
-]);
+export const WithdrawalStatusEnum = pgEnum(
+	"withdrawal_status",
+	WITHDRAWAL_STATUS,
+);
 
-export type WithdrawalStatus = (typeof WithdrawalStatusEnum.enumValues)[number];
+export type WithdrawalStatus = WITHDRAWAL_STATUS;
 
 export const withdrawalRequest = pgTable("withdrawal_request", {
 	id: uuid("id").primaryKey().defaultRandom(),
@@ -26,7 +25,9 @@ export const withdrawalRequest = pgTable("withdrawal_request", {
 	createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
 		.defaultNow()
 		.notNull(),
-	status: WithdrawalStatusEnum("status").default("PENDING").notNull(),
+	status: WithdrawalStatusEnum("status")
+		.default(WITHDRAWAL_STATUS.PENDING)
+		.notNull(),
 });
 
 export type WithdrawalRequest = typeof withdrawalRequest.$inferSelect;

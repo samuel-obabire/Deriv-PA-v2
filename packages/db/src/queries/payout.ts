@@ -47,9 +47,7 @@ export const getPayouts = async ({
 	}
 
 	if (searchQuery) {
-		conditions.push(
-			ilike(payoutRequest.recipientName, `%${searchQuery}%`),
-		);
+		conditions.push(ilike(payoutRequest.recipientName, `%${searchQuery}%`));
 	}
 
 	const payouts = await db

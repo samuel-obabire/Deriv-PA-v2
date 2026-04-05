@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { withdrawalRequest } from "@repo/db";
+import { WITHDRAWAL_STATUS } from "@repo/db/enums";
 import { and, eq, or, sql } from "drizzle-orm";
 import { DatabaseService } from "src/database/database.service";
 
@@ -25,20 +26,20 @@ export class MatcherService {
 			? or(
 					and(
 						eq(withdrawalRequest.derivId, cr),
-						eq(withdrawalRequest.status, "PENDING"),
+						eq(withdrawalRequest.status, WITHDRAWAL_STATUS.PENDING),
 						sql`${withdrawalRequest.createdAt} >= NOW() - INTERVAL '15 minutes'`,
 						sql`${withdrawalRequest.amountNgn} BETWEEN ${min} AND ${max}`,
 					),
 
 					and(
-						eq(withdrawalRequest.status, "PENDING"),
+						eq(withdrawalRequest.status, WITHDRAWAL_STATUS.PENDING),
 						sql`${withdrawalRequest.createdAt} >= NOW() - INTERVAL '15 minutes'`,
 						sql`word_similarity(${withdrawalRequest.clientName}, ${narration}) > 0.3`,
 						sql`${withdrawalRequest.amountNgn} BETWEEN ${min} AND ${max}`,
 					),
 				)
 			: and(
-					eq(withdrawalRequest.status, "PENDING"),
+					eq(withdrawalRequest.status, WITHDRAWAL_STATUS.PENDING),
 					sql`${withdrawalRequest.createdAt} >= NOW() - INTERVAL '15 minutes'`,
 					sql`word_similarity(${withdrawalRequest.clientName}, ${narration}) > 0.3`,
 					sql`${withdrawalRequest.amountNgn} BETWEEN ${min} AND ${max}`,

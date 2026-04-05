@@ -6,13 +6,10 @@ import {
 	timestamp,
 	uuid,
 } from "drizzle-orm/pg-core";
+import { PAYOUT_STATUS } from "../../enums";
 import { withdrawalRequest } from "./withdrawalRequest";
 
-export const PayoutStatusEnum = pgEnum("payout_status", [
-	"UNMATCHED",
-	"MATCHED",
-	"FLAGGED",
-]);
+export const PayoutStatusEnum = pgEnum("payout_status", PAYOUT_STATUS);
 
 export const payoutRequest = pgTable("payout_request", {
 	id: uuid("id").primaryKey().defaultRandom(),
@@ -25,9 +22,9 @@ export const payoutRequest = pgTable("payout_request", {
 	createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
 		.defaultNow()
 		.notNull(),
-	status: PayoutStatusEnum("status").default("UNMATCHED").notNull(),
+	status: PayoutStatusEnum("status").default(PAYOUT_STATUS.UNMATCHED).notNull(),
 	flagReason: text("flag_reason"),
 });
 
-export type PayoutStatus = (typeof PayoutStatusEnum.enumValues)[number];
+export type PayoutStatus = PAYOUT_STATUS;
 export type PayoutRequest = typeof payoutRequest.$inferSelect;

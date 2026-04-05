@@ -1,6 +1,6 @@
 import { PayoutStatusEnum } from "@repo/db";
+import { PAYOUT_STATUS } from "@repo/db/enums";
 import { ListFilter } from "lucide-react";
-
 import { Button } from "../ui/button";
 import {
 	DropdownMenu,
@@ -14,7 +14,7 @@ import {
 const StatusFilter = ({
 	onSelect,
 }: {
-	onSelect: (status: (typeof PayoutStatusEnum.enumValues)[number]) => void;
+	onSelect: (status: PAYOUT_STATUS) => void;
 }) => {
 	return (
 		<DropdownMenu>
@@ -29,7 +29,10 @@ const StatusFilter = ({
 					<DropdownMenuLabel>Status</DropdownMenuLabel>
 
 					{PayoutStatusEnum.enumValues.map((status) => (
-						<DropdownMenuItem key={status} onClick={() => onSelect(status)}>
+						<DropdownMenuItem
+							key={status}
+							onClick={() => onSelect(status as PAYOUT_STATUS)}
+						>
 							<span className="capitalize">{status.toLowerCase()}</span>
 						</DropdownMenuItem>
 					))}
