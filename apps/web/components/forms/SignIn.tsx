@@ -72,6 +72,7 @@ const SignIn = ({ onSubmit }: SignInProps) => {
 									<FieldLabel htmlFor="email">Email</FieldLabel>
 									<Input
 										{...field}
+										className="input-class"
 										id="email"
 										aria-invalid={fieldState.invalid}
 										placeholder="Enter email"
@@ -91,6 +92,7 @@ const SignIn = ({ onSubmit }: SignInProps) => {
 									<FieldLabel htmlFor="password">Password</FieldLabel>
 									<Input
 										{...field}
+										className="input-class"
 										id="password"
 										type="password"
 										aria-invalid={fieldState.invalid}

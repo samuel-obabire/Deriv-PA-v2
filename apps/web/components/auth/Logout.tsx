@@ -27,7 +27,7 @@ const Logout = () => {
 
 	return (
 		<Button onClick={handleSignout} variant="ghost" className="cursor-pointer">
-			<LogOut className="font-bold size- text-pending" /> Logout
+			<LogOut className="font-bold size-6 text-primary" /> Logout
 		</Button>
 	);
 };

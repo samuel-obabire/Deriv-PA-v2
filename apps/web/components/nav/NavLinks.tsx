@@ -20,9 +20,9 @@ const NavLinks = () => {
 						key={link.label}
 						href={link.href}
 						className={cn(
-							"font-space font-bold tracking-tight px-3 rounded transition-colors text-accent-foreground hover:text-pending active:text-pending",
+							"font-space font-bold tracking-tight px-3 rounded transition-colors text-accent-foreground hover:text-primary active:text-primary",
 							{
-								"text-pending": isActive,
+								"text-primary": isActive,
 							},
 						)}
 					>

@@ -66,6 +66,7 @@ const Signup = ({ onSubmit }: SignupProps) => {
 									<FieldLabel htmlFor="name">Name</FieldLabel>
 									<Input
 										{...field}
+										className="input-class"
 										id="name"
 										aria-invalid={fieldState.invalid}
 										placeholder="Adeluxe Hub"
@@ -85,6 +86,7 @@ const Signup = ({ onSubmit }: SignupProps) => {
 									<FieldLabel htmlFor="email">Email</FieldLabel>
 									<Input
 										{...field}
+										className="input-class"
 										id="email"
 										aria-invalid={fieldState.invalid}
 										placeholder="Enter email"
@@ -104,6 +106,7 @@ const Signup = ({ onSubmit }: SignupProps) => {
 									<FieldLabel htmlFor="password">Password</FieldLabel>
 									<Input
 										{...field}
+										className="input-class"
 										id="password"
 										type="password"
 										aria-invalid={fieldState.invalid}
@@ -124,6 +127,7 @@ const Signup = ({ onSubmit }: SignupProps) => {
 									<FieldLabel htmlFor="password">Confirm Password</FieldLabel>
 									<Input
 										{...field}
+										className="input-class"
 										id="confirm-password"
 										type="password"
 										aria-invalid={fieldState.invalid}
