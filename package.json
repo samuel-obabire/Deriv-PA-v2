@@ -11,7 +11,8 @@
 		"test": "turbo run test",
 		"test:e2e": "turbo run test:e2e",
 		"format-and-lint": "biome check .",
-		"format-and-lint:fix": "biome check . --write"
+		"format-and-lint:fix": "biome check . --write",
+		"prepare": "husky"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.8",
@@ -26,6 +27,7 @@
 	"dependencies": {
 		"drizzle-kit": "^0.31.10",
 		"drizzle-orm": "^0.45.2",
+		"husky": "^9.1.7",
 		"postgres": "^3.4.8"
 	}
 }
