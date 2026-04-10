@@ -10,9 +10,8 @@
 		"build": "turbo run build",
 		"test": "turbo run test",
 		"test:e2e": "turbo run test:e2e",
-		"lint": "biome check .",
-		"format": "biome check .",
-		"format:fix": "biome check . --write"
+		"format-and-lint": "biome check .",
+		"format-and-lint:fix": "biome check . --write"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.8",
