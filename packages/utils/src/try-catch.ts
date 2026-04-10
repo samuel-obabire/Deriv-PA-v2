@@ -1,7 +1,4 @@
-type Success<T> = { data: T; error: null };
-type Failure<E> = { data: null; error: E };
-
-type Result<T, E = Error> = Success<T> | Failure<E>;
+type Result<T, E = Error> = [T, null] | [null, E];
 
 export const tryCatch = async <T, E = Error>(
 	promise: Promise<T>,
@@ -9,8 +6,8 @@ export const tryCatch = async <T, E = Error>(
 	try {
 		const data = await promise;
 
-		return { data, error: null };
+		return [data, null];
 	} catch (err: unknown) {
-		return { data: null, error: err as E };
+		return [null, err as E];
 	}
 };

@@ -38,7 +38,7 @@ const Signup = ({ onSubmit }: SignupProps) => {
 	});
 
 	const handleSubmit = async (data: z.infer<typeof SignUpSchema>) => {
-		const { data: result, error } = await tryCatch(onSubmit(data));
+		const [result, error] = await tryCatch(onSubmit(data));
 
 		if (error) toast.error(error.message);
 

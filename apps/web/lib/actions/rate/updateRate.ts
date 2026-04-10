@@ -11,7 +11,7 @@ import { RateUpdateSchema } from "@/lib/validations/rate";
 export const updateRate = async (
 	data: z.infer<typeof RateUpdateSchema>,
 ): Promise<ActionResponse> => {
-	const { data: validated, error } = await tryCatch(
+	const [validated, error] = await tryCatch(
 		action({
 			params: data,
 			schema: RateUpdateSchema,
@@ -23,7 +23,7 @@ export const updateRate = async (
 
 	const { deposit, withdrawal, charge, smallAmount } = validated.params;
 
-	const { error: updateError } = await tryCatch(
+	const [, updateError] = await tryCatch(
 		updateCurrentRate(db, { deposit, withdrawal, charge, smallAmount }),
 	);
 

@@ -12,7 +12,7 @@ const Logout = () => {
 	const router = useRouter();
 
 	const handleSignout = async () => {
-		const { data: result, error: signOutError } = await tryCatch(
+		const [result, signOutError] = await tryCatch(
 			authClient.signOut(),
 		);
 
