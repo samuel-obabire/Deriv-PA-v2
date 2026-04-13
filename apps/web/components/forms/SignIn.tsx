@@ -40,7 +40,7 @@ const SignIn = ({ onSubmit }: SignInProps) => {
 	});
 
 	const handleSubmit = async (data: z.infer<typeof SignInSchema>) => {
-		const { data: result, error } = await tryCatch(onSubmit(data));
+		const [result, error] = await tryCatch(onSubmit(data));
 
 		if (error) return toast.error(error.message);
 
@@ -72,6 +72,7 @@ const SignIn = ({ onSubmit }: SignInProps) => {
 									<FieldLabel htmlFor="email">Email</FieldLabel>
 									<Input
 										{...field}
+										className="input-class"
 										id="email"
 										aria-invalid={fieldState.invalid}
 										placeholder="Enter email"
@@ -91,6 +92,7 @@ const SignIn = ({ onSubmit }: SignInProps) => {
 									<FieldLabel htmlFor="password">Password</FieldLabel>
 									<Input
 										{...field}
+										className="input-class"
 										id="password"
 										type="password"
 										aria-invalid={fieldState.invalid}

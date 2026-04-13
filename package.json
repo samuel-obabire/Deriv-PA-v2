@@ -10,13 +10,14 @@
 		"build": "turbo run build",
 		"test": "turbo run test",
 		"test:e2e": "turbo run test:e2e",
-		"lint": "biome check .",
-		"format": "biome check .",
-		"format:fix": "biome check . --write"
+		"format-and-lint": "biome check .",
+		"format-and-lint:fix": "biome check . --write",
+		"prepare": "husky"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.8",
 		"@repo/typescript-config": "workspace:*",
+		"lint-staged": "^16.4.0",
 		"turbo": "^2.9.3",
 		"typescript": "^6.0.2"
 	},
@@ -24,9 +25,13 @@
 	"engines": {
 		"node": ">=18"
 	},
+	"lint-staged": {
+		"**/*.{ts,tsx,js,jsx,json,css}": "biome check . --write"
+	},
 	"dependencies": {
 		"drizzle-kit": "^0.31.10",
 		"drizzle-orm": "^0.45.2",
+		"husky": "^9.1.7",
 		"postgres": "^3.4.8"
 	}
 }

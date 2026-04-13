@@ -27,20 +27,20 @@ export class MatcherService {
 					and(
 						eq(withdrawalRequest.derivId, cr),
 						eq(withdrawalRequest.status, WITHDRAWAL_STATUS.PENDING),
-						sql`${withdrawalRequest.createdAt} >= NOW() - INTERVAL '15 minutes'`,
+						sql`${withdrawalRequest.createdAt} >= NOW() - INTERVAL '59 minutes'`,
 						sql`${withdrawalRequest.amountNgn} BETWEEN ${min} AND ${max}`,
 					),
 
 					and(
 						eq(withdrawalRequest.status, WITHDRAWAL_STATUS.PENDING),
-						sql`${withdrawalRequest.createdAt} >= NOW() - INTERVAL '15 minutes'`,
+						sql`${withdrawalRequest.createdAt} >= NOW() - INTERVAL '59 minutes'`,
 						sql`word_similarity(${withdrawalRequest.clientName}, ${narration}) > 0.3`,
 						sql`${withdrawalRequest.amountNgn} BETWEEN ${min} AND ${max}`,
 					),
 				)
 			: and(
 					eq(withdrawalRequest.status, WITHDRAWAL_STATUS.PENDING),
-					sql`${withdrawalRequest.createdAt} >= NOW() - INTERVAL '15 minutes'`,
+					sql`${withdrawalRequest.createdAt} >= NOW() - INTERVAL '59 minutes'`,
 					sql`word_similarity(${withdrawalRequest.clientName}, ${narration}) > 0.3`,
 					sql`${withdrawalRequest.amountNgn} BETWEEN ${min} AND ${max}`,
 				);

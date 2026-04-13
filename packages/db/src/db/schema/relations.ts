@@ -1,9 +1,9 @@
 import { relations } from "drizzle-orm";
-import { payoutRequest } from "./payoutRequest";
-import { withdrawalRequest } from "./withdrawalRequest";
 import { account } from "./account";
+import { payoutRequest } from "./payoutRequest";
 import { session } from "./session";
 import { user } from "./user";
+import { withdrawalRequest } from "./withdrawalRequest";
 
 export const payoutRelations = relations(payoutRequest, ({ one }) => ({
 	withdrawal: one(withdrawalRequest, {

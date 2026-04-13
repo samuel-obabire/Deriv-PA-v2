@@ -10,7 +10,7 @@ import { getSearchParamsFromRequest } from "@/utils/getSearchParamsFromRequest";
 export const GET = async (req: NextRequest) => {
 	const searchParams = getSearchParamsFromRequest(req);
 
-	const result = await tryCatch(
+	const [actionResult, actionError] = await tryCatch(
 		action({
 			params: searchParams,
 			schema: TransactionQuerySchema,
@@ -18,7 +18,7 @@ export const GET = async (req: NextRequest) => {
 		}),
 	);
 
-	if (result.error) return handleError(result.error, "api");
+	if (actionError) return handleError(actionError, "api");
 
 	const {
 		cursorDate,
@@ -28,7 +28,7 @@ export const GET = async (req: NextRequest) => {
 		status,
 		from,
 		to,
-	} = result.data.params;
+	} = actionResult.params;
 
 	const fn = getPayouts({
 		db,
@@ -50,7 +50,7 @@ export const GET = async (req: NextRequest) => {
 		},
 	});
 
-	const { data: transactions, error: getPayoutError } = await tryCatch(fn);
+	const [transactions, getPayoutError] = await tryCatch(fn);
 
 	if (getPayoutError) return handleError(getPayoutError, "api");
 

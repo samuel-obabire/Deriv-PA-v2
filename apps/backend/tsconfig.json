@@ -3,9 +3,12 @@
 	"compilerOptions": {
 		"module": "nodenext",
 		"moduleResolution": "nodenext",
-		"baseUrl": "./",
+		"paths": {
+			"src/*": ["./src/*"]
+		},
 		"outDir": "./dist",
 		"strictNullChecks": false,
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"types": ["jest", "node"]
 	}
 }

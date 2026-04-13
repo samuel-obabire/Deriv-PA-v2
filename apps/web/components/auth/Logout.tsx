@@ -12,9 +12,7 @@ const Logout = () => {
 	const router = useRouter();
 
 	const handleSignout = async () => {
-		const { data: result, error: signOutError } = await tryCatch(
-			authClient.signOut(),
-		);
+		const [result, signOutError] = await tryCatch(authClient.signOut());
 
 		if (signOutError) toast.error(signOutError.message);
 
@@ -27,7 +25,7 @@ const Logout = () => {
 
 	return (
 		<Button onClick={handleSignout} variant="ghost" className="cursor-pointer">
-			<LogOut className="font-bold size- text-pending" /> Logout
+			<LogOut className="font-bold size-6 text-primary" /> Logout
 		</Button>
 	);
 };
