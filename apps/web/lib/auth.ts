@@ -1,7 +1,9 @@
 import * as schema from "@repo/db";
+import { getUser } from "@repo/db/queries";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
+import { organization } from "better-auth/plugins";
 import { db } from "./db";
 
 export const auth = betterAuth({
@@ -27,8 +29,25 @@ export const auth = betterAuth({
 		},
 	},
 
+	databaseHooks: {
+		session: {
+			create: {
+				before: async (session) => {
+					const user = await getUser(session.userId, db);
+
+					return {
+						data: {
+							...session,
+							activeOrganizationId: user?.activeOrgId,
+						},
+					};
+				},
+			},
+		},
+	},
+
 	experimental: { joins: true },
-	plugins: [nextCookies()],
+	plugins: [organization(), nextCookies()],
 });
 
 export type User = typeof auth.$Infer.Session.user;
