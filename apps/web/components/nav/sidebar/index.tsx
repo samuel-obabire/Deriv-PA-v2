@@ -4,6 +4,7 @@ import { ChevronDown, LucideIcon, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
+import ThemeToggler from "@/components/theme/ThemeToggler";
 import {
 	Collapsible,
 	CollapsibleContent,
@@ -54,7 +55,10 @@ const SidebarContent = ({
 				))}
 			</div>
 
-			<Logout />
+			<div className="flex justify-between">
+				<ThemeToggler />
+				<Logout />
+			</div>
 		</div>
 	);
 };
@@ -89,7 +93,7 @@ export const DesktopSideBar = () => {
 	const groups = getSidebarForRole("admin");
 
 	return (
-		<aside className="hidden pt-10 lg:block h-dvh border-r overflow-y-auto">
+		<aside className="hidden pt-10 lg:block h-dvh border-r shadow-sidebar-primary overflow-y-auto">
 			<SidebarContent
 				groups={groups}
 				renderItems={(items) => {

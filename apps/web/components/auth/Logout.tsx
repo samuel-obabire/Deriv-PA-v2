@@ -24,8 +24,12 @@ const Logout = () => {
 	};
 
 	return (
-		<Button onClick={handleSignout} variant="ghost" className="cursor-pointer">
-			<LogOut className="font-bold size-6 text-primary" /> Logout
+		<Button
+			onClick={handleSignout}
+			variant="ghost"
+			className="cursor-pointer flex gap-3"
+		>
+			Logout <LogOut strokeWidth={3} />
 		</Button>
 	);
 };
