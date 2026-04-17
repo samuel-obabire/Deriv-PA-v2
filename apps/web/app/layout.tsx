@@ -14,7 +14,7 @@ const space = Space_Grotesk({
 
 const inter = Inter({
 	subsets: ["vietnamese"],
-	weight: ["300", "400", "500", "600", "700"],
+	weight: ["300", "400", "500", "600", "700", "800", "900"],
 	variable: "--font-sans",
 });
 
@@ -37,7 +37,7 @@ export default function RootLayout({
 			<body className="antialiased">
 				<ThemeProvider
 					attribute="class"
-					defaultTheme="dark"
+					defaultTheme="system"
 					enableSystem
 					disableTransitionOnChange
 				>
