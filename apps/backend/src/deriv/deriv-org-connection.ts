@@ -107,7 +107,7 @@ export class DerivOrgConnection {
 
 		await this.waitForSocketOpen.promise;
 
-		if (!this.websocket.OPEN) {
+		if (this.websocket.readyState !== WebSocket.OPEN) {
 			this.requestHandlers.delete(reqId.toString());
 			throw new WsException("Event loop closed. Please retry your request");
 		}
@@ -182,7 +182,7 @@ export class DerivOrgConnection {
 	}
 
 	private cleanup() {
-		clearInterval(this.keepAliveInterval);
+		clearInterval(this.keepAliveIntervalId);
 
 		this.requestHandlers.clear();
 		this.subscriptionHandlers.clear();

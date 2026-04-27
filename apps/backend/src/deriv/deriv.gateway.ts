@@ -10,6 +10,7 @@ import {
 	WebSocketServer,
 	WsException,
 } from "@nestjs/websockets";
+import { tryCatch } from "@repo/utils";
 import { ZodValidationPipe } from "nestjs-zod";
 import { Server, Socket } from "socket.io";
 import { DerivService } from "./deriv.service";
@@ -98,7 +99,9 @@ export class DerivGateway
 			if (!orgId) return;
 
 			// Check remaining users in org room
-			const room = this.server.sockets.adapter.rooms.get(orgId);
+			const room = this.server.sockets.adapter.rooms.get(
+				orgTokenKey(client.data.orgId, client.data.tokenId),
+			);
 
 			if (!room || room.size === 0) {
 				this.pool.cleanOrganisationPool(client.data.orgId);
@@ -123,14 +126,16 @@ export class DerivGateway
 	}
 
 	@SubscribeMessage("transfer_funds")
-	async transferFunds(
+	transferFunds(
 		@ConnectedSocket() client: Client,
 		@MessageBody() dto: TransferFundsDto,
 	) {
-		return this.derivService.transferFunds(
-			client.data.orgId,
-			dto,
-			client.data.tokenId,
+		return this.handlePromise(
+			this.derivService.transferFunds(
+				client.data.orgId,
+				dto,
+				client.data.tokenId,
+			),
 		);
 	}
 
@@ -146,5 +151,21 @@ export class DerivGateway
 			orgId: payload.orgId,
 			role: payload.role,
 		};
+	}
+
+	private async handlePromise<T>(promise: Promise<T>) {
+		const [data, error] = await tryCatch(promise);
+
+		if (error) {
+			return {
+				success: false,
+				error: { message: error.message },
+			};
+		} else {
+			return {
+				success: true,
+				data: data,
+			};
+		}
 	}
 }
