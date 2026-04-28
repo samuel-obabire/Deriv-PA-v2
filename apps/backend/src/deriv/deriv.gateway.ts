@@ -37,6 +37,7 @@ export interface Client extends Socket {
 @WebSocketGateway({
 	cors: {
 		credentials: true,
+		orgin: "http://localhost:3001",
 	},
 })
 export class DerivGateway
@@ -58,8 +59,7 @@ export class DerivGateway
 
 	async handleConnection(client: Client) {
 		try {
-			// const auth = client.handshake.auth as Partial<AuthPayload>;
-			const auth = client.handshake.query as Partial<AuthPayload>;
+			const auth = client.handshake.auth as Partial<AuthPayload>;
 
 			if (!auth.organizationId || !auth.userId || !auth.tokenId) {
 				throw new WsException("Missing auth params");
