@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
+import { orgTokenKey } from "@repo/deriv";
 import { Server } from "socket.io";
-import { orgTokenKey } from "./deriv.utils";
 import { DerivOrgConnection } from "./deriv-org-connection";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
@@ -15,13 +15,7 @@ const tokens: Record<string, string> = {
 export class DerivService {
 	constructor(private readonly derivOrgPoolService: DerivOrgPoolService) {}
 
-	async initializeDerivSocket({
-		orgId,
-		tokenId,
-	}: {
-		tokenId: string;
-		orgId: string;
-	}) {
+	async authorize({ orgId, tokenId }: { tokenId: string; orgId: string }) {
 		if (this.derivOrgPoolService.checkOrgExist(orgId, tokenId)) return;
 
 		const token = tokens[tokenId];
@@ -80,10 +74,10 @@ export class DerivService {
 			payload: subscribeBalanceDto,
 			onData: (data) => {
 				// emit to room
-				server.to(orgTokenKey(orgId, tokenId)).emit("balance", data.balance);
+				server.to(orgTokenKey(orgId, tokenId)).emit("balance", data);
 			},
 			onError: (error) => {
-				server.to(orgTokenKey(orgId, tokenId)).emit("error", error.message);
+				server.to(orgTokenKey(orgId, tokenId)).emit("error", error);
 				orgSocket.disconnect();
 			},
 		});

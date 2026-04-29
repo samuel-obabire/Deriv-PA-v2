@@ -1,7 +1,7 @@
+import { derivCurrencies } from "@repo/deriv";
 import { createZodDto } from "nestjs-zod";
 
 import * as z from "zod";
-import { derivCurrencies } from "../types";
 
 const TransferFundsSchema = z.object({
 	paymentagent_transfer: z.literal(1),

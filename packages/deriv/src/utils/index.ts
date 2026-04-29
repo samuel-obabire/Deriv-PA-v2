@@ -2,20 +2,22 @@ export const orgTokenKey = (orgId: string, tokenId: string) => {
 	return `${orgId}:${tokenId}`;
 };
 
-export const hashPayload = <T extends object>(payload: T): string => {
-	const sorted = Object.keys(payload)
+export const hashPayload = <T extends Record<string, unknown>>(
+	payload: T,
+): string => {
+	const sorted = (Object.keys(payload) as (keyof T)[])
 		.sort()
-		.reduce<Record<PropertyKey, T>>((acc, key) => {
+		.reduce((acc, key) => {
 			acc[key] = payload[key];
 			return acc;
-		}, {});
+		}, {} as T);
 
 	return JSON.stringify(sorted);
 };
 
 export const createPromise = <T, E = Error>() => {
-	let resolve: (value: T) => void;
-	let reject: (reason: E) => void;
+	let resolve!: (value: T) => void;
+	let reject!: (reason: E) => void;
 
 	const promise = new Promise<T>((res, rej) => {
 		resolve = res;

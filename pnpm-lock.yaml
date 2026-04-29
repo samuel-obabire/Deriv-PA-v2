@@ -63,6 +63,9 @@ importers:
       '@repo/db':
         specifier: workspace:^
         version: link:../../packages/db
+      '@repo/deriv':
+        specifier: workspace:^
+        version: link:../../packages/deriv
       '@repo/typescript-config':
         specifier: workspace:^
         version: link:../../packages/typescript-config
@@ -169,6 +172,9 @@ importers:
       '@repo/db':
         specifier: workspace:^
         version: link:../../packages/db
+      '@repo/deriv':
+        specifier: workspace:^
+        version: link:../../packages/deriv
       '@repo/utils':
         specifier: workspace:^
         version: link:../../packages/utils
@@ -306,6 +312,15 @@ importers:
       drizzle-kit:
         specifier: ^0.31.10
         version: 0.31.10
+
+  packages/deriv:
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/typescript-config: {}
 

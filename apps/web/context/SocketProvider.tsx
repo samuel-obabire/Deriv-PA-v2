@@ -2,6 +2,8 @@
 
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { SocketResponse } from "@/lib/types/global";
+import { clientEnv } from "@/lib/validations/env/client";
 
 type SocketProviderProps = {
 	orgId: string;
@@ -17,7 +19,7 @@ const SocketProvider = ({ orgId, children, tokenId }: SocketProviderProps) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
 
 	useEffect(() => {
-		const newSocket = io("http://localhost:5050", {
+		const newSocket = io(clientEnv.NEXT_PUBLIC_SERVER_URL, {
 			auth: {
 				organizationId: orgId,
 				userId: 1,
@@ -27,8 +29,14 @@ const SocketProvider = ({ orgId, children, tokenId }: SocketProviderProps) => {
 		});
 
 		newSocket.on("connect", () => {
-			// todo: Authorize org
-			setSocket(newSocket);
+			newSocket.emit("authorize", (response: SocketResponse) => {
+				if (!response.success) {
+					newSocket.disconnect();
+					return;
+				}
+
+				setSocket(newSocket);
+			});
 		});
 
 		newSocket.on("connect_error", (err) => {

@@ -14,3 +14,7 @@ type ErrorResponse = {
 type ActionResponse<T = undefined> = SuccessResponse<T> | ErrorResponse;
 
 type ApiResponse<T = undefined> = NextResponse<ActionResponse<T>>;
+
+export type SocketResponse<T = undefined> =
+	| { success: true; data: T }
+	| { success: false; error: { message: string } };

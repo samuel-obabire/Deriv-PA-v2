@@ -1,15 +1,16 @@
 import { WsException } from "@nestjs/websockets";
-import WebSocket from "ws";
-import { createPromise, hashPayload } from "./deriv.utils";
 import {
+	createPromise,
 	DerivEndpointName,
 	DerivError,
 	DerivRequestPayload,
 	DerivResponseData,
 	DerivSubcriptionEndpoint,
+	hashPayload,
 	RequestHandler,
 	SubscriptionHandler,
-} from "./types";
+} from "@repo/deriv";
+import WebSocket from "ws";
 
 export class DerivOrgConnection {
 	private websocket: WebSocket;

@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy } from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
-import { orgTokenKey } from "./deriv.utils";
+import { orgTokenKey } from "@repo/deriv";
 import { DerivOrgConnection } from "./deriv-org-connection";
 
 type Connections = Map<string, DerivOrgConnection>;

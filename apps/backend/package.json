@@ -28,6 +28,7 @@
 		"@nestjs/platform-socket.io": "^11.1.19",
 		"@nestjs/websockets": "^11.1.19",
 		"@repo/db": "workspace:^",
+		"@repo/deriv": "workspace:^",
 		"@repo/typescript-config": "workspace:^",
 		"@repo/utils": "workspace:^",
 		"@types/pg": "^8.20.0",

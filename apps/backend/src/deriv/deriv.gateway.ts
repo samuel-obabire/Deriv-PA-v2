@@ -10,11 +10,11 @@ import {
 	WebSocketServer,
 	WsException,
 } from "@nestjs/websockets";
+import { orgTokenKey } from "@repo/deriv";
 import { tryCatch } from "@repo/utils";
 import { ZodValidationPipe } from "nestjs-zod";
 import { Server, Socket } from "socket.io";
 import { DerivService } from "./deriv.service";
-import { orgTokenKey } from "./deriv.utils";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
 import { TransferFundsDto } from "./dto/transferFunds.dto";
@@ -37,6 +37,8 @@ export interface Client extends Socket {
 @WebSocketGateway({
 	cors: {
 		credentials: true,
+
+		//todo: env validation and get env from configService
 		orgin: "http://localhost:3001",
 	},
 })
@@ -76,12 +78,6 @@ export class DerivGateway
 			// Join org room
 			client.join(orgTokenKey(auth.organizationId, auth.tokenId));
 
-			// Ensure org Deriv connection exists
-			await this.derivService.initializeDerivSocket({
-				orgId: auth.organizationId,
-				tokenId: auth.tokenId,
-			});
-
 			this.logger.log(
 				`Member [${member.memberId}] connected — org [${auth.organizationId}]`,
 			);
@@ -112,16 +108,28 @@ export class DerivGateway
 		}
 	}
 
+	@SubscribeMessage("authorize")
+	authorize(@ConnectedSocket() client: Client) {
+		return this.handlePromise(
+			this.derivService.authorize({
+				orgId: client.data.orgId,
+				tokenId: client.data.tokenId,
+			}),
+		);
+	}
+
 	@SubscribeMessage("subscribe_balance")
-	async subscribeBalance(
+	subscribeBalance(
 		@ConnectedSocket() client: Client,
 		@MessageBody() dto: SubscribeBalanceDto,
 	) {
-		return this.derivService.subscribeBalance(
-			client.data.orgId,
-			dto,
-			client.data.tokenId,
-			this.server,
+		return this.handlePromise(
+			this.derivService.subscribeBalance(
+				client.data.orgId,
+				dto,
+				client.data.tokenId,
+				this.server,
+			),
 		);
 	}
 

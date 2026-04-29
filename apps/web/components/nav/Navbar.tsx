@@ -1,5 +1,6 @@
 "use client";
 
+import { DerivRequestPayload, DerivResponseData } from "@repo/deriv";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -20,11 +21,11 @@ const Balance = () => {
 				subscribe: 1,
 				balance: 1,
 				account: "current",
-			});
+			} satisfies DerivRequestPayload<"balance">);
 		}, 5000);
 
-		socket.on("balance", (res) => {
-			setBalance(res.balance);
+		socket.on("balance", (res: DerivResponseData<"balance">) => {
+			setBalance(res.balance.balance);
 		});
 	}, [socket]);
 
