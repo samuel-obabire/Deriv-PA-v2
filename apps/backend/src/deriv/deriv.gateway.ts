@@ -1,4 +1,4 @@
-import { Logger, UsePipes } from "@nestjs/common";
+import { Logger, UseFilters, UseInterceptors, UsePipes } from "@nestjs/common";
 import {
 	ConnectedSocket,
 	MessageBody,
@@ -10,10 +10,11 @@ import {
 	WebSocketServer,
 	WsException,
 } from "@nestjs/websockets";
-import { orgTokenKey } from "@repo/deriv";
-import { tryCatch } from "@repo/utils";
+import { DerivSocketEvent, orgTokenKey } from "@repo/deriv";
 import { ZodValidationPipe } from "nestjs-zod";
 import { Server, Socket } from "socket.io";
+import { WsExceptionFilter } from "src/common/filters/ws-exception/ws-exception.filter";
+import { WsInterceptor } from "src/common/interceptors/ws/ws.interceptor";
 import { DerivService } from "./deriv.service";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
@@ -34,6 +35,8 @@ export interface Client extends Socket {
 }
 
 @UsePipes(ZodValidationPipe)
+@UseInterceptors(WsInterceptor)
+@UseFilters(WsExceptionFilter)
 @WebSocketGateway({
 	cors: {
 		credentials: true,
@@ -108,42 +111,36 @@ export class DerivGateway
 		}
 	}
 
-	@SubscribeMessage("authorize")
+	@SubscribeMessage(DerivSocketEvent.Authorize)
 	authorize(@ConnectedSocket() client: Client) {
-		return this.handlePromise(
-			this.derivService.authorize({
-				orgId: client.data.orgId,
-				tokenId: client.data.tokenId,
-			}),
-		);
+		return this.derivService.authorize({
+			orgId: client.data.orgId,
+			tokenId: client.data.tokenId,
+		});
 	}
 
-	@SubscribeMessage("subscribe_balance")
-	subscribeBalance(
+	@SubscribeMessage(DerivSocketEvent.SubscribeBalance)
+	async subscribeBalance(
 		@ConnectedSocket() client: Client,
 		@MessageBody() dto: SubscribeBalanceDto,
 	) {
-		return this.handlePromise(
-			this.derivService.subscribeBalance(
-				client.data.orgId,
-				dto,
-				client.data.tokenId,
-				this.server,
-			),
+		return this.derivService.subscribeBalance(
+			client.data.orgId,
+			dto,
+			client.data.tokenId,
+			this.server,
 		);
 	}
 
-	@SubscribeMessage("transfer_funds")
+	@SubscribeMessage(DerivSocketEvent.TransferFunds)
 	transferFunds(
 		@ConnectedSocket() client: Client,
 		@MessageBody() dto: TransferFundsDto,
 	) {
-		return this.handlePromise(
-			this.derivService.transferFunds(
-				client.data.orgId,
-				dto,
-				client.data.tokenId,
-			),
+		return this.derivService.transferFunds(
+			client.data.orgId,
+			dto,
+			client.data.tokenId,
 		);
 	}
 
@@ -159,21 +156,5 @@ export class DerivGateway
 			orgId: payload.orgId,
 			role: payload.role,
 		};
-	}
-
-	private async handlePromise<T>(promise: Promise<T>) {
-		const [data, error] = await tryCatch(promise);
-
-		if (error) {
-			return {
-				success: false,
-				error: { message: error.message },
-			};
-		} else {
-			return {
-				success: true,
-				data: data,
-			};
-		}
 	}
 }

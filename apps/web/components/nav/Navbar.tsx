@@ -1,6 +1,10 @@
 "use client";
 
-import { DerivRequestPayload, DerivResponseData } from "@repo/deriv";
+import {
+	DerivRequestPayload,
+	DerivResponseData,
+	DerivSocketEvent,
+} from "@repo/deriv";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -15,18 +19,18 @@ const Balance = () => {
 	useEffect(() => {
 		if (!socket) return;
 
-		// todo: connect properly and remove the timeout
-		setTimeout(() => {
-			socket.emit("subscribe_balance", {
-				subscribe: 1,
-				balance: 1,
-				account: "current",
-			} satisfies DerivRequestPayload<"balance">);
-		}, 5000);
+		socket.emit(DerivSocketEvent.SubscribeBalance, {
+			subscribe: 1,
+			balance: 1,
+			account: "current",
+		} satisfies DerivRequestPayload<"balance">);
 
-		socket.on("balance", (res: DerivResponseData<"balance">) => {
-			setBalance(res.balance.balance);
-		});
+		socket.on(
+			DerivSocketEvent.Balance,
+			({ balance: balanceResponse }: DerivResponseData<"balance">) => {
+				setBalance(balanceResponse.balance);
+			},
+		);
 	}, [socket]);
 
 	return (

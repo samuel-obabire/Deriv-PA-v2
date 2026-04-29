@@ -146,13 +146,12 @@ export class DerivOrgConnection {
 
 			this.subscriptionHandlers.set(subscriptionHash, newSubscriptionHandler);
 
-			await this.send({
+			// don't await subscription call. otherwise it will never resolve
+			this.send({
 				name: name,
 				payload: { req_id: this.reqId, ...payload },
 			});
 		}
-
-		return subscriptionHash;
 	}
 
 	private keepAlive() {

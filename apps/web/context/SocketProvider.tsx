@@ -1,5 +1,6 @@
 "use client";
 
+import { DerivSocketEvent } from "@repo/deriv";
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { SocketResponse } from "@/lib/types/global";
@@ -29,7 +30,7 @@ const SocketProvider = ({ orgId, children, tokenId }: SocketProviderProps) => {
 		});
 
 		newSocket.on("connect", () => {
-			newSocket.emit("authorize", (response: SocketResponse) => {
+			newSocket.emit(DerivSocketEvent.Authorize, (response: SocketResponse) => {
 				if (!response.success) {
 					newSocket.disconnect();
 					return;
