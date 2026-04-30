@@ -1,9 +1,8 @@
 "use client";
 
-import { DerivSocketEvent } from "@repo/deriv";
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { SocketResponse } from "@/lib/types/global";
+import SocketClient from "@/lib/socketClient";
 import { clientEnv } from "@/lib/validations/env/client";
 
 type SocketProviderProps = {
@@ -12,12 +11,14 @@ type SocketProviderProps = {
 	tokenId: string;
 };
 
-export const SocketContext = createContext<{ socket: Socket | null } | null>(
-	null,
-);
+export const SocketContext = createContext<{
+	socket: Socket | null;
+	socketClient: SocketClient | null;
+} | null>(null);
 
 const SocketProvider = ({ orgId, children, tokenId }: SocketProviderProps) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
+	const [socketClient, setSocketClient] = useState<SocketClient | null>(null);
 
 	useEffect(() => {
 		const newSocket = io(clientEnv.NEXT_PUBLIC_SERVER_URL, {
@@ -29,15 +30,13 @@ const SocketProvider = ({ orgId, children, tokenId }: SocketProviderProps) => {
 			transports: ["websocket"],
 		});
 
-		newSocket.on("connect", () => {
-			newSocket.emit(DerivSocketEvent.Authorize, (response: SocketResponse) => {
-				if (!response.success) {
-					newSocket.disconnect();
-					return;
-				}
+		newSocket.on("connect", async () => {
+			const socketClient = new SocketClient(newSocket);
 
-				setSocket(newSocket);
-			});
+			await socketClient.authorize({ authorize: "" });
+
+			setSocket(newSocket);
+			setSocketClient(socketClient);
 		});
 
 		newSocket.on("connect_error", (err) => {
@@ -46,16 +45,16 @@ const SocketProvider = ({ orgId, children, tokenId }: SocketProviderProps) => {
 
 		newSocket.on("disconnect", () => {
 			setSocket(null);
+			setSocketClient(null);
 		});
 
 		return () => {
 			newSocket.disconnect();
-			setSocket(null);
 		};
 	}, [tokenId, orgId]);
 
 	return (
-		<SocketContext.Provider value={{ socket }}>
+		<SocketContext.Provider value={{ socket, socketClient }}>
 			{children}
 		</SocketContext.Provider>
 	);

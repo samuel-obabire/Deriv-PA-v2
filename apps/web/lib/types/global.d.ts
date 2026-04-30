@@ -1,3 +1,5 @@
+import { DerivEndpointName, DerivResponseData } from "@repo/deriv";
+
 type SuccessResponse<T = undefined> = {
 	success: true;
 	data?: T;
@@ -15,6 +17,6 @@ type ActionResponse<T = undefined> = SuccessResponse<T> | ErrorResponse;
 
 type ApiResponse<T = undefined> = NextResponse<ActionResponse<T>>;
 
-export type SocketResponse<T = undefined> =
-	| { success: true; data: T }
+export type SocketResponse<T = DerivEndpointName> =
+	| { success: true; data: DerivResponseData<T> }
 	| { success: false; error: { message: string } };

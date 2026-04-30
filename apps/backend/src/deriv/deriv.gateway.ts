@@ -119,7 +119,7 @@ export class DerivGateway
 		});
 	}
 
-	@SubscribeMessage(DerivSocketEvent.SubscribeBalance)
+	@SubscribeMessage(DerivSocketEvent.Balance)
 	async subscribeBalance(
 		@ConnectedSocket() client: Client,
 		@MessageBody() dto: SubscribeBalanceDto,

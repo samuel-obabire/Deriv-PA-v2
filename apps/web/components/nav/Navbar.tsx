@@ -1,10 +1,5 @@
 "use client";
 
-import {
-	DerivRequestPayload,
-	DerivResponseData,
-	DerivSocketEvent,
-} from "@repo/deriv";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -14,24 +9,17 @@ import SideBar from "./sidebar";
 const Balance = () => {
 	const [balance, setBalance] = useState(0.0);
 
-	const { socket } = useSocket();
+	const { socket, socketClient } = useSocket();
 
 	useEffect(() => {
-		if (!socket) return;
+		if (!socket || !socketClient) return;
 
-		socket.emit(DerivSocketEvent.SubscribeBalance, {
-			subscribe: 1,
-			balance: 1,
-			account: "current",
-		} satisfies DerivRequestPayload<"balance">);
-
-		socket.on(
-			DerivSocketEvent.Balance,
-			({ balance: balanceResponse }: DerivResponseData<"balance">) => {
-				setBalance(balanceResponse.balance);
-			},
-		);
-	}, [socket]);
+		(async () => {
+			await socketClient.subscribeBalance((data) => {
+				setBalance(data.balance.balance);
+			});
+		})();
+	}, [socket, socketClient]);
 
 	return (
 		<div className="flex gap-3">
