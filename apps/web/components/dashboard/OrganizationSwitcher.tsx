@@ -32,7 +32,7 @@ const OrganizationSwitcher = ({
 		if (orgId === activeOrgId) return;
 
 		startTransition(async () => {
-			const [, error] = await tryCatch(onOrgSwitch(orgId));
+			const [, error] = await tryCatch(() => onOrgSwitch(orgId));
 
 			if (error) toast.error(error.message ?? "Unable to complete request");
 		});

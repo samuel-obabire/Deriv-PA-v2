@@ -6,12 +6,13 @@ import { tryCatch } from "@repo/utils";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/http-errors";
+import { ActionResponse } from "@/lib/types/global";
 import { SetActiveOrgSchema } from "@/lib/validations/organization";
 
 export const setUserActiveOrganization = async (orgData: {
 	orgId: string;
 }): Promise<ActionResponse<Partial<User>>> => {
-	const [validationResult, validationError] = await tryCatch(
+	const [validationResult, validationError] = await tryCatch(() =>
 		action({
 			params: orgData,
 			schema: SetActiveOrgSchema,
@@ -26,7 +27,7 @@ export const setUserActiveOrganization = async (orgData: {
 		session,
 	} = validationResult;
 
-	const [updatedUser, updateUserError] = await tryCatch(
+	const [updatedUser, updateUserError] = await tryCatch(() =>
 		updateUser(
 			{
 				userId: session?.session.userId as string,

@@ -10,13 +10,13 @@ import handleError from "../../http-errors";
 export const signIn = async (
 	data: z.infer<typeof SignInSchema>,
 ): Promise<ActionResponse> => {
-	const [actionResult, validationError] = await tryCatch(
+	const [actionResult, validationError] = await tryCatch(() =>
 		action({ params: data, schema: SignInSchema, authorise: false }),
 	);
 
 	if (validationError) return handleError(validationError) as ErrorResponse;
 
-	const [, userSignInError] = await tryCatch(
+	const [, userSignInError] = await tryCatch(() =>
 		auth.api.signInEmail({ body: actionResult.params }),
 	);
 

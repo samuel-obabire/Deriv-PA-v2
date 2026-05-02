@@ -33,7 +33,7 @@ const RateForm = ({ onSubmit, rate }: SignInProps) => {
 	});
 
 	const handleSubmit = async (data: z.infer<typeof RateUpdateSchema>) => {
-		const [result, error] = await tryCatch(onSubmit(data));
+		const [result, error] = await tryCatch(() => onSubmit(data));
 
 		if (error) return toast.error(error.message);
 

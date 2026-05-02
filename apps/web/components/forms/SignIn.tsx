@@ -41,7 +41,7 @@ const SignIn = ({ onSubmit }: SignInProps) => {
 	});
 
 	const handleSubmit = async (data: z.infer<typeof SignInSchema>) => {
-		const [result, error] = await tryCatch(onSubmit(data));
+		const [result, error] = await tryCatch(() => onSubmit(data));
 
 		if (error) return toast.error(error.message);
 

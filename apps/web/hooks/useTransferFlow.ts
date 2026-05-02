@@ -42,9 +42,7 @@ const useTransferFlow = () => {
 	const { socketClient } = useSocket();
 
 	const transfer = (data: TransferData, dryRun: boolean) => {
-		// return a rejected error promise  so that tryCatch catches it.
-		// tryCatch will only catch errors thrown by a rejected promise
-		if (!socketClient) return Promise.reject(new Error("Socket disconnected"));
+		if (!socketClient) throw new Error("Socket disconnected");
 
 		const transferResponse = socketClient.transferFunds({
 			paymentagent_transfer: 1,
@@ -65,7 +63,7 @@ const useTransferFlow = () => {
 	const onValidation = async (transferData: TransferData) => {
 		setPending(true);
 
-		const [validationResult, error] = await tryCatch(
+		const [validationResult, error] = await tryCatch(() =>
 			transfer(transferData, true),
 		);
 
@@ -93,7 +91,7 @@ const useTransferFlow = () => {
 	const onTransferSubmit = async () => {
 		setPending(true);
 
-		const [, error] = await tryCatch(transfer(state.transferData, false));
+		const [, error] = await tryCatch(() => transfer(state.transferData, false));
 
 		setPending(false);
 

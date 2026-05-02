@@ -10,13 +10,13 @@ import { SignUpSchema } from "../../validations/auth/sign-up";
 export const signUp = async (
 	data: z.infer<typeof SignUpSchema>,
 ): Promise<ActionResponse> => {
-	const [actionResult, validationError] = await tryCatch(
+	const [actionResult, validationError] = await tryCatch(() =>
 		action({ params: data, schema: SignUpSchema, authorise: false }),
 	);
 
 	if (validationError) return handleError(validationError) as ErrorResponse;
 
-	const [, userCreationError] = await tryCatch(
+	const [, userCreationError] = await tryCatch(() =>
 		auth.api.signUpEmail({ body: actionResult.params }),
 	);
 

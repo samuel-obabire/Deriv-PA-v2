@@ -29,7 +29,7 @@ const CreateOrganizationForm = ({
 	const handleCreate = async () => {
 		if (!newOrgName.trim()) return;
 
-		const [result, error] = await tryCatch(
+		const [result, error] = await tryCatch(() =>
 			handleOrgCreate({ orgName: newOrgName }),
 		);
 

@@ -6,13 +6,14 @@ import { auth } from "@/lib/auth";
 import { OrganizationWithMembers } from "@/lib/auth-client";
 import action from "@/lib/handlers/action";
 import handleError from "@/lib/http-errors";
+import { ActionResponse } from "@/lib/types/global";
 import { CreateOrgSchema } from "@/lib/validations/organization";
 import { slugifyString } from "@/utils/slugify";
 
 const createOrganization = async (newOrgData: {
 	orgName: string;
 }): Promise<ActionResponse<OrganizationWithMembers>> => {
-	const [validationResult, validationError] = await tryCatch(
+	const [validationResult, validationError] = await tryCatch(() =>
 		action({
 			params: newOrgData,
 			schema: CreateOrgSchema,
@@ -26,7 +27,7 @@ const createOrganization = async (newOrgData: {
 		params: { orgName },
 	} = validationResult;
 
-	const [createdOrg, orgCreationError] = await tryCatch(
+	const [createdOrg, orgCreationError] = await tryCatch(async () =>
 		auth.api.createOrganization({
 			body: {
 				name: orgName,
