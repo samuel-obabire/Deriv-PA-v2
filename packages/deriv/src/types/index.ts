@@ -32,6 +32,7 @@ export type RequestPayload<T extends DerivEndpointName = DerivEndpointName> =
 								currency: DerivCurrency;
 								transfer_to: string;
 								dry_run: 0 | 1;
+								description?: string;
 							}
 						: T extends "ping"
 							? { ping: 1 }
@@ -129,7 +130,7 @@ export type DerivError = {
 
 export type RequestHandler<T extends DerivEndpointName = DerivEndpointName> = {
 	onData: (data: DerivResponseData<T>) => void;
-	onError: (error: DerivError) => void;
+	onError: (error: unknown) => void;
 };
 
 export type SubscriptionHandler<
@@ -139,5 +140,5 @@ export type SubscriptionHandler<
 	subscriptionName: T;
 	subscriptionId?: string;
 	onData: (data: DerivResponseData<T>) => void;
-	onError: (error: DerivError) => void;
+	onError: (error: unknown) => void;
 };

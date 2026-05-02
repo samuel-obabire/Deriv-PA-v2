@@ -1,5 +1,5 @@
 export enum DerivSocketEvent {
 	Authorize = "authorize",
-	TransferFunds = "transfer_funds",
+	TransferFunds = "paymentagent_transfer",
 	Balance = "balance",
 }

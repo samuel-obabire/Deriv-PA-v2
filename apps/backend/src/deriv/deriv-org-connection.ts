@@ -63,7 +63,7 @@ export class DerivOrgConnection {
 
 				if (parsedData.error) {
 					this.subscriptionHandlers.delete(subscribeHash);
-					matchingHandler.onError(parsedData.error as DerivError);
+					matchingHandler.onError(new WsException(parsedData.error));
 					return;
 				}
 
@@ -76,7 +76,7 @@ export class DerivOrgConnection {
 				if (!matchingHandler) return;
 
 				if (parsedData.error) {
-					matchingHandler.onError(parsedData.error as DerivError);
+					matchingHandler.onError(new WsException(parsedData.error));
 				} else {
 					matchingHandler.onData(parsedData);
 				}
@@ -103,7 +103,7 @@ export class DerivOrgConnection {
 
 		this.requestHandlers.set(reqId.toString(), {
 			onData: (data) => resolve(data as DerivResponseData<T>),
-			onError: reject,
+			onError: (e) => reject(e as DerivError),
 		});
 
 		await this.waitForSocketOpen.promise;
@@ -126,7 +126,7 @@ export class DerivOrgConnection {
 		name: T;
 		payload: DerivRequestPayload<T>;
 		onData: (data: DerivResponseData<T>) => void;
-		onError: (error: DerivError) => void;
+		onError: (error: unknown) => void;
 	}) {
 		const subscriptionHash = hashPayload(payload);
 		const matchingHandler = this.subscriptionHandlers.get(subscriptionHash);

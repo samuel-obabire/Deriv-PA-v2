@@ -1,14 +1,17 @@
-import { derivCurrencies } from "@repo/deriv";
+import {
+	derivCurrencies,
+	transferFundsBaseSchema,
+	twoDpNumberNumeric,
+} from "@repo/deriv";
 import { createZodDto } from "nestjs-zod";
-
 import * as z from "zod";
 
-const TransferFundsSchema = z.object({
+const TransferFundsSchema = transferFundsBaseSchema.extend({
+	amount: twoDpNumberNumeric,
 	paymentagent_transfer: z.literal(1),
 	currency: z.enum(derivCurrencies),
 	dry_run: z.union([z.literal(0), z.literal(1)]).default(1),
 	transfer_to: z.string(),
-	amount: z.int().positive(),
 });
 
 export class TransferFundsDto extends createZodDto(TransferFundsSchema) {}

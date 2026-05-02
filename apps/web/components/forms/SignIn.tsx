@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import ROUTES from "@/lib/constants/routes";
+import { ActionResponse } from "@/lib/types/global";
 import { SignInSchema } from "@/lib/validations/auth/sign-in";
 
 type SignInProps = {

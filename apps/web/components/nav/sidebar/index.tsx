@@ -3,7 +3,7 @@
 import { ChevronDown, LucideIcon, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import ThemeToggler from "@/components/theme/ThemeToggler";
 import {
 	Collapsible,
@@ -68,16 +68,17 @@ const SideBarLink = ({
 	href,
 	isActive,
 	title,
+	...props
 }: {
 	href: string;
 	isActive: boolean;
 	Icon?: LucideIcon;
 	title: string;
-}) => {
+} & Omit<React.ComponentPropsWithoutRef<typeof Link>, "href">) => {
 	return (
 		<Link
-			key={href}
 			href={href}
+			{...props}
 			className={`flex items-center gap-2 px-3 py-2 rounded-md transition
 											${isActive ? "bg-muted font-medium" : "hover:bg-muted/50"}
 											`}
