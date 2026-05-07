@@ -1,3 +1,4 @@
+import { Permissions } from "@repo/utils";
 import { Socket } from "socket.io";
 
 export type AuthPayload = {

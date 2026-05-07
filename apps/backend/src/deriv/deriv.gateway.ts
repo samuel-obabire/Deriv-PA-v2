@@ -1,4 +1,10 @@
-import { Logger, UseFilters, UseInterceptors, UsePipes } from "@nestjs/common";
+import {
+	Logger,
+	UseFilters,
+	UseGuards,
+	UseInterceptors,
+	UsePipes,
+} from "@nestjs/common";
 import {
 	ConnectedSocket,
 	MessageBody,
@@ -14,10 +20,13 @@ import { DerivSocketEvent, orgTokenKey } from "@repo/deriv";
 import { Permissions } from "@repo/utils";
 import { ZodValidationPipe } from "nestjs-zod";
 import { Server, Socket } from "socket.io";
+import { RequirePermission } from "src/common/decorators/permissions.decorator";
 import { WsExceptionFilter } from "src/common/filters/ws-exception/ws-exception.filter";
+import { PermissionsGuard } from "src/common/guards/permissions.guard";
 import { WsInterceptor } from "src/common/interceptors/ws/ws.interceptor";
 import { RevocationService } from "src/iam/authentication/revocation.service";
 import { TokenService } from "src/iam/authentication/token.service";
+import { DecodedJwtAccessToken } from "src/iam/types";
 import { DerivService } from "./deriv.service";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
@@ -27,6 +36,7 @@ import type { AuthenticatedSocket, AuthPayload } from "./types";
 @UsePipes(ZodValidationPipe)
 @UseInterceptors(WsInterceptor)
 @UseFilters(WsExceptionFilter)
+@UseGuards(PermissionsGuard)
 @WebSocketGateway({
 	cors: {
 		credentials: true,
@@ -75,7 +85,7 @@ export class DerivGateway
 
 	async handleDisconnect(client: AuthenticatedSocket) {
 		try {
-			const { organizationId, userId } = client.data || {};
+			const { organizationId, userId } = client.data;
 
 			this.logger.log(
 				`Member [${userId}] disconnected — org [${organizationId}]`,
@@ -96,12 +106,7 @@ export class DerivGateway
 		}
 	}
 
-	disconnectUser(userId: string) {
-		this.logger.log(`Revoking sockets for user ${userId}`);
-
-		this.server.to(this.getUserRoomKey(userId)).disconnectSockets(true);
-	}
-
+	@RequirePermission(Permissions.READ)
 	@SubscribeMessage(DerivSocketEvent.Authorize)
 	authorize(@ConnectedSocket() client: AuthenticatedSocket) {
 		return this.derivService.authorize({
@@ -110,6 +115,7 @@ export class DerivGateway
 		});
 	}
 
+	@RequirePermission(Permissions.READ)
 	@SubscribeMessage(DerivSocketEvent.Balance)
 	async subscribeBalance(
 		@ConnectedSocket() client: AuthenticatedSocket,
@@ -123,6 +129,7 @@ export class DerivGateway
 		);
 	}
 
+	@RequirePermission(Permissions.PAYMENTS)
 	@SubscribeMessage(DerivSocketEvent.TransferFunds)
 	transferFunds(
 		@ConnectedSocket() client: AuthenticatedSocket,
@@ -143,13 +150,9 @@ export class DerivGateway
 		}
 
 		const { organizationId, permissions, sub, tokenId, version } =
-			await this.tokenService.verifyToken<{
-				sub: string;
-				permissions: Permissions[];
-				version: number;
-				organizationId: string;
-				tokenId: string;
-			}>(auth.accessToken);
+			await this.tokenService.verifyToken<DecodedJwtAccessToken>(
+				auth.accessToken,
+			);
 
 		const userVersion = await this.revocationService.getVersion(sub);
 
@@ -169,5 +172,11 @@ export class DerivGateway
 
 	getUserRoomKey(userId: string) {
 		return `user:${userId}`;
+	}
+
+	disconnectUser(userId: string) {
+		this.logger.log(`Revoking sockets for user ${userId}`);
+
+		this.server.to(this.getUserRoomKey(userId)).disconnectSockets(true);
 	}
 }

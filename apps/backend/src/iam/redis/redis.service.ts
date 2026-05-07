@@ -7,9 +7,8 @@ import {
 } from "@nestjs/common";
 import type { ConfigType } from "@nestjs/config";
 import Redis from "ioredis";
+import { InvalidatedValueError } from "src/common/exceptions/invalidatedValue.exception";
 import redisConfig from "./redis.config";
-
-export class InvalidatedValueError extends Error {}
 
 @Injectable()
 export class RedisService

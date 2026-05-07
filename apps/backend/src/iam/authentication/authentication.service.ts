@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { DecodedJwtRefreshToken } from "../types";
 import { IssueTokensDto } from "./dto/issueTokens.dto";
 import { RefreshTokensDto } from "./dto/refreshTokens.dto";
 import { RevokeTokensDto } from "./dto/revokeTokens.dto";
@@ -35,10 +36,8 @@ export class AuthenticationService {
 	async refreshTokens(refreshTokenDto: RefreshTokensDto) {
 		const { refreshToken, payload } = refreshTokenDto;
 
-		const { jti, sub } = await this.tokenService.verifyToken<{
-			jti: string;
-			sub: string;
-		}>(refreshToken);
+		const { jti, sub } =
+			await this.tokenService.verifyToken<DecodedJwtRefreshToken>(refreshToken);
 
 		await this.sessionService.consumeRefreshToken(jti, sub);
 
