@@ -23,6 +23,7 @@
 		"@nestjs/common": "^11.1.18",
 		"@nestjs/config": "^4.0.3",
 		"@nestjs/core": "^11.1.18",
+		"@nestjs/jwt": "^11.0.2",
 		"@nestjs/mapped-types": "^2.1.1",
 		"@nestjs/platform-express": "^11.1.18",
 		"@nestjs/platform-socket.io": "^11.1.19",
@@ -34,6 +35,7 @@
 		"@types/pg": "^8.20.0",
 		"decimal.js": "^10.6.0",
 		"dotenv": "^17.4.0",
+		"ioredis": "^5.10.1",
 		"nestjs-zod": "^5.2.1",
 		"pg": "^8.20.0",
 		"queries": "link:@repo/db/queries",
@@ -41,6 +43,7 @@
 		"reflect-metadata": "^0.2.2",
 		"rxjs": "^7.8.2",
 		"socket.io": "^4.8.3",
+		"uuid": "^14.0.0",
 		"ws": "^8.20.0",
 		"zod": "^4.3.6"
 	},

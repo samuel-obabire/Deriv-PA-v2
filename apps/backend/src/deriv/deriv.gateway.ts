@@ -11,28 +11,18 @@ import {
 	WsException,
 } from "@nestjs/websockets";
 import { DerivSocketEvent, orgTokenKey } from "@repo/deriv";
+import { Permissions } from "@repo/utils";
 import { ZodValidationPipe } from "nestjs-zod";
 import { Server, Socket } from "socket.io";
 import { WsExceptionFilter } from "src/common/filters/ws-exception/ws-exception.filter";
 import { WsInterceptor } from "src/common/interceptors/ws/ws.interceptor";
+import { RevocationService } from "src/iam/authentication/revocation.service";
+import { TokenService } from "src/iam/authentication/token.service";
 import { DerivService } from "./deriv.service";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
 import { TransferFundsDto } from "./dto/transferFunds.dto";
-
-type AuthPayload = {
-	organizationId: string;
-	userId: string;
-	tokenId: string;
-};
-
-export interface Client extends Socket {
-	data: {
-		orgId: string;
-		userId: string;
-		tokenId: string;
-	};
-}
+import type { AuthenticatedSocket, AuthPayload } from "./types";
 
 @UsePipes(ZodValidationPipe)
 @UseInterceptors(WsInterceptor)
@@ -40,9 +30,7 @@ export interface Client extends Socket {
 @WebSocketGateway({
 	cors: {
 		credentials: true,
-
-		//todo: env validation and get env from configService
-		orgin: "http://localhost:3001",
+		origin: process.env.FRONTEND_URL,
 	},
 })
 export class DerivGateway
@@ -56,76 +44,79 @@ export class DerivGateway
 	constructor(
 		private readonly pool: DerivOrgPoolService,
 		private readonly derivService: DerivService,
+		private readonly tokenService: TokenService,
+		private readonly revocationService: RevocationService,
 	) {}
 
 	afterInit() {
 		this.logger.log("WebSocket server initialized");
 	}
 
-	async handleConnection(client: Client) {
+	async handleConnection(socket: Socket) {
 		try {
-			const auth = client.handshake.auth as Partial<AuthPayload>;
+			const authenticatedSocket = (await this.authenticate(
+				socket,
+			)) as AuthenticatedSocket;
 
-			if (!auth.organizationId || !auth.userId || !auth.tokenId) {
-				throw new WsException("Missing auth params");
-			}
+			const { organizationId, tokenId, userId } = authenticatedSocket.data;
 
-			client.data = {
-				orgId: auth.organizationId,
-				userId: auth.userId,
-				tokenId: auth.tokenId,
-			};
+			// Join org room to support broadcast/multi-tab connection
+			socket.join(orgTokenKey(organizationId, tokenId));
 
-			const member = await this.authenticate(client);
+			// join user room key to support revocation
+			socket.join(this.getUserRoomKey(userId));
 
-			// Join org room
-			client.join(orgTokenKey(auth.organizationId, auth.tokenId));
-
-			this.logger.log(
-				`Member [${member.memberId}] connected — org [${auth.organizationId}]`,
-			);
+			this.logger.log(`Member [${userId}] connected — org [${organizationId}]`);
 		} catch (err) {
 			this.logger.warn(`Connection rejected: ${err}`);
-			client.disconnect(true);
+			socket.disconnect(true);
 		}
 	}
 
-	async handleDisconnect(client: Client) {
+	async handleDisconnect(client: AuthenticatedSocket) {
 		try {
-			const { orgId, userId } = client.data || {};
+			const { organizationId, userId } = client.data || {};
 
-			this.logger.log(`Member [${userId}] disconnected — org [${orgId}]`);
-			if (!orgId) return;
+			this.logger.log(
+				`Member [${userId}] disconnected — org [${organizationId}]`,
+			);
+			if (!organizationId) return;
 
 			// Check remaining users in org room
 			const room = this.server.sockets.adapter.rooms.get(
-				orgTokenKey(client.data.orgId, client.data.tokenId),
+				orgTokenKey(client.data.organizationId, client.data.tokenId),
 			);
 
 			if (!room || room.size === 0) {
-				this.pool.cleanOrganisationPool(client.data.orgId);
-				this.logger.log(`Cleaned up Deriv socket for org [${orgId}]`);
+				this.pool.cleanOrganisationPool(client.data.organizationId);
+				this.logger.log(`Cleaned up Deriv socket for org [${organizationId}]`);
 			}
 		} catch (err) {
 			this.logger.error(`Disconnect error: ${err}`);
 		}
 	}
 
+	disconnectUser(userId: string) {
+		this.logger.log(`Revoking sockets for user ${userId}`);
+
+		this.server.to(this.getUserRoomKey(userId)).disconnectSockets(true);
+	}
+
 	@SubscribeMessage(DerivSocketEvent.Authorize)
-	authorize(@ConnectedSocket() client: Client) {
+	authorize(@ConnectedSocket() client: AuthenticatedSocket) {
 		return this.derivService.authorize({
-			orgId: client.data.orgId,
+			orgId: client.data.organizationId,
 			tokenId: client.data.tokenId,
 		});
 	}
 
 	@SubscribeMessage(DerivSocketEvent.Balance)
 	async subscribeBalance(
-		@ConnectedSocket() client: Client,
+		@ConnectedSocket() client: AuthenticatedSocket,
 		@MessageBody() dto: SubscribeBalanceDto,
 	) {
 		return this.derivService.subscribeBalance(
-			client.data.orgId,
+			client.data.organizationId,
 			dto,
 			client.data.tokenId,
 			this.server,
@@ -134,27 +125,49 @@ export class DerivGateway
 
 	@SubscribeMessage(DerivSocketEvent.TransferFunds)
 	transferFunds(
-		@ConnectedSocket() client: Client,
+		@ConnectedSocket() client: AuthenticatedSocket,
 		@MessageBody() dto: TransferFundsDto,
 	) {
 		return this.derivService.transferFunds(
-			client.data.orgId,
+			client.data.organizationId,
 			dto,
 			client.data.tokenId,
 		);
 	}
 
-	private async authenticate(client: Client) {
-		const payload = {
-			sub: client.data.userId,
-			orgId: client.data.orgId,
-			role: "admin" as const,
+	private async authenticate(socket: Socket) {
+		const auth = socket.handshake.auth as Partial<AuthPayload>;
+
+		if (!auth.accessToken) {
+			throw new WsException("Missing auth params");
+		}
+
+		const { organizationId, permissions, sub, tokenId, version } =
+			await this.tokenService.verifyToken<{
+				sub: string;
+				permissions: Permissions[];
+				version: number;
+				organizationId: string;
+				tokenId: string;
+			}>(auth.accessToken);
+
+		const userVersion = await this.revocationService.getVersion(sub);
+
+		if (userVersion !== version.toString()) {
+			throw new WsException("Access denied");
+		}
+
+		socket.data = {
+			organizationId,
+			userId: sub,
+			tokenId,
+			permissions,
 		};
 
-		return {
-			memberId: payload.sub,
-			orgId: payload.orgId,
-			role: payload.role,
-		};
+		return socket;
+	}
+
+	getUserRoomKey(userId: string) {
+		return `user:${userId}`;
 	}
 }

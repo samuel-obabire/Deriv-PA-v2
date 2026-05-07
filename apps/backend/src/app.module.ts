@@ -2,11 +2,13 @@ import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_PIPE } from "@nestjs/core";
 import { ZodValidationPipe } from "nestjs-zod";
-
 import { AppService } from "./app.service";
 import { LoggingMiddleware } from "./common/middleware/logging/logging.middleware";
+import { envSchema } from "./common/validation";
 import { DatabaseModule } from "./database/database.module";
 import { DerivModule } from "./deriv/deriv.module";
+import { AuthenticationController } from "./iam/authentication/authentication.controller";
+import { IamModule } from "./iam/iam.module";
 import { MatcherModule } from "./matcher/matcher.module";
 import { MatcherService } from "./matcher/matcher.service";
 import { OrganisationModule } from "./organisation/organisation.module";
@@ -21,6 +23,7 @@ import { WithdrawalRequestModule } from "./withdrawal-request/withdrawal-request
 		DatabaseModule,
 		ConfigModule.forRoot({
 			isGlobal: true,
+			validate: (config) => envSchema.parse(config),
 		}),
 		PayoutModule,
 		WithdrawalRequestModule,
@@ -29,6 +32,7 @@ import { WithdrawalRequestModule } from "./withdrawal-request/withdrawal-request
 		RateModule,
 		DerivModule,
 		OrganisationModule,
+		IamModule,
 	],
 	providers: [
 		AppService,
@@ -39,6 +43,7 @@ import { WithdrawalRequestModule } from "./withdrawal-request/withdrawal-request
 		MatcherService,
 		OrganisationService,
 	],
+	controllers: [AuthenticationController],
 })
 export class AppModule implements NestModule {
 	configure(consumer: MiddlewareConsumer) {
