@@ -11,5 +11,6 @@ export interface AuthenticatedSocket extends Socket {
 		userId: string;
 		tokenId: string;
 		permissions: Permissions[];
+		accessToken: string;
 	};
 }

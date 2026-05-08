@@ -143,16 +143,14 @@ export class DerivGateway
 	}
 
 	private async authenticate(socket: Socket) {
-		const auth = socket.handshake.auth as Partial<AuthPayload>;
+		const { accessToken } = socket.handshake.auth as Partial<AuthPayload>;
 
-		if (!auth.accessToken) {
+		if (!accessToken) {
 			throw new WsException("Missing auth params");
 		}
 
 		const { organizationId, permissions, sub, tokenId, version } =
-			await this.tokenService.verifyToken<DecodedJwtAccessToken>(
-				auth.accessToken,
-			);
+			await this.tokenService.verifyToken<DecodedJwtAccessToken>(accessToken);
 
 		const userVersion = await this.revocationService.getVersion(sub);
 
@@ -165,6 +163,7 @@ export class DerivGateway
 			userId: sub,
 			tokenId,
 			permissions,
+			accessToken,
 		};
 
 		return socket;
