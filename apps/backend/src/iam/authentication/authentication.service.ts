@@ -20,10 +20,12 @@ export class AuthenticationService {
 			issueTokensDto.userId,
 		);
 
+		const { userId, ...payload } = issueTokensDto;
+
 		const { jti, ...generatedTokens } = await this.tokenService.generateTokens(
 			issueTokensDto.userId,
 			version,
-			{ permissions: issueTokensDto.permissions },
+			payload,
 		);
 
 		await this.sessionService.insertRefreshToken(jti, issueTokensDto.userId);

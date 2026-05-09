@@ -1,6 +1,8 @@
 import { Cursor } from "@repo/db/queries";
-import fetchHandler from "./handlers/fetchHandler";
-import { clientEnv } from "./validations/env/client";
+
+import fetchHandler from "../handlers/fetchHandler";
+import { clientEnv } from "../validations/env/client";
+import { tokenService } from "./token-service";
 
 const getPayoutUrl = (searchParams: string, cursor?: Cursor | null) => {
 	return cursor
@@ -12,4 +14,6 @@ export const api = {
 	fetchPayouts: async <T>(searchParams: string, cursor?: Cursor | null) => {
 		return await fetchHandler<T>(getPayoutUrl(searchParams, cursor));
 	},
+
+	tokenService: tokenService,
 };

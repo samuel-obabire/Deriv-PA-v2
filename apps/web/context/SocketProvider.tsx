@@ -1,31 +1,41 @@
 "use client";
 
-import { createContext, ReactNode, useEffect, useState } from "react";
+import {
+	createContext,
+	ReactNode,
+	useCallback,
+	useEffect,
+	useState,
+} from "react";
 import { io, Socket } from "socket.io-client";
+import useAccessToken from "@/hooks/useAccessToken";
 import SocketClient from "@/lib/socketClient";
 import { clientEnv } from "@/lib/validations/env/client";
 
 type SocketProviderProps = {
-	orgId: string;
 	children: ReactNode;
-	tokenId: string;
 };
 
 export const SocketContext = createContext<{
 	socket: Socket | null;
 	socketClient: SocketClient | null;
+	reconnectSocket: (accessToken: string) => void;
 } | null>(null);
 
-const SocketProvider = ({ orgId, children, tokenId }: SocketProviderProps) => {
+const SocketProvider = ({ children }: SocketProviderProps) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
 	const [socketClient, setSocketClient] = useState<SocketClient | null>(null);
 
-	useEffect(() => {
+	const { accessToken } = useAccessToken();
+
+	const reconnectSocket = (accessToken: string) => {
+		connectSocket(accessToken);
+	};
+
+	const connectSocket = useCallback((accessToken: string) => {
 		const newSocket = io(clientEnv.NEXT_PUBLIC_SERVER_URL, {
 			auth: {
-				organizationId: orgId,
-				userId: 1,
-				tokenId: tokenId,
+				accessToken: accessToken,
 			},
 			transports: ["websocket"],
 		});
@@ -48,13 +58,21 @@ const SocketProvider = ({ orgId, children, tokenId }: SocketProviderProps) => {
 			setSocketClient(null);
 		});
 
+		return newSocket;
+	}, []);
+
+	useEffect(() => {
+		if (!accessToken) return;
+
+		const newSocket = connectSocket(accessToken);
+
 		return () => {
 			newSocket.disconnect();
 		};
-	}, [tokenId, orgId]);
+	}, [accessToken, connectSocket]);
 
 	return (
-		<SocketContext.Provider value={{ socket, socketClient }}>
+		<SocketContext.Provider value={{ socket, socketClient, reconnectSocket }}>
 			{children}
 		</SocketContext.Provider>
 	);

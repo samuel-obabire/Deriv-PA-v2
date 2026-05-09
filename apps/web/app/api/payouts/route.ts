@@ -50,7 +50,7 @@ export const GET = async (req: NextRequest) => {
 		},
 	});
 
-	const [transactions, getPayoutError] = await tryCatch(fn);
+	const [transactions, getPayoutError] = await tryCatch(() => fn);
 
 	if (getPayoutError) return handleError(getPayoutError, "api");
 

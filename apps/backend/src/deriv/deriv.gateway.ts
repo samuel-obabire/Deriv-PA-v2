@@ -22,7 +22,7 @@ import { ZodValidationPipe } from "nestjs-zod";
 import { Server, Socket } from "socket.io";
 import { RequirePermission } from "src/common/decorators/permissions.decorator";
 import { WsExceptionFilter } from "src/common/filters/ws-exception/ws-exception.filter";
-import { PermissionsGuard } from "src/common/guards/permissions.guard";
+import { WsPermissionsGuard } from "src/common/guards/ws-permissions.guard";
 import { WsInterceptor } from "src/common/interceptors/ws/ws.interceptor";
 import { RevocationService } from "src/iam/authentication/revocation.service";
 import { TokenService } from "src/iam/authentication/token.service";
@@ -36,7 +36,7 @@ import type { AuthenticatedSocket, AuthPayload } from "./types";
 @UsePipes(ZodValidationPipe)
 @UseInterceptors(WsInterceptor)
 @UseFilters(WsExceptionFilter)
-@UseGuards(PermissionsGuard)
+@UseGuards(WsPermissionsGuard)
 @WebSocketGateway({
 	cors: {
 		credentials: true,
@@ -59,28 +59,28 @@ export class DerivGateway
 	) {}
 
 	afterInit() {
+		// Ensure all client is authenticate using the middleware before then can send request
+		this.server.use(async (socket, next) => {
+			try {
+				await this.authenticate(socket);
+				next();
+			} catch (err) {
+				next(new WsException(err instanceof Error ? err : "Invalid"));
+			}
+		});
 		this.logger.log("WebSocket server initialized");
 	}
 
-	async handleConnection(socket: Socket) {
-		try {
-			const authenticatedSocket = (await this.authenticate(
-				socket,
-			)) as AuthenticatedSocket;
+	async handleConnection(socket: AuthenticatedSocket) {
+		const { organizationId, tokenId, userId } = socket.data;
 
-			const { organizationId, tokenId, userId } = authenticatedSocket.data;
+		// Join org room to support broadcast/multi-tab connection
+		socket.join(orgTokenKey(organizationId, tokenId));
 
-			// Join org room to support broadcast/multi-tab connection
-			socket.join(orgTokenKey(organizationId, tokenId));
+		// join user room key to support revocation
+		socket.join(this.getUserRoomKey(userId));
 
-			// join user room key to support revocation
-			socket.join(this.getUserRoomKey(userId));
-
-			this.logger.log(`Member [${userId}] connected — org [${organizationId}]`);
-		} catch (err) {
-			this.logger.warn(`Connection rejected: ${err}`);
-			socket.disconnect(true);
-		}
+		this.logger.log(`Member [${userId}] connected — org [${organizationId}]`);
 	}
 
 	async handleDisconnect(client: AuthenticatedSocket) {

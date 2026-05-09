@@ -1,3 +1,5 @@
+import { clientEnv } from "../validations/env/client";
+
 const ROUTES = {
 	SIGN_IN: "/sign-in",
 	SIGN_UP: "/sign-up",
@@ -13,6 +15,8 @@ const ROUTES = {
 	ORGANIZATION: "/organization",
 	ORGANIZATION_STAFF: "/organization/staff",
 	AUTHORIZE_DERIV: "/authorize-deriv",
+
+	GET_ACCESS_TOKEN: `${clientEnv.NEXT_PUBLIC_URL}/api/token`,
 };
 
 export default ROUTES;
