@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { DecodedJwtRefreshToken } from "../types";
 import { IssueTokensDto } from "./dto/issueTokens.dto";
 import { RefreshTokensDto } from "./dto/refreshTokens.dto";
@@ -16,16 +16,14 @@ export class AuthenticationService {
 	) {}
 
 	async issueTokens(issueTokensDto: IssueTokensDto) {
-		const version = await this.revocationService.initializeVersion(
+		const version = await this.revocationService.ensureVersion(
 			issueTokensDto.userId,
 		);
 
 		const { jti, ...generatedTokens } = await this.tokenService.generateTokens(
 			issueTokensDto.userId,
-			{
-				permissions: issueTokensDto.permissions,
-				version,
-			},
+			version,
+			{ permissions: issueTokensDto.permissions },
 		);
 
 		await this.sessionService.insertRefreshToken(jti, issueTokensDto.userId);
@@ -36,17 +34,26 @@ export class AuthenticationService {
 	async refreshTokens(refreshTokenDto: RefreshTokensDto) {
 		const { refreshToken, payload } = refreshTokenDto;
 
-		const { jti, sub } =
-			await this.tokenService.verifyToken<DecodedJwtRefreshToken>(refreshToken);
+		const {
+			jti,
+			sub,
+			version: tokenVersion,
+		} = await this.tokenService.verifyToken<DecodedJwtRefreshToken>(
+			refreshToken,
+		);
 
 		await this.sessionService.consumeRefreshToken(jti, sub);
 
-		const version = await this.revocationService.getVersion(sub);
+		const userCurrentTokenVersion =
+			await this.revocationService.getVersion(sub);
+
+		if (!userCurrentTokenVersion || userCurrentTokenVersion !== tokenVersion) {
+			throw new UnauthorizedException();
+		}
 
 		const { jti: newJti, ...generatedTokens } =
-			await this.tokenService.generateTokens(sub, {
+			await this.tokenService.generateTokens(sub, userCurrentTokenVersion, {
 				...payload,
-				version,
 			});
 
 		await this.sessionService.insertRefreshToken(newJti, sub);

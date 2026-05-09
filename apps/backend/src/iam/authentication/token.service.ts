@@ -24,7 +24,11 @@ export class TokenService {
 		);
 	}
 
-	async generateTokens<T extends object>(sub: string, payload: T) {
+	async generateTokens<T extends object>(
+		sub: string,
+		version: string,
+		payload: T,
+	) {
 		const jti = uuidv4();
 
 		const [accessToken, refreshToken] = await Promise.all([
@@ -32,10 +36,12 @@ export class TokenService {
 				...payload,
 				sub,
 				jti,
+				version,
 			}),
 			this.signToken(sub, this.jwtConfiguration.refreshTokenTtl, {
 				sub,
 				jti,
+				version,
 			}),
 		]);
 

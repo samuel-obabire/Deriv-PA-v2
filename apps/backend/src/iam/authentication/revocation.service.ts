@@ -17,7 +17,7 @@ export class RevocationService {
 		return this.redisService.get(this.getVersionKey(userId));
 	}
 
-	async initializeVersion(userId: string) {
+	async ensureVersion(userId: string) {
 		return this.redisService.getOrSet(this.getVersionKey(userId), "1");
 	}
 
