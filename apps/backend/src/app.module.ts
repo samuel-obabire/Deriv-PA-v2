@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { APP_PIPE } from "@nestjs/core";
 import { ZodValidationPipe } from "nestjs-zod";
 import { AppService } from "./app.service";
+import { CommonModule } from "./common/common.module";
 import { LoggingMiddleware } from "./common/middleware/logging/logging.middleware";
 import { envSchema } from "./common/validation";
 import { DatabaseModule } from "./database/database.module";
@@ -33,6 +34,7 @@ import { WithdrawalRequestModule } from "./withdrawal-request/withdrawal-request
 		DerivModule,
 		OrganisationModule,
 		IamModule,
+		CommonModule,
 	],
 	providers: [
 		AppService,
