@@ -7,9 +7,3 @@ export type DecodedJwtAccessToken = {
 	organizationId: string;
 	tokenId: string;
 };
-
-export type DecodedJwtRefreshToken = {
-	sub: string;
-	jti: string;
-	version: string;
-};

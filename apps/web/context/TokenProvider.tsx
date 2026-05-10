@@ -1,6 +1,5 @@
 "use client";
 
-import { jwtDecode } from "jwt-decode";
 import {
 	createContext,
 	PropsWithChildren,
@@ -9,53 +8,49 @@ import {
 	useState,
 } from "react";
 import { getValidAccessToken } from "@/lib/api/token";
+import { isTokenValid } from "@/lib/utils/jwt";
 
 export const TokenContext = createContext<{
 	accessToken: string | null;
-	isFetching: boolean;
 	isTokenValid: (token: string) => boolean;
+	refreshToken: () => Promise<void>;
 } | null>(null);
 
 const TokenProvider = ({ children }: PropsWithChildren) => {
 	const [accessToken, setAccessToken] = useState<string | null>(null);
-	const [isFetching, setIsFetching] = useState(true);
 
-	//todo: register event to ensure token is valid on focus
-
-	const getToken = useCallback(async () => {
-		try {
-			const accessToken = await getValidAccessToken();
-
-			if (!accessToken) throw new Error("Unable to fetch accessToken");
-
-			setAccessToken(accessToken);
-		} catch (error) {
-			console.error(error);
-		} finally {
-			setIsFetching(false);
-		}
+	const setToken = useCallback((token: string) => {
+		setAccessToken(token);
 	}, []);
 
-	const isTokenValid = (token: string) => {
-		//todo move the jwt logic to its own file
+	const fetchToken = useCallback(async () => {
+		const token = await getValidAccessToken();
 
-		const TOKEN_BUFFER = 30 * 1000; // 30 seconds
+		if (!token) throw new Error("Unable to fetch accessToken");
 
-		const decoded = jwtDecode(token);
+		setToken(token);
+	}, [setToken]);
 
-		if (!decoded.exp) return false;
+	const refreshToken = async () => {
+		const token = await getValidAccessToken();
 
-		console.log(decoded.exp * 1000 - TOKEN_BUFFER > Date.now());
+		if (!token) throw new Error("Unable to fetch accessToken");
 
-		return decoded.exp * 1000 - TOKEN_BUFFER > Date.now();
+		setToken(token);
 	};
 
 	useEffect(() => {
-		getToken();
-	}, [getToken]);
+		fetchToken();
+	}, [fetchToken]);
 
 	return (
-		<TokenContext.Provider value={{ accessToken, isFetching, isTokenValid }}>
+		<TokenContext.Provider
+			value={{
+				accessToken,
+				isTokenValid,
+				refreshToken,
+			}}
+		>
 			{children}
 		</TokenContext.Provider>
 	);

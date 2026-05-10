@@ -13,7 +13,6 @@ export const GetTokenAccessResponseSchema = z.object({
 	data: z
 		.object({
 			accessToken: z.string().min(3),
-			refreshToken: z.string().min(5),
 		})
 		.optional(),
 

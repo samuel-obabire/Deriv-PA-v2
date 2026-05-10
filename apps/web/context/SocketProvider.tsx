@@ -5,6 +5,7 @@ import {
 	ReactNode,
 	useCallback,
 	useEffect,
+	useRef,
 	useState,
 } from "react";
 import { io, Socket } from "socket.io-client";
@@ -19,43 +20,61 @@ type SocketProviderProps = {
 export const SocketContext = createContext<{
 	socket: Socket | null;
 	socketClient: SocketClient | null;
-	reconnectSocket: (accessToken: string) => void;
 } | null>(null);
 
 const SocketProvider = ({ children }: SocketProviderProps) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
 	const [socketClient, setSocketClient] = useState<SocketClient | null>(null);
 
+	const socketRef = useRef<Socket | null>(null);
+	const clientRef = useRef<SocketClient | null>(null);
+
 	const { accessToken } = useAccessToken();
 
-	const reconnectSocket = (accessToken: string) => {
-		connectSocket(accessToken);
-	};
-
-	const connectSocket = useCallback((accessToken: string) => {
+	const connectSocket = useCallback((token: string) => {
 		const newSocket = io(clientEnv.NEXT_PUBLIC_SERVER_URL, {
-			auth: {
-				accessToken: accessToken,
-			},
+			auth: { accessToken: token },
 			transports: ["websocket"],
 		});
 
-		newSocket.on("connect", async () => {
-			const socketClient = new SocketClient(newSocket);
+		socketRef.current = newSocket;
 
-			await socketClient.authorize({ authorize: "" });
-
+		const handleConnect = async () => {
 			setSocket(newSocket);
-			setSocketClient(socketClient);
-		});
 
-		newSocket.on("connect_error", (err) => {
-			console.error("socket error:", err.message);
-		});
+			const client = clientRef.current ?? new SocketClient(newSocket);
 
-		newSocket.on("disconnect", () => {
+			clientRef.current = client;
+
+			try {
+				await client.authorize({ authorize: "" });
+				setSocketClient(client);
+			} catch {
+				newSocket.disconnect();
+			}
+		};
+
+		const handleReconnect = async () => {
+			try {
+				await clientRef.current?.authorize({ authorize: "" });
+			} catch {
+				newSocket.disconnect();
+			}
+		};
+
+		const handleDisconnect = () => {
 			setSocket(null);
 			setSocketClient(null);
+			socketRef.current = null;
+			clientRef.current = null;
+		};
+
+		newSocket.on("connect", handleConnect);
+		newSocket.io.on("reconnect", handleReconnect);
+		newSocket.on("disconnect", handleDisconnect);
+
+		newSocket.on("connect_error", () => {
+			newSocket.disconnect();
 		});
 
 		return newSocket;
@@ -64,15 +83,15 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 	useEffect(() => {
 		if (!accessToken) return;
 
-		const newSocket = connectSocket(accessToken);
+		const socketInstance = connectSocket(accessToken);
 
 		return () => {
-			newSocket.disconnect();
+			socketInstance.disconnect();
 		};
 	}, [accessToken, connectSocket]);
 
 	return (
-		<SocketContext.Provider value={{ socket, socketClient, reconnectSocket }}>
+		<SocketContext.Provider value={{ socket, socketClient }}>
 			{children}
 		</SocketContext.Provider>
 	);

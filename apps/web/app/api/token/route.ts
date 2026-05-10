@@ -1,15 +1,13 @@
 import { Permissions, TokenPayload, tryCatch } from "@repo/utils";
 import { NextRequest, NextResponse } from "next/server";
+import { serverApi } from "@/lib/api/server-api";
 import { UnauthorizedError } from "@/lib/errors";
 import action from "@/lib/handlers/action";
-import fetchHandler from "@/lib/handlers/fetchHandler";
 import handleError from "@/lib/http-errors";
-import { ActionResponse } from "@/lib/types/global";
 import {
 	GetTokenAccessRequestSchema,
 	GetTokenAccessResponseSchema,
 } from "@/lib/validations/auth/access-token";
-import { clientEnv } from "@/lib/validations/env/client";
 
 export const POST = async (req: NextRequest) => {
 	const body = await req.json();
@@ -37,12 +35,7 @@ export const POST = async (req: NextRequest) => {
 			userId: session.session.userId,
 		};
 
-		const res = await fetchHandler<
-			ActionResponse<{ accessToken: string; refreshToken: string }>
-		>(`${clientEnv.NEXT_PUBLIC_SERVER_URL}/authentication/issue-tokens`, {
-			method: "POST",
-			body: JSON.stringify(tokenPayload),
-		});
+		const res = await serverApi.getToken(tokenPayload);
 
 		const parsedResponse = GetTokenAccessResponseSchema.parse(res);
 

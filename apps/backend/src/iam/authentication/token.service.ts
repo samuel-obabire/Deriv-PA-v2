@@ -1,7 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { ConfigType } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { v4 as uuidv4 } from "uuid";
 import jwtConfig from "../jwt/jwt.config";
 
 @Injectable()
@@ -29,23 +28,17 @@ export class TokenService {
 		version: string,
 		payload: T,
 	) {
-		const jti = uuidv4();
-
-		const [accessToken, refreshToken] = await Promise.all([
-			this.signToken(sub, this.jwtConfiguration.accessTokenTtl, {
+		const accessToken = await this.signToken(
+			sub,
+			this.jwtConfiguration.accessTokenTtl,
+			{
 				...payload,
 				sub,
-				jti,
 				version,
-			}),
-			this.signToken(sub, this.jwtConfiguration.refreshTokenTtl, {
-				sub,
-				jti,
-				version,
-			}),
-		]);
+			},
+		);
 
-		return { accessToken, refreshToken, jti };
+		return { accessToken };
 	}
 
 	async verifyToken<T extends object>(token: string) {
