@@ -5,6 +5,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { organization } from "better-auth/plugins";
 import { db } from "./db";
+import { ac, admin, auditor, cashier, member, owner } from "./permissions";
 
 export const auth = betterAuth({
 	appName: "Adeluxe",
@@ -47,7 +48,19 @@ export const auth = betterAuth({
 	},
 
 	experimental: { joins: true },
-	plugins: [organization(), nextCookies()],
+	plugins: [
+		organization({
+			ac,
+			roles: {
+				owner,
+				admin,
+				member,
+				auditor,
+				cashier,
+			},
+		}),
+		nextCookies(),
+	],
 });
 
 export type User = typeof auth.$Infer.Session.user;

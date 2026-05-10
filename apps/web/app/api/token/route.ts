@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { serverApi } from "@/lib/api/server-api";
 import { UnauthorizedError } from "@/lib/errors";
 import action from "@/lib/handlers/action";
+import { hasPermission } from "@/lib/has-permission";
 import handleError from "@/lib/http-errors";
 import {
 	GetTokenAccessRequestSchema,
@@ -28,9 +29,14 @@ export const POST = async (req: NextRequest) => {
 		if (!session || !session.session.activeOrganizationId)
 			throw new UnauthorizedError();
 
+		const hasPaymentPermission = await hasPermission({ payment: ["create"] });
+
 		const tokenPayload: TokenPayload = {
 			organizationId: session.session.activeOrganizationId,
-			permissions: [Permissions.READ, Permissions.PAYMENTS],
+			permissions: [
+				Permissions.READ,
+				...(hasPaymentPermission.success ? [Permissions.PAYMENTS] : []),
+			],
 			tokenId: "token-1",
 			userId: session.session.userId,
 		};
@@ -49,17 +55,16 @@ export const POST = async (req: NextRequest) => {
 					status: 500,
 				},
 			);
-		} else {
-			return NextResponse.json(
-				{
-					success: true,
-					data: { accessToken: parsedResponse.data?.accessToken },
-				},
-				{
-					status: 200,
-				},
-			);
 		}
+		return NextResponse.json(
+			{
+				success: true,
+				data: { accessToken: parsedResponse.data?.accessToken },
+			},
+			{
+				status: 200,
+			},
+		);
 	} catch (error) {
 		return handleError(error, "api");
 	}
