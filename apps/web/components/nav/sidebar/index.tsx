@@ -3,7 +3,7 @@
 import { ChevronDown, LucideIcon, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { ReactNode } from "react";
+import React, { ReactNode, use } from "react";
 import ThemeToggler from "@/components/theme/ThemeToggler";
 import {
 	Collapsible,
@@ -16,20 +16,10 @@ import {
 	SheetContent,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import { RoleNames } from "@/lib/permissions";
 import Logout from "../../auth/Logout";
-import { sidebarConfig } from "./config";
 import { SidebarGroup, SidebarItem } from "./types";
-
-const getSidebarForRole = (role: "admin" | "staff") => {
-	return sidebarConfig
-		.map((group) => ({
-			...group,
-			items: group.items.filter(
-				(item) => !item.roles || item.roles.includes(role),
-			),
-		}))
-		.filter((group) => group.items.length > 0);
-};
+import { getSidebarForRole } from "./utils";
 
 const SidebarContent = ({
 	renderItems,
@@ -89,9 +79,15 @@ const SideBarLink = ({
 	);
 };
 
-export const DesktopSideBar = () => {
+export const DesktopSideBar = ({
+	rolePromise,
+}: {
+	rolePromise: Promise<{ role: RoleNames }>;
+}) => {
+	const userRole = use(rolePromise);
+
 	const pathname = usePathname();
-	const groups = getSidebarForRole("admin");
+	const groups = getSidebarForRole(userRole.role);
 
 	return (
 		<aside className="hidden pt-10 lg:block h-dvh border-r shadow-sidebar-primary overflow-y-auto">
@@ -117,9 +113,9 @@ export const DesktopSideBar = () => {
 	);
 };
 
-const SideBar = () => {
+const SideBar = ({ role }: { role: RoleNames }) => {
 	const pathname = usePathname();
-	const groups = getSidebarForRole("admin");
+	const groups = getSidebarForRole(role);
 
 	return (
 		<Sheet>

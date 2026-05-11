@@ -9,6 +9,8 @@ import {
 const statement = {
 	...defaultStatements,
 	payment: ["create", "update"],
+	settings: ["manage"],
+	auth_provider: ["manage"],
 } as const;
 
 const ac = createAccessControl(statement);
@@ -19,10 +21,15 @@ const member = ac.newRole({
 
 const admin = ac.newRole({
 	payment: ["create", "update"],
+	settings: ["manage"],
+	auth_provider: ["manage"],
 	...adminAc.statements,
 });
+
 const owner = ac.newRole({
 	payment: ["create", "update"],
+	settings: ["manage"],
+	auth_provider: ["manage"],
 	...ownerAc.statements,
 });
 
@@ -35,8 +42,9 @@ const auditor = ac.newRole({
 	...memberAc.statements,
 });
 
-// Infer the type from ac
-type Statements = typeof statement;
+export type Statements = typeof statement;
+
+// const roleNames = ["auditor", "cashier", "admin"] as const;
 
 type PermissionType = {
 	[key in keyof Statements]?: Array<
@@ -44,6 +52,18 @@ type PermissionType = {
 	>;
 };
 
-export { ac, admin, auditor, cashier, member, owner, type PermissionType };
+const roles = { admin, owner, member, cashier, auditor } as const;
 
-export const roleNames = ["auditor", "cashier", "admin"];
+type RoleNames = keyof typeof roles;
+
+export {
+	ac,
+	admin,
+	auditor,
+	cashier,
+	member,
+	owner,
+	type PermissionType,
+	type RoleNames,
+	roles,
+};
