@@ -1,20 +1,26 @@
 import * as schema from "@repo/db";
 import { getUser } from "@repo/db/queries";
-import { betterAuth } from "better-auth";
+import { type BetterAuthOptions, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { organization } from "better-auth/plugins";
+import { customSession, Member, organization } from "better-auth/plugins";
 import { db } from "./db";
-import { ac, admin, auditor, cashier, member, owner } from "./permissions";
+import {
+	ac,
+	admin,
+	auditor,
+	cashier,
+	member,
+	owner,
+	RoleNames,
+} from "./permissions";
 
-export const auth = betterAuth({
+const options = {
 	appName: "Adeluxe",
 
 	database: drizzleAdapter(db, {
 		provider: "pg",
-		schema: {
-			...schema,
-		},
+		schema: { ...schema },
 		transaction: true,
 	}),
 
@@ -35,7 +41,6 @@ export const auth = betterAuth({
 			create: {
 				before: async (session) => {
 					const user = await getUser(session.userId, db);
-
 					return {
 						data: {
 							...session,
@@ -51,14 +56,36 @@ export const auth = betterAuth({
 	plugins: [
 		organization({
 			ac,
-			roles: {
-				owner,
-				admin,
-				member,
-				auditor,
-				cashier,
-			},
+			roles: { owner, admin, member, auditor, cashier },
 		}),
+	],
+} satisfies BetterAuthOptions;
+
+export const auth = betterAuth({
+	...options,
+	plugins: [
+		...(options.plugins ?? []),
+		customSession(async ({ user, session }, ctx) => {
+			let activeOrgRole: string | null = "";
+
+			const member = (await ctx.context.adapter.findOne({
+				model: "member",
+				where: [
+					{ field: "userId", value: user.id },
+					{
+						field: "organizationId",
+						value: session.activeOrganizationId as string | null,
+					},
+				],
+			})) as Member | null;
+
+			activeOrgRole = member?.role ?? null;
+
+			return {
+				user: { ...user, role: activeOrgRole as RoleNames },
+				session,
+			};
+		}, options),
 		nextCookies(),
 	],
 });

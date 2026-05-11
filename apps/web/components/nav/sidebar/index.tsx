@@ -16,6 +16,7 @@ import {
 	SheetContent,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import { Session } from "@/lib/auth";
 import { RoleNames } from "@/lib/permissions";
 import Logout from "../../auth/Logout";
 import { SidebarGroup, SidebarItem } from "./types";
@@ -80,14 +81,16 @@ const SideBarLink = ({
 };
 
 export const DesktopSideBar = ({
-	rolePromise,
+	sessionPromise,
 }: {
-	rolePromise: Promise<{ role: RoleNames }>;
+	sessionPromise: Promise<Session | null>;
 }) => {
-	const userRole = use(rolePromise);
-
 	const pathname = usePathname();
-	const groups = getSidebarForRole(userRole.role);
+
+	const session = use(sessionPromise);
+	if (!session) return null;
+
+	const groups = getSidebarForRole(session.user.role);
 
 	return (
 		<aside className="hidden pt-10 lg:block h-dvh border-r shadow-sidebar-primary overflow-y-auto">

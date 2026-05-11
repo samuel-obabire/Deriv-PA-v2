@@ -4,7 +4,7 @@ import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { use, useEffect, useState } from "react";
 import useSocket from "@/hooks/useSocket";
-import { RoleNames } from "@/lib/permissions";
+import { Session } from "@/lib/auth";
 import SideBar from "./sidebar";
 
 const Balance = () => {
@@ -44,16 +44,18 @@ const Balance = () => {
 };
 
 const Navbar = ({
-	rolePromise,
+	sessionPromise,
 }: {
-	rolePromise: Promise<{ role: RoleNames }>;
+	sessionPromise: Promise<Session | null>;
 }) => {
-	const userRole = use(rolePromise);
+	const session = use(sessionPromise);
+
+	if (!session) return null;
 
 	return (
 		<nav className="flex items-center p-2  justify-between gap-8">
 			<div className={`lg:hidden`}>
-				<SideBar role={userRole.role} />
+				<SideBar role={session.user.role} />
 			</div>
 
 			<div className={`hidden lg:block`}>

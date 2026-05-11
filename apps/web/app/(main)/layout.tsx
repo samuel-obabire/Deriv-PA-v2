@@ -4,10 +4,10 @@ import { DesktopSideBar } from "@/components/nav/sidebar";
 import ConnectionRefresher from "@/components/providers/ConnectionRefresher";
 import SocketProvider from "@/context/SocketProvider";
 import TokenProvider from "@/context/TokenProvider";
-import { getActiveMemberRole } from "@/lib/role";
+import { getSession } from "@/lib/session";
 
 export default async function AuditLayout({ children }: PropsWithChildren) {
-	const rolePromise = getActiveMemberRole();
+	const sessionPromise = getSession();
 
 	return (
 		<TokenProvider>
@@ -15,13 +15,13 @@ export default async function AuditLayout({ children }: PropsWithChildren) {
 				<ConnectionRefresher>
 					<div className="lg:grid lg:grid-cols-[300px_1fr]">
 						<Suspense fallback={<div />}>
-							<DesktopSideBar rolePromise={rolePromise} />
+							<DesktopSideBar sessionPromise={sessionPromise} />
 						</Suspense>
 
 						<main>
 							<header className="bg-background h-16 top-0 sticky z-50">
 								<Suspense fallback={<div />}>
-									<Navbar rolePromise={rolePromise} />
+									<Navbar sessionPromise={sessionPromise} />
 								</Suspense>
 							</header>
 

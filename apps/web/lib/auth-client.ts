@@ -1,6 +1,11 @@
-import { organizationClient } from "better-auth/client/plugins";
+import {
+	customSessionClient,
+	inferAdditionalFields,
+	organizationClient,
+} from "better-auth/client/plugins";
 import type { Member, Organization } from "better-auth/plugins/organization";
 import { createAuthClient } from "better-auth/react";
+import { auth } from "./auth";
 import { ac, admin, auditor, cashier, member, owner } from "./permissions";
 
 export const authClient = createAuthClient({
@@ -13,6 +18,8 @@ export const authClient = createAuthClient({
 			auditor,
 			cashier,
 		}),
+		customSessionClient<typeof auth>(),
+		inferAdditionalFields<typeof auth>(),
 	],
 });
 
