@@ -1,3 +1,5 @@
+import { CURRENCY_CONFIG } from "../constants";
+
 export type DerivEndpointName =
 	| "authorize"
 	| "balance"
@@ -8,7 +10,7 @@ export type DerivEndpointName =
 
 export type DerivSubcriptionEndpoint = "balance";
 
-export const derivCurrencies = ["USD", "USDC", "tUSDT", "eUSDT"] as const;
+export const derivCurrencies = CURRENCY_CONFIG.map((c) => c.code);
 export type DerivCurrency = (typeof derivCurrencies)[number];
 
 export type RequestPayload<T extends DerivEndpointName = DerivEndpointName> =

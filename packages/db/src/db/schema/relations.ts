@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { account } from "./account";
+import { currency } from "./currency";
 import { invitation } from "./invitation";
 import { member } from "./member";
 import { organization } from "./organization";
@@ -67,5 +68,12 @@ export const invitationRelations = relations(invitation, ({ one }) => ({
 	inviter: one(user, {
 		fields: [invitation.inviterId],
 		references: [user.id],
+	}),
+}));
+
+export const currencyRelation = relations(currency, ({ one }) => ({
+	organization: one(organization, {
+		fields: [currency.id],
+		references: [organization.id],
 	}),
 }));

@@ -1,10 +1,15 @@
-import { RoleNames, roles, type Statements } from "@/lib/permissions";
+import {
+	ResourcePermission,
+	RoleNames,
+	roles,
+	type Statements,
+} from "@/lib/permissions";
 import { sidebarConfig } from "./config";
-import { SidebarGroup, SidebarPermission } from "./types";
+import { SidebarGroup } from "./types";
 
-const hasRoleStatement = (
+export const hasRoleStatement = (
 	roleName: RoleNames,
-	{ resource, action }: SidebarPermission,
+	{ resource, action }: ResourcePermission,
 ): boolean => {
 	const role = roles[roleName as keyof typeof roles];
 	const stmts = role.statements as Partial<

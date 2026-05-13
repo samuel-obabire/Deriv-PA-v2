@@ -14,7 +14,7 @@ const ROUTES = {
 	SETTINGS_RATES: "/settings/rates",
 	ORGANIZATION: "/organization",
 	ORGANIZATION_STAFF: "/organization/staff",
-	AUTHORIZE_DERIV: "/authorize-deriv",
+	DERIV_TOKENS: "/settings/deriv-tokens",
 
 	GET_ACCESS_TOKEN: `${clientEnv.NEXT_PUBLIC_URL}/api/token`,
 };

@@ -92,3 +92,6 @@ export const auth = betterAuth({
 
 export type User = typeof auth.$Infer.Session.user;
 export type Session = typeof auth.$Infer.Session;
+export type SessionWithActiveOrg = Session & {
+	session: Session["session"] & { activeOrganizationId: string };
+};

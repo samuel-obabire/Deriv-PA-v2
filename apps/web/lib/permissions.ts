@@ -52,6 +52,10 @@ type PermissionType = {
 	>;
 };
 
+type ResourcePermission = {
+	[K in keyof Statements]: { resource: K; action: Statements[K][number] };
+}[keyof Statements];
+
 const roles = { admin, owner, member, cashier, auditor } as const;
 
 type RoleNames = keyof typeof roles;
@@ -64,6 +68,7 @@ export {
 	member,
 	owner,
 	type PermissionType,
+	type ResourcePermission,
 	type RoleNames,
 	roles,
 };

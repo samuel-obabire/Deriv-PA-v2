@@ -1,5 +1,4 @@
 import {
-	ArrowLeftRight,
 	ArrowRightLeft,
 	Building2,
 	FileText,
@@ -22,27 +21,27 @@ export const sidebarConfig: SidebarGroup[] = [
 				icon: ArrowRightLeft,
 				permission: { resource: "payment", action: "create" },
 			},
-			{
-				title: "Transfer Between Accounts",
-				href: ROUTES.TRANSFER_INTERNAL,
-				icon: ArrowLeftRight,
-				permission: { resource: "payment", action: "create" },
-			},
+			// {
+			// 	title: "Transfer Between Accounts",
+			// 	href: ROUTES.TRANSFER_INTERNAL,
+			// 	icon: ArrowLeftRight,
+			// 	permission: { resource: "payment", action: "create" },
+			// },
 		],
 	},
 	{
 		title: "Reports",
 		items: [
 			{
-				title: "Statement",
-				href: ROUTES.STATEMENT,
-				icon: FileText,
-				permission: { resource: "ac", action: "read" },
-			},
-			{
 				title: "Summary",
 				href: ROUTES.SUMMARY,
 				icon: LayoutDashboard,
+				permission: { resource: "ac", action: "read" },
+			},
+			{
+				title: "Statement",
+				href: ROUTES.STATEMENT,
+				icon: FileText,
 				permission: { resource: "ac", action: "read" },
 			},
 		],
@@ -51,18 +50,7 @@ export const sidebarConfig: SidebarGroup[] = [
 		title: "Settings",
 		items: [
 			{
-				title: "Rate Settings",
-				href: ROUTES.SETTINGS_RATES,
-				icon: Settings,
-				permission: { resource: "settings", action: "manage" },
-			},
-		],
-	},
-	{
-		title: "Organization",
-		items: [
-			{
-				title: "Organization Settings",
+				title: "Organization",
 				href: ROUTES.ORGANIZATION,
 				icon: Building2,
 				permission: { resource: "organization", action: "update" },
@@ -73,14 +61,15 @@ export const sidebarConfig: SidebarGroup[] = [
 				icon: Users,
 				permission: { resource: "member", action: "create" },
 			},
-		],
-	},
-	{
-		title: "Authorization",
-		items: [
 			{
-				title: "Authorize Deriv",
-				href: ROUTES.AUTHORIZE_DERIV,
+				title: "Rate Management",
+				href: ROUTES.SETTINGS_RATES,
+				icon: Settings,
+				permission: { resource: "settings", action: "manage" },
+			},
+			{
+				title: "Deriv Tokens",
+				href: ROUTES.DERIV_TOKENS,
 				icon: ShieldCheck,
 				permission: { resource: "auth_provider", action: "manage" },
 			},

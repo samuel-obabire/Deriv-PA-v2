@@ -10,3 +10,10 @@ export enum WITHDRAWAL_STATUS {
 	FLAGGED = "FLAGGED",
 	MISSING = "MISSING",
 }
+
+export enum CURRENCY {
+	USD = "USD",
+	USDC = "USDC",
+	eUSDT = "eUSDT",
+	tUSDT = "tUSDT",
+}

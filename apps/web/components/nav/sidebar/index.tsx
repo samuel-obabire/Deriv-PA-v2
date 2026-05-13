@@ -14,6 +14,7 @@ import {
 	Sheet,
 	SheetClose,
 	SheetContent,
+	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
 import { Session } from "@/lib/auth";
@@ -127,7 +128,8 @@ const SideBar = ({ role }: { role: RoleNames }) => {
 					<Menu />
 				</button>
 			</SheetTrigger>
-			<SheetContent side="left">
+			<SheetContent side="left" aria-describedby={undefined}>
+				<SheetTitle className="sr-only">Navigation</SheetTitle>
 				<SidebarContent
 					groups={groups}
 					renderItems={(items) => {

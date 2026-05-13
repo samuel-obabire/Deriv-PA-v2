@@ -1,17 +1,19 @@
 import { type ZodType } from "zod";
 import { auth } from "../auth";
-import { UnauthorizedError } from "../errors";
+import { UnauthorizedError, ValidationError } from "../errors";
 import { getSession } from "../session";
 
 type ActionProps<T> = {
 	params: unknown;
 	schema: ZodType<T>;
 	authorise?: boolean;
+	requireActiveOrganization?: boolean;
 };
 const action = async <T>({
 	params,
 	schema,
 	authorise = true,
+	requireActiveOrganization,
 }: ActionProps<T>) => {
 	const parsedResult = schema.parse(params);
 
@@ -25,7 +27,16 @@ const action = async <T>({
 		throw new UnauthorizedError("You are not authorised");
 	}
 
-	return { params: parsedResult, session };
+	if (!requireActiveOrganization && session) {
+		if (!session || !session.session.activeOrganizationId) {
+			throw new ValidationError("No active organization selected.");
+		}
+	}
+
+	return {
+		params: parsedResult,
+		session,
+	};
 };
 
 export default action;
