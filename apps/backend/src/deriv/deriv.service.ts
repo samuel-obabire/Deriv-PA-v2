@@ -1,25 +1,26 @@
 import { Injectable } from "@nestjs/common";
-import { WsException } from "@nestjs/websockets";
 import { orgTokenKey } from "@repo/deriv";
 import { Server } from "socket.io";
+import { CurrencyTokenService } from "./currency-token.service";
 import { DerivOrgConnection } from "./deriv-org-connection";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
 import { TransferFundsDto } from "./dto/transferFunds.dto";
 
-const tokens: Record<string, string> = {
-	"token-1": "h9OoOCwt2yFUYYO",
-};
-
 @Injectable()
 export class DerivService {
-	constructor(private readonly derivOrgPoolService: DerivOrgPoolService) {}
+	constructor(
+		private readonly derivOrgPoolService: DerivOrgPoolService,
+		private readonly currencyTokenService: CurrencyTokenService,
+	) {}
 
 	async authorize({ orgId, tokenId }: { tokenId: string; orgId: string }) {
 		if (this.derivOrgPoolService.checkOrgExist(orgId, tokenId)) return;
 
-		const token = tokens[tokenId];
-		if (!token) throw new WsException("token not found");
+		const plainToken = await this.currencyTokenService.getDecryptedOrgToken(
+			orgId,
+			tokenId,
+		);
 
 		const orgConnection = new DerivOrgConnection({
 			orgId: orgId,
@@ -32,7 +33,7 @@ export class DerivService {
 			tokenId,
 		});
 
-		await this.authorizeSocket(token, orgConnection);
+		await this.authorizeSocket(plainToken, orgConnection);
 	}
 
 	async transferFunds(
@@ -73,7 +74,6 @@ export class DerivService {
 			name: "balance",
 			payload: subscribeBalanceDto,
 			onData: (data) => {
-				// emit to room
 				server.to(orgTokenKey(orgId, tokenId)).emit("balance", data);
 			},
 			onError: (error) => {

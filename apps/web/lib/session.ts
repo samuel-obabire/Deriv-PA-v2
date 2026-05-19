@@ -3,7 +3,7 @@ import "server-only";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { hasRoleStatement } from "@/components/nav/sidebar/utils";
-import { auth, SessionWithActiveOrg } from "./auth";
+import { auth } from "./auth";
 import ROUTES from "./constants/routes";
 import { ResourcePermission } from "./permissions";
 
@@ -25,7 +25,9 @@ export const getSession = async () => {
  * @returns Session
  */
 export const verifySession = async (permission?: ResourcePermission) => {
-	const session = await getSession();
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
 
 	if (!session) redirect(ROUTES.SIGN_IN);
 
@@ -33,5 +35,5 @@ export const verifySession = async (permission?: ResourcePermission) => {
 		notFound();
 	}
 
-	return session as SessionWithActiveOrg;
+	return session;
 };

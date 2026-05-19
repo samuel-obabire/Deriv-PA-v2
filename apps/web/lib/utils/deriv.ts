@@ -17,3 +17,11 @@ export function buildConfiguredCurrencies(
 		};
 	});
 }
+
+export const CURRENCY_ICON = {
+	USD: "/asset/svg/USD.svg",
+	USDC: "/asset/svg/USDC.svg",
+	eUSDT: "/asset/svg/eUSDT.svg",
+	tUSDT: "/asset/svg/tUSDT.svg",
+	DEFAULT: "/asset/svg/USD.svg",
+};

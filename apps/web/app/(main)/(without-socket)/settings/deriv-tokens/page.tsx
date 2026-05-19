@@ -13,7 +13,7 @@ const Tokens = async () => {
 	});
 
 	const userCurrencies = await getAllOrganizationCurrencies(
-		session.session.activeOrganizationId,
+		session.session.activeOrganizationId as string,
 		db,
 	);
 

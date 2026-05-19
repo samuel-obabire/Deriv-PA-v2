@@ -7,6 +7,7 @@ import {
 	useEffect,
 	useRef,
 	useState,
+	useTransition,
 } from "react";
 import { io, Socket } from "socket.io-client";
 import useAccessToken from "@/hooks/useAccessToken";
@@ -20,18 +21,20 @@ type SocketProviderProps = {
 export const SocketContext = createContext<{
 	socket: Socket | null;
 	socketClient: SocketClient | null;
+	isPending: boolean;
 } | null>(null);
 
 const SocketProvider = ({ children }: SocketProviderProps) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
 	const [socketClient, setSocketClient] = useState<SocketClient | null>(null);
+	const [isPending, startTransition] = useTransition();
 
 	const socketRef = useRef<Socket | null>(null);
 	const clientRef = useRef<SocketClient | null>(null);
 
 	const { accessToken } = useAccessToken();
 
-	const connectSocket = useCallback((token: string) => {
+	const connectSocket = useCallback((token: string): Socket => {
 		const newSocket = io(clientEnv.NEXT_PUBLIC_SERVER_URL, {
 			auth: { accessToken: token },
 			transports: ["websocket"],
@@ -40,15 +43,15 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 		socketRef.current = newSocket;
 
 		const handleConnect = async () => {
-			setSocket(newSocket);
-
 			const client = clientRef.current ?? new SocketClient(newSocket);
-
 			clientRef.current = client;
 
 			try {
-				await client.authorize({ authorize: "" });
-				setSocketClient(client);
+				startTransition(async () => {
+					await client.authorize({ authorize: "" });
+					setSocket(newSocket);
+					setSocketClient(client);
+				});
 			} catch {
 				newSocket.disconnect();
 			}
@@ -63,8 +66,10 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 		};
 
 		const handleDisconnect = () => {
-			setSocket(null);
-			setSocketClient(null);
+			startTransition(() => {
+				setSocket(null);
+				setSocketClient(null);
+			});
 			socketRef.current = null;
 			clientRef.current = null;
 		};
@@ -91,7 +96,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 	}, [accessToken, connectSocket]);
 
 	return (
-		<SocketContext.Provider value={{ socket, socketClient }}>
+		<SocketContext.Provider value={{ socket, socketClient, isPending }}>
 			{children}
 		</SocketContext.Provider>
 	);

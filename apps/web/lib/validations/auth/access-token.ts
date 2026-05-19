@@ -1,11 +1,8 @@
+import { CURRENCY } from "@repo/db/enums";
 import * as z from "zod";
 
 export const GetTokenAccessRequestSchema = z.object({
-	options: z
-		.object({
-			fresh: z.boolean().optional(),
-		})
-		.optional(),
+	currency: z.enum(CURRENCY),
 });
 
 export const GetTokenAccessResponseSchema = z.object({

@@ -1,6 +1,8 @@
+import { getOneOrganizationCurrency } from "@repo/db/queries";
 import { Permissions, TokenPayload, tryCatch } from "@repo/utils";
 import { NextRequest, NextResponse } from "next/server";
 import { serverApi } from "@/lib/api/server-api";
+import { db } from "@/lib/db";
 import { UnauthorizedError } from "@/lib/errors";
 import action from "@/lib/handlers/action";
 import { hasPermission } from "@/lib/has-permission";
@@ -23,11 +25,19 @@ export const POST = async (req: NextRequest) => {
 
 	if (verificationError) return handleError(verificationError, "api");
 
-	const { session } = verificationResult;
+	const { session, params } = verificationResult;
 
 	try {
 		if (!session || !session.session.activeOrganizationId)
 			throw new UnauthorizedError();
+
+		const currency = await getOneOrganizationCurrency(
+			{
+				currencyCode: params.currency,
+				organizationId: session.session.activeOrganizationId,
+			},
+			db,
+		);
 
 		const hasPaymentPermission = await hasPermission({ payment: ["create"] });
 
@@ -37,7 +47,7 @@ export const POST = async (req: NextRequest) => {
 				Permissions.READ,
 				...(hasPaymentPermission.success ? [Permissions.PAYMENTS] : []),
 			],
-			tokenId: "token-1",
+			tokenId: currency.id,
 			userId: session.session.userId,
 		};
 

@@ -7,6 +7,7 @@ import {
 	useEffect,
 	useState,
 } from "react";
+import useCurrency from "@/hooks/useCurrency";
 import { getValidAccessToken } from "@/lib/api/token";
 import { isTokenValid } from "@/lib/utils/jwt";
 
@@ -18,25 +19,24 @@ export const TokenContext = createContext<{
 
 const TokenProvider = ({ children }: PropsWithChildren) => {
 	const [accessToken, setAccessToken] = useState<string | null>(null);
+	const { selectedCurrency } = useCurrency();
 
 	const setToken = useCallback((token: string) => {
 		setAccessToken(token);
 	}, []);
 
 	const fetchToken = useCallback(async () => {
-		const token = await getValidAccessToken();
+		if (!selectedCurrency) return;
+
+		const token = await getValidAccessToken(selectedCurrency);
 
 		if (!token) throw new Error("Unable to fetch accessToken");
 
 		setToken(token);
-	}, [setToken]);
+	}, [setToken, selectedCurrency]);
 
 	const refreshToken = async () => {
-		const token = await getValidAccessToken();
-
-		if (!token) throw new Error("Unable to fetch accessToken");
-
-		setToken(token);
+		await fetchToken();
 	};
 
 	useEffect(() => {

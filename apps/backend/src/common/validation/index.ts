@@ -10,4 +10,6 @@ export const envSchema = z.object({
 	JWT_TOKEN_AUDIENCE: z.string().min(5),
 	JWT_TOKEN_ISSUER: z.string().min(5),
 	JWT_ACCESS_TOKEN_TTL: z.string().min(2),
+
+	TOKEN_ENCRYPTION_KEY: z.string().min(10),
 });
