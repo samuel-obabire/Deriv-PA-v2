@@ -20,7 +20,7 @@ const CurrencyProvider = ({
 }: CurrencyProviderProps) => {
 	const [lastActiveCurrency, setLastActiveCurrency] = useLocalStorage(
 		"currency",
-		"USD",
+		currencyList[0]?.code ?? "USD",
 	);
 
 	const [selectedCurrency, setSelectedCurrency] = useState<string | null>(null);
