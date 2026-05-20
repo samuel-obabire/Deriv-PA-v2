@@ -10,6 +10,7 @@ const initialState: State = {
 		clientAccount: "",
 		clientName: "",
 		amount: "",
+		ngnAmount: "",
 		description: "",
 	},
 	errorMessage: "",

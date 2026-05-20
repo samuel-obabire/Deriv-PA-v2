@@ -1,12 +1,17 @@
 "use client";
 
+import { Rate } from "@repo/db";
 import useTransferFlow from "@/hooks/useTransferFlow";
 import TransferDetails from "./TransferDetails";
 import TransferError from "./TransferError";
 import TransferResult from "./TransferResult";
 import TransferToClientForm from "./TransferToClientForm";
 
-const TransferToClient = () => {
+type TransferToClientProps = {
+	rate: Rate;
+};
+
+const TransferToClient = ({ rate }: TransferToClientProps) => {
 	const {
 		clearError,
 		onReset,
@@ -23,6 +28,7 @@ const TransferToClient = () => {
 			case 1:
 				return (
 					<TransferToClientForm
+						rate={rate}
 						isPending={isPending}
 						initialData={transferData}
 						onSubmit={onValidation}

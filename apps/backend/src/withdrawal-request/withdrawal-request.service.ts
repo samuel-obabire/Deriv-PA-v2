@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Rate, withdrawalRequest } from "@repo/db";
 
-import { mul, sub } from "src/common/utils/decimal";
+import { mul, sub } from "@repo/utils";
 import { DatabaseService } from "src/database/database.service";
 import { ParserService } from "src/parser/parser.service";
 import { RateService } from "src/rate/rate.service";

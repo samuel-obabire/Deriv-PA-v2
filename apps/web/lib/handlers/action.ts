@@ -13,7 +13,7 @@ const action = async <T>({
 	params,
 	schema,
 	authorise = true,
-	requireActiveOrganization,
+	requireActiveOrganization = true,
 }: ActionProps<T>) => {
 	const parsedResult = schema.parse(params);
 
@@ -27,8 +27,8 @@ const action = async <T>({
 		throw new UnauthorizedError("You are not authorised");
 	}
 
-	if (!requireActiveOrganization && session) {
-		if (!session || !session.session.activeOrganizationId) {
+	if (requireActiveOrganization) {
+		if (session && !session.session.activeOrganizationId) {
 			throw new ValidationError("No active organization selected.");
 		}
 	}

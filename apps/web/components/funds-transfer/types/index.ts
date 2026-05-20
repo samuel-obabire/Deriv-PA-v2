@@ -11,6 +11,7 @@ export type TransferData = {
 	clientAccount: string;
 	clientName?: string;
 	amount: string;
+	ngnAmount: string;
 	description?: string;
 };
 

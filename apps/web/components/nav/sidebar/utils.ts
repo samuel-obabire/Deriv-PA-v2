@@ -11,7 +11,8 @@ export const hasRoleStatement = (
 	roleName: RoleNames,
 	{ resource, action }: ResourcePermission,
 ): boolean => {
-	const role = roles[roleName as keyof typeof roles];
+	const role = roles[roleName ?? "member"];
+	if (!role) return false;
 	const stmts = role.statements as Partial<
 		Record<keyof Statements, readonly string[]>
 	>;

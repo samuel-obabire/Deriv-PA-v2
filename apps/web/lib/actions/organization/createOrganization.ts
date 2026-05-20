@@ -18,6 +18,7 @@ const createOrganization = async (newOrgData: {
 			params: newOrgData,
 			schema: CreateOrgSchema,
 			authorise: true,
+			requireActiveOrganization: false,
 		}),
 	);
 

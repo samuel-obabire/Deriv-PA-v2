@@ -8,6 +8,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { OrganizationWithMembers } from "@/lib/auth-client";
+import { ActionResponse } from "@/lib/types/global";
 import { CreateOrgSchema } from "@/lib/validations/organization";
 
 type CreateOrgData = z.infer<typeof CreateOrgSchema>;

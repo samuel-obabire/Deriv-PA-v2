@@ -17,6 +17,7 @@ export const updateRate = async (
 			params: data,
 			schema: RateUpdateSchema,
 			authorise: true,
+			requireActiveOrganization: true,
 		}),
 	);
 
@@ -25,7 +26,17 @@ export const updateRate = async (
 	const { deposit, withdrawal, charge, smallAmount } = validated.params;
 
 	const [, updateError] = await tryCatch(() =>
-		updateCurrentRate(db, { deposit, withdrawal, charge, smallAmount }),
+		updateCurrentRate(
+			{
+				deposit,
+				withdrawal,
+				charge,
+				smallAmount,
+				organizationId: validated.session?.session
+					.activeOrganizationId as string,
+			},
+			db,
+		),
 	);
 
 	if (updateError) return handleError(updateError);

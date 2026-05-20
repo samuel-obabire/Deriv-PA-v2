@@ -5,6 +5,7 @@ import { invitation } from "./invitation";
 import { member } from "./member";
 import { organization } from "./organization";
 import { payoutRequest } from "./payoutRequest";
+import { rate } from "./rate";
 import { session } from "./session";
 import { user } from "./user";
 import { withdrawalRequest } from "./withdrawalRequest";
@@ -74,6 +75,13 @@ export const invitationRelations = relations(invitation, ({ one }) => ({
 export const currencyRelation = relations(currency, ({ one }) => ({
 	organization: one(organization, {
 		fields: [currency.id],
+		references: [organization.id],
+	}),
+}));
+
+export const rateRelation = relations(rate, ({ one }) => ({
+	organization: one(organization, {
+		fields: [rate.id],
 		references: [organization.id],
 	}),
 }));

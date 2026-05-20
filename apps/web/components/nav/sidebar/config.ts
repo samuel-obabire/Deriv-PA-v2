@@ -21,12 +21,6 @@ export const sidebarConfig: SidebarGroup[] = [
 				icon: ArrowRightLeft,
 				permission: { resource: "payment", action: "create" },
 			},
-			// {
-			// 	title: "Transfer Between Accounts",
-			// 	href: ROUTES.TRANSFER_INTERNAL,
-			// 	icon: ArrowLeftRight,
-			// 	permission: { resource: "payment", action: "create" },
-			// },
 		],
 	},
 	{

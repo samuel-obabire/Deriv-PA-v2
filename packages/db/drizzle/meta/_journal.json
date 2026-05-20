@@ -5,29 +5,8 @@
 		{
 			"idx": 0,
 			"version": "7",
-			"when": 1775032888117,
-			"tag": "0000_wise_sugar_man",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "7",
-			"when": 1775926160463,
-			"tag": "0001_absent_amazoness",
-			"breakpoints": true
-		},
-		{
-			"idx": 2,
-			"version": "7",
-			"when": 1776100462931,
-			"tag": "0002_overconfident_kang",
-			"breakpoints": true
-		},
-		{
-			"idx": 3,
-			"version": "7",
-			"when": 1778695976191,
-			"tag": "0003_sweet_mastermind",
+			"when": 1779298239590,
+			"tag": "0000_brainy_carmella_unuscione",
 			"breakpoints": true
 		}
 	]

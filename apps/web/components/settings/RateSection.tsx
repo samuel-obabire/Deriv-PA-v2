@@ -5,7 +5,7 @@ import { updateRate } from "@/lib/actions/rate/updateRate";
 import RateForm from "../forms/Rate";
 
 type RateSectionProp = {
-	ratePromise: Promise<Rate>;
+	ratePromise: Promise<Rate | undefined>;
 };
 
 const RateSection = ({ ratePromise }: RateSectionProp) => {
