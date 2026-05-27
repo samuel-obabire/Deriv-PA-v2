@@ -7,10 +7,7 @@ import { verifySession } from "@/lib/session";
 import { buildConfiguredCurrencies } from "@/lib/utils/deriv";
 
 const Tokens = async () => {
-	const session = await verifySession({
-		resource: "auth_provider",
-		action: "manage",
-	});
+	const session = await verifySession("auth_provider", "manage");
 
 	const userCurrencies = await getAllOrganizationCurrencies(
 		session.session.activeOrganizationId as string,

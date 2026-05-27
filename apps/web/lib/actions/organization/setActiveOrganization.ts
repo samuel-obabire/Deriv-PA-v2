@@ -17,6 +17,7 @@ export const setUserActiveOrganization = async (orgData: {
 			params: orgData,
 			schema: SetActiveOrgSchema,
 			authorise: true,
+			requireActiveOrganization: false,
 		}),
 	);
 

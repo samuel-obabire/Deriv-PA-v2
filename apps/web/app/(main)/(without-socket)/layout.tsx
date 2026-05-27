@@ -1,9 +1,9 @@
 import { PropsWithChildren, Suspense } from "react";
 import NavbarSlim from "@/components/nav/NavbarSlim";
-import { getSession } from "@/lib/session";
+import { verifySession } from "@/lib/session";
 
 export default async function PagesLayout({ children }: PropsWithChildren) {
-	const sessionPromise = getSession();
+	const sessionPromise = verifySession();
 
 	return (
 		<>

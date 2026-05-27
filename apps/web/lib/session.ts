@@ -2,6 +2,7 @@ import "server-only";
 
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+import { cache } from "react";
 import { hasRoleStatement } from "@/components/nav/sidebar/utils";
 import { auth } from "./auth";
 import ROUTES from "./constants/routes";
@@ -24,16 +25,33 @@ export const getSession = async () => {
  * May return session from cookie cache
  * @returns Session
  */
-export const verifySession = async (permission?: ResourcePermission) => {
-	const session = await auth.api.getSession({
-		headers: await headers(),
-	});
+export const verifySession = cache(
+	async (resource?: string, action?: string) => {
+		const session = await auth.api.getSession({
+			headers: await headers(),
+		});
 
-	if (!session) redirect(ROUTES.SIGN_IN);
+		if (!session) redirect(ROUTES.SIGN_IN);
 
-	if (permission && !hasRoleStatement(session.user.role, permission)) {
-		notFound();
-	}
+		if (
+			resource &&
+			action &&
+			!hasRoleStatement(session.user.role, {
+				resource,
+				action,
+			} as ResourcePermission)
+		) {
+			notFound();
+		}
 
-	return session;
+		return session;
+	},
+);
+
+export const requireActiveOrg = async () => {
+	const session = await verifySession();
+	if (!session.session.activeOrganizationId) redirect(ROUTES.DASHBOARD);
+	return session as typeof session & {
+		session: { activeOrganizationId: string };
+	};
 };

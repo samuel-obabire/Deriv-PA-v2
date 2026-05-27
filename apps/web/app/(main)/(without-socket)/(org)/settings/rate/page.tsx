@@ -6,10 +6,7 @@ import { db } from "@/lib/db";
 import { verifySession } from "@/lib/session";
 
 const SettingsPage = async () => {
-	const session = await verifySession({
-		action: "update",
-		resource: "organization",
-	});
+	const session = await verifySession("organization", "update");
 
 	const ratePromise = getOrganizationRate(
 		session.session.activeOrganizationId as string,

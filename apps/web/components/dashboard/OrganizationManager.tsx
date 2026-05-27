@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { createOrganization } from "@/lib/actions/organization/createOrganization";
 import { setUserActiveOrganization } from "@/lib/actions/organization/setActiveOrganization";
 import {
@@ -15,6 +16,8 @@ const OrganizationManager = () => {
 
 	const { data: orgs, refetch } = useListOrganizations();
 
+	const router = useRouter();
+
 	const onOrgCreate = async (newOrgId: string) => {
 		await Promise.all([
 			organization.setActive({ organizationId: newOrgId }),
@@ -22,6 +25,8 @@ const OrganizationManager = () => {
 		]);
 
 		await refetch();
+
+		router.refresh();
 	};
 
 	const onOrgSwitch = async (newActiveOrgId: string) => {
@@ -29,6 +34,8 @@ const OrganizationManager = () => {
 			organization.setActive({ organizationId: newActiveOrgId }),
 			setUserActiveOrganization({ orgId: newActiveOrgId }),
 		]);
+
+		router.refresh();
 	};
 
 	return (
