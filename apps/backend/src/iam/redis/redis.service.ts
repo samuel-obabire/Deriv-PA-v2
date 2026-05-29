@@ -25,6 +25,8 @@ export class RedisService
 		this.redisClient = new Redis({
 			host: this.config.host,
 			port: this.config.port,
+			username: this.config.username,
+			password: this.config.password,
 		});
 	}
 
