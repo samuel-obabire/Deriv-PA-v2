@@ -5,6 +5,7 @@ export type Action =
 	| { type: "setData"; payload: State["transferData"] }
 	| { type: "setError"; payload: string }
 	| { type: "setPending"; payload: boolean }
+	| { type: "setIdempotencyKey"; payload: string }
 	| { type: "reset" };
 
 export type TransferData = {
@@ -20,4 +21,5 @@ export type State = {
 	transferData: TransferData;
 	errorMessage?: string;
 	isPending: boolean;
+	idempotencyKey?: string;
 };

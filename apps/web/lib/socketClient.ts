@@ -10,6 +10,11 @@ import { SocketResponse } from "./types/global";
 
 type Listener<T> = (data: T) => void;
 
+type TransferFundsPayload = {
+	data: DerivRequestPayload<"paymentagent_transfer">;
+	options: { idempotencyKey: string };
+};
+
 class SocketClient {
 	private subscriptions = new Map<
 		DerivSubcriptionEndpoint,
@@ -22,10 +27,10 @@ class SocketClient {
 
 	constructor(private socket: Socket) {}
 
-	private request<T extends DerivEndpointName>(
-		event: T,
-		data: DerivRequestPayload<T>,
-	) {
+	private request<
+		T extends DerivEndpointName,
+		P extends object = DerivRequestPayload<T>,
+	>(event: T, data: P) {
 		const { promise, reject, resolve } = createPromise();
 
 		this.socket.emit(event, data, (response: SocketResponse<T>) => {
@@ -96,8 +101,14 @@ class SocketClient {
 		};
 	}
 
-	transferFunds(data: DerivRequestPayload<"paymentagent_transfer">) {
-		return this.request("paymentagent_transfer", data);
+	transferFunds(
+		data: DerivRequestPayload<"paymentagent_transfer">,
+		options: { idempotencyKey: string },
+	) {
+		return this.request<"paymentagent_transfer", TransferFundsPayload>(
+			"paymentagent_transfer",
+			{ data, options },
+		);
 	}
 
 	authorize(data: DerivRequestPayload<"authorize">) {

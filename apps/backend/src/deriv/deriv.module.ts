@@ -6,6 +6,7 @@ import { CurrencyTokenService } from "./currency-token.service";
 import { DerivGateway } from "./deriv.gateway";
 import { DerivService } from "./deriv.service";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
+import { TransactionService } from "./transaction.service";
 
 @Module({
 	imports: [OrganisationModule, IamModule, DatabaseModule],
@@ -15,6 +16,7 @@ import { DerivOrgPoolService } from "./deriv-org-pool.service";
 		DerivGateway,
 		DerivOrgPoolService,
 		DerivService,
+		TransactionService,
 	],
 })
 export class DerivModule {}

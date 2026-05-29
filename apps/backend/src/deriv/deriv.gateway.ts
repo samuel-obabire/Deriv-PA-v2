@@ -139,6 +139,7 @@ export class DerivGateway
 			client.data.organizationId,
 			dto,
 			client.data.tokenId,
+			client.data.userId,
 		);
 	}
 

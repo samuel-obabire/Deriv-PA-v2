@@ -1,17 +1,20 @@
 import { Injectable } from "@nestjs/common";
-import { orgTokenKey } from "@repo/deriv";
+import { CURRENCY } from "@repo/db/enums";
+import { DerivRequestPayload, orgTokenKey } from "@repo/deriv";
 import { Server } from "socket.io";
 import { CurrencyTokenService } from "./currency-token.service";
 import { DerivOrgConnection } from "./deriv-org-connection";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
 import { TransferFundsDto } from "./dto/transferFunds.dto";
+import { TransactionService } from "./transaction.service";
 
 @Injectable()
 export class DerivService {
 	constructor(
 		private readonly derivOrgPoolService: DerivOrgPoolService,
 		private readonly currencyTokenService: CurrencyTokenService,
+		private readonly transactionService: TransactionService,
 	) {}
 
 	async authorize({ orgId, tokenId }: { tokenId: string; orgId: string }) {
@@ -40,15 +43,43 @@ export class DerivService {
 		orgId: string,
 		transferFundsDto: TransferFundsDto,
 		tokenId: string,
+		userId: string,
 	) {
 		const orgDerivSocket = this.derivOrgPoolService.getOrganizationSocket(
 			orgId,
 			tokenId,
 		);
 
-		return await orgDerivSocket.send({
+		const { data, options } = transferFundsDto;
+
+		if (data.dry_run === 0) {
+			const inserted = await this.transactionService.createPending({
+				clientId: data.transfer_to,
+				amount: data.amount.toString(),
+				currency: data.currency as CURRENCY,
+				organizationId: orgId,
+				staffId: userId,
+				idempotencyKey: options.idempotencyKey,
+			});
+
+			const result = await orgDerivSocket.send({
+				name: "paymentagent_transfer",
+				payload: data,
+			});
+
+			await this.transactionService.complete(
+				inserted.id,
+				result.client_to_full_name,
+			);
+
+			return result;
+		}
+
+		// Todo: implement reconcilliation
+
+		return orgDerivSocket.send({
 			name: "paymentagent_transfer",
-			payload: transferFundsDto,
+			payload: data as DerivRequestPayload<"paymentagent_transfer">,
 		});
 	}
 

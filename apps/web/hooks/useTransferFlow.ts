@@ -1,7 +1,8 @@
+import { CURRENCY } from "@repo/db/enums";
 import { tryCatch } from "@repo/utils";
 import { useReducer } from "react";
 import { Action, State, TransferData } from "@/components/funds-transfer/types";
-
+import useCurrency from "./useCurrency";
 import useSocket from "./useSocket";
 
 const initialState: State = {
@@ -30,6 +31,8 @@ const transferReducer = (state: State, action: Action): State => {
 			return { ...state, errorMessage: action.payload };
 		case "setPending":
 			return { ...state, isPending: action.payload };
+		case "setIdempotencyKey":
+			return { ...state, idempotencyKey: action.payload };
 		case "reset":
 			return initialState;
 		default:
@@ -41,20 +44,26 @@ const useTransferFlow = () => {
 	const [state, dispatch] = useReducer(transferReducer, initialState);
 
 	const { socketClient } = useSocket();
+	const { selectedCurrency } = useCurrency();
 
-	const transfer = (data: TransferData, dryRun: boolean) => {
+	const transfer = (
+		data: TransferData,
+		dryRun: boolean,
+		idempotencyKey: string,
+	) => {
 		if (!socketClient) throw new Error("Socket disconnected");
 
-		const transferResponse = socketClient.transferFunds({
-			paymentagent_transfer: 1,
-			amount: Number(data.amount),
-			currency: "USD",
-			dry_run: dryRun ? 1 : 0,
-			transfer_to: data.clientAccount,
-			description: data.description,
-		});
-
-		return transferResponse;
+		return socketClient.transferFunds(
+			{
+				paymentagent_transfer: 1,
+				amount: Number(data.amount),
+				currency: selectedCurrency as CURRENCY,
+				dry_run: dryRun ? 1 : 0,
+				transfer_to: data.clientAccount,
+				description: data.description,
+			},
+			{ idempotencyKey },
+		);
 	};
 
 	const setPending = (pending: boolean) => {
@@ -64,8 +73,10 @@ const useTransferFlow = () => {
 	const onValidation = async (transferData: TransferData) => {
 		setPending(true);
 
+		const idempotencyKey = crypto.randomUUID();
+
 		const [validationResult, error] = await tryCatch(() =>
-			transfer(transferData, true),
+			transfer(transferData, true, idempotencyKey),
 		);
 
 		setPending(false);
@@ -79,6 +90,7 @@ const useTransferFlow = () => {
 			return;
 		}
 
+		dispatch({ type: "setIdempotencyKey", payload: idempotencyKey });
 		dispatch({ type: "setStep", payload: 2 });
 		dispatch({
 			type: "setData",
@@ -90,9 +102,14 @@ const useTransferFlow = () => {
 	};
 
 	const onTransferSubmit = async () => {
+		const { idempotencyKey } = state;
+		if (!idempotencyKey) return;
+
 		setPending(true);
 
-		const [, error] = await tryCatch(() => transfer(state.transferData, false));
+		const [, error] = await tryCatch(() =>
+			transfer(state.transferData, false, idempotencyKey),
+		);
 
 		setPending(false);
 

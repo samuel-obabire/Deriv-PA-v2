@@ -17,3 +17,14 @@ export enum CURRENCY {
 	eUSDT = "eUSDT",
 	tUSDT = "tUSDT",
 }
+
+export enum TRANSACTION_TYPE {
+	DEPOSIT = "deposit",
+	WITHDRAWAL = "withdrawal",
+}
+
+export enum TRANSACTION_STATUS {
+	PENDING = "pending",
+	COMPLETED = "completed",
+	FAILED = "failed",
+}

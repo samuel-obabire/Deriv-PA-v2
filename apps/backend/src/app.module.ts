@@ -10,14 +10,8 @@ import { DatabaseModule } from "./database/database.module";
 import { DerivModule } from "./deriv/deriv.module";
 import { AuthenticationController } from "./iam/authentication/authentication.controller";
 import { IamModule } from "./iam/iam.module";
-import { MatcherModule } from "./matcher/matcher.module";
-import { MatcherService } from "./matcher/matcher.service";
 import { OrganisationModule } from "./organisation/organisation.module";
 import { OrganisationService } from "./organisation/organisation.service";
-import { PayoutModule } from "./payout/payout.module";
-import { ProcessorModule } from "./processor/processor.module";
-import { RateModule } from "./rate/rate.module";
-import { WithdrawalRequestModule } from "./withdrawal-request/withdrawal-request.module";
 
 @Module({
 	imports: [
@@ -26,11 +20,7 @@ import { WithdrawalRequestModule } from "./withdrawal-request/withdrawal-request
 			isGlobal: true,
 			validate: (config) => envSchema.parse(config),
 		}),
-		PayoutModule,
-		WithdrawalRequestModule,
-		MatcherModule,
-		ProcessorModule,
-		RateModule,
+
 		DerivModule,
 		OrganisationModule,
 		IamModule,
@@ -42,7 +32,7 @@ import { WithdrawalRequestModule } from "./withdrawal-request/withdrawal-request
 			provide: APP_PIPE,
 			useClass: ZodValidationPipe,
 		},
-		MatcherService,
+
 		OrganisationService,
 	],
 	controllers: [AuthenticationController],
