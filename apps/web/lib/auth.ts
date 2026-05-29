@@ -14,9 +14,11 @@ import {
 	owner,
 	RoleNames,
 } from "./permissions";
+import { clientEnv } from "./validations/env/client";
 
 const options = {
 	appName: "Adeluxe",
+	baseURL: clientEnv.NEXT_PUBLIC_URL,
 
 	database: drizzleAdapter(db, {
 		provider: "pg",
