@@ -1,5 +1,5 @@
 {
-	"id": "38813fdd-8351-47d9-aca7-57039160c45f",
+	"id": "ed5f8439-50f8-4dfe-ba72-f727d68c974d",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -468,92 +468,6 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
-		"public.payout_request": {
-			"name": "payout_request",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
-				"withdrawal_id": {
-					"name": "withdrawal_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"amount_ngn": {
-					"name": "amount_ngn",
-					"type": "numeric(12, 2)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"reciepient_name": {
-					"name": "reciepient_name",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"reciepient_account": {
-					"name": "reciepient_account",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"reciepient_bank": {
-					"name": "reciepient_bank",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"client_cr": {
-					"name": "client_cr",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"created_at": {
-					"name": "created_at",
-					"type": "timestamp with time zone",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				},
-				"status": {
-					"name": "status",
-					"type": "payout_status",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "'UNMATCHED'"
-				},
-				"flag_reason": {
-					"name": "flag_reason",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": false
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"payout_request_withdrawal_id_withdrawal_request_id_fk": {
-					"name": "payout_request_withdrawal_id_withdrawal_request_id_fk",
-					"tableFrom": "payout_request",
-					"tableTo": "withdrawal_request",
-					"columnsFrom": ["withdrawal_id"],
-					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
 		"public.rate": {
 			"name": "rate",
 			"schema": "",
@@ -741,6 +655,187 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
+		"public.transactions": {
+			"name": "transactions",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"idempotency_key": {
+					"name": "idempotency_key",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"client_id": {
+					"name": "client_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"client_name": {
+					"name": "client_name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"organization_id": {
+					"name": "organization_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"staff_id": {
+					"name": "staff_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"amount": {
+					"name": "amount",
+					"type": "numeric(12, 2)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"type": {
+					"name": "type",
+					"type": "transaction_type_enum",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"currency": {
+					"name": "currency",
+					"type": "currency_enum",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"status": {
+					"name": "status",
+					"type": "transaction_status_enum",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'pending'"
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp (6) with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"transaction_org_idx": {
+					"name": "transaction_org_idx",
+					"columns": [
+						{
+							"expression": "organization_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				},
+				"transaction_client_idx": {
+					"name": "transaction_client_idx",
+					"columns": [
+						{
+							"expression": "client_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				},
+				"transaction_org_created_idx": {
+					"name": "transaction_org_created_idx",
+					"columns": [
+						{
+							"expression": "organization_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						},
+						{
+							"expression": "created_at",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				},
+				"transaction_staff_idx": {
+					"name": "transaction_staff_idx",
+					"columns": [
+						{
+							"expression": "staff_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {
+				"transactions_organization_id_organization_id_fk": {
+					"name": "transactions_organization_id_organization_id_fk",
+					"tableFrom": "transactions",
+					"tableTo": "organization",
+					"columnsFrom": ["organization_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"transactions_staff_id_user_id_fk": {
+					"name": "transactions_staff_id_user_id_fk",
+					"tableFrom": "transactions",
+					"tableTo": "user",
+					"columnsFrom": ["staff_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"transactions_idempotency_key_unique": {
+					"name": "transactions_idempotency_key_unique",
+					"nullsNotDistinct": false,
+					"columns": ["idempotency_key"]
+				}
+			},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
 		"public.user": {
 			"name": "user",
 			"schema": "",
@@ -861,70 +956,6 @@
 			"policies": {},
 			"checkConstraints": {},
 			"isRLSEnabled": false
-		},
-		"public.withdrawal_request": {
-			"name": "withdrawal_request",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
-				"client_name": {
-					"name": "client_name",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"deriv_id": {
-					"name": "deriv_id",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"amount": {
-					"name": "amount",
-					"type": "numeric(12, 2)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"amount_ngn": {
-					"name": "amount_ngn",
-					"type": "numeric(12, 2)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"currency": {
-					"name": "currency",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"created_at": {
-					"name": "created_at",
-					"type": "timestamp with time zone",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				},
-				"status": {
-					"name": "status",
-					"type": "withdrawal_status",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "'PENDING'"
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
 		}
 	},
 	"enums": {
@@ -933,15 +964,15 @@
 			"schema": "public",
 			"values": ["USD", "USDC", "eUSDT", "tUSDT"]
 		},
-		"public.payout_status": {
-			"name": "payout_status",
+		"public.transaction_status_enum": {
+			"name": "transaction_status_enum",
 			"schema": "public",
-			"values": ["UNMATCHED", "MATCHED", "FLAGGED"]
+			"values": ["pending", "completed", "failed"]
 		},
-		"public.withdrawal_status": {
-			"name": "withdrawal_status",
+		"public.transaction_type_enum": {
+			"name": "transaction_type_enum",
 			"schema": "public",
-			"values": ["PENDING", "MATCHED", "FLAGGED", "MISSING"]
+			"values": ["deposit", "withdrawal"]
 		}
 	},
 	"schemas": {},
