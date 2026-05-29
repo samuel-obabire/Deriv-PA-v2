@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { tryCatch } from "@repo/utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -38,12 +39,15 @@ const Signup = ({ onSubmit }: SignupProps) => {
 		},
 	});
 
+	const router = useRouter();
+
 	const handleSubmit = async (data: z.infer<typeof SignUpSchema>) => {
 		const [result, error] = await tryCatch(() => onSubmit(data));
 
 		if (error) toast.error(error.message);
 
 		if (result?.success) {
+			router.push(ROUTES.DASHBOARD);
 			return toast.success("signup complete");
 		} else {
 			toast.error(result?.error?.message);

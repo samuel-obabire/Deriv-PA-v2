@@ -36,6 +36,14 @@ const computeNgn = (usdValue: string, depositRate: number): string => {
 	return mul(usdValue, depositRate).toDecimalPlaces(2).toString();
 };
 
+const computeUsdAmount = (
+	ngnValue: Parameters<typeof div>[0],
+	deposit: number,
+): string => {
+	const usd = div(ngnValue, deposit).toDecimalPlaces(2);
+	return usd.lt(0) ? "0" : usd.toString();
+};
+
 const TransferToClientForm = ({
 	initialData,
 	isPending,
@@ -77,15 +85,22 @@ const TransferToClientForm = ({
 			!waiveCharge && rawUsd.lt(rate.smallAmount)
 				? sub(val, rate.charge)
 				: rawUsd.times(rate.deposit);
-		const usd = div(ngnForCalc, rate.deposit).toDecimalPlaces(2);
+		form.setValue("amount", computeUsdAmount(ngnForCalc, rate.deposit), {
+			shouldValidate: true,
+		});
+	};
 
-		form.setValue("amount", usd.lt(0) ? "0" : usd.toString(), {
+	const handleChargeWaive = (chargedWaived: boolean) => {
+		const ngnForCalc = chargedWaived ? ngnAmount : sub(ngnAmount, rate.charge);
+		form.setValue("amount", computeUsdAmount(ngnForCalc, rate.deposit), {
 			shouldValidate: true,
 		});
 	};
 
 	const handleWaiveChargeChange = (checked: boolean) => {
 		setWaiveCharge(checked);
+
+		handleChargeWaive(checked);
 	};
 
 	return (
