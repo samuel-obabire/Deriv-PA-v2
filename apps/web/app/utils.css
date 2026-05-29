@@ -88,7 +88,7 @@
   }
 
   .input-class {
-    @apply no-ring h-10! font-medium;
+    @apply no-ring  font-medium;
   }
 }
 

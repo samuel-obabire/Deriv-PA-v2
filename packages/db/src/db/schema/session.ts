@@ -10,6 +10,8 @@ export const session = pgTable("session", {
 	expiresAt: timestamp("expires_at").notNull(),
 	ipAddress: text("ip_address"),
 	userAgent: text("user_agent"),
+	activeOrganizationId: text("active_organization_id"),
+	activeTeamId: text("active_team_id"),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 	updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

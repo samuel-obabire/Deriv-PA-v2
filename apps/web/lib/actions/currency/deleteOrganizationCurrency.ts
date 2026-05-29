@@ -1,0 +1,44 @@
+"use server";
+
+import { removeOrganizationCurrency } from "@repo/db/queries";
+import { tryCatch } from "@repo/utils";
+import * as z from "zod";
+import { db } from "@/lib/db";
+import action from "@/lib/handlers/action";
+import handleError from "@/lib/http-errors";
+import { ActionResponse } from "@/lib/types/global";
+import { DeleteOrganizationCurrencySchema } from "@/lib/validations/currency";
+
+export const deleteOrganizationCurrency = async (
+	data: z.infer<typeof DeleteOrganizationCurrencySchema>,
+): Promise<ActionResponse> => {
+	const [validated, error] = await tryCatch(() =>
+		action({
+			params: data,
+			schema: DeleteOrganizationCurrencySchema,
+			authorise: true,
+			requireActiveOrganization: true,
+		}),
+	);
+
+	if (error) return handleError(error);
+
+	const { code } = validated.params;
+
+	const organizationId = validated.session?.session
+		.activeOrganizationId as string; // surely present; validated in action call
+
+	const [, deleteError] = await tryCatch(() =>
+		removeOrganizationCurrency(
+			{
+				currencyCode: code,
+				organizationId,
+			},
+			db,
+		),
+	);
+
+	if (deleteError) return handleError(deleteError);
+
+	return { success: true };
+};

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import z, { ZodError } from "zod";
 import logger from "@/utils/logger";
 import { RequestError, ValidationError } from "./errors";
+import { ApiResponse, ErrorResponse } from "./types/global";
 
 export type ResponseType = "api" | "server";
 

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import ROUTES from "@/lib/constants/routes";
+import { ActionResponse } from "@/lib/types/global";
 import { SignInSchema } from "@/lib/validations/auth/sign-in";
 
 type SignInProps = {
@@ -40,7 +41,7 @@ const SignIn = ({ onSubmit }: SignInProps) => {
 	});
 
 	const handleSubmit = async (data: z.infer<typeof SignInSchema>) => {
-		const [result, error] = await tryCatch(onSubmit(data));
+		const [result, error] = await tryCatch(() => onSubmit(data));
 
 		if (error) return toast.error(error.message);
 

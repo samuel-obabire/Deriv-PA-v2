@@ -1,0 +1,21 @@
+{
+	"name": "@repo/deriv",
+	"version": "1.0.0",
+	"scripts": {
+		"dev": "tsc --watch",
+		"build": "tsc"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"peerDependencies": {
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"typescript": "^5.9.3",
+		"@repo/typescript-config": "workspace:*"
+	}
+}

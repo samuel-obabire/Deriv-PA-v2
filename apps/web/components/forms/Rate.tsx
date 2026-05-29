@@ -14,26 +14,27 @@ import {
 	FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { ActionResponse } from "@/lib/types/global";
 import { RateUpdateSchema } from "@/lib/validations/rate";
 
-type SignInProps = {
+type RateFormProps = {
 	onSubmit: (data: z.infer<typeof RateUpdateSchema>) => Promise<ActionResponse>;
-	rate: Rate;
+	rate: Rate | undefined;
 };
 
-const RateForm = ({ onSubmit, rate }: SignInProps) => {
+const RateForm = ({ onSubmit, rate }: RateFormProps) => {
 	const form = useForm<z.infer<typeof RateUpdateSchema>>({
 		resolver: zodResolver(RateUpdateSchema),
 		defaultValues: {
-			deposit: rate.deposit,
-			withdrawal: rate.withdrawal,
-			charge: rate.charge,
-			smallAmount: rate.smallAmount,
+			deposit: rate?.deposit || 0,
+			withdrawal: rate?.withdrawal || 0,
+			charge: rate?.charge || 0,
+			smallAmount: rate?.smallAmount || 0,
 		},
 	});
 
 	const handleSubmit = async (data: z.infer<typeof RateUpdateSchema>) => {
-		const [result, error] = await tryCatch(onSubmit(data));
+		const [result, error] = await tryCatch(() => onSubmit(data));
 
 		if (error) return toast.error(error.message);
 

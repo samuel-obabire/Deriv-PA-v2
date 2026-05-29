@@ -10,7 +10,7 @@ import { getSearchParamsFromRequest } from "@/utils/getSearchParamsFromRequest";
 export const GET = async (req: NextRequest) => {
 	const searchParams = getSearchParamsFromRequest(req);
 
-	const [actionResult, actionError] = await tryCatch(
+	const [actionResult, actionError] = await tryCatch(() =>
 		action({
 			params: searchParams,
 			schema: TransactionQuerySchema,
@@ -50,7 +50,7 @@ export const GET = async (req: NextRequest) => {
 		},
 	});
 
-	const [transactions, getPayoutError] = await tryCatch(fn);
+	const [transactions, getPayoutError] = await tryCatch(() => fn);
 
 	if (getPayoutError) return handleError(getPayoutError, "api");
 

@@ -1,9 +1,21 @@
-import NavLinks from "./NavLinks";
+"use client";
 
-const Navbar = () => {
+import { RoleNames } from "@/lib/permissions";
+import CurrencySwitcher from "./CurrencySwitcher";
+import SideBar from "./sidebar";
+
+const Navbar = ({ role }: { role: RoleNames }) => {
 	return (
-		<nav className="items-center gap-8">
-			<NavLinks />
+		<nav className="flex items-center p-2  justify-between gap-8">
+			<div className={`lg:hidden`}>
+				<SideBar role={role} />
+			</div>
+
+			<div className={`hidden lg:block`}>
+				<div>DerivPay</div>
+			</div>
+
+			<CurrencySwitcher />
 		</nav>
 	);
 };

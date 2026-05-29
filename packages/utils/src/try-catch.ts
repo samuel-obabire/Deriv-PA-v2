@@ -1,10 +1,10 @@
 type Result<T, E = Error> = [T, null] | [null, E];
 
 export const tryCatch = async <T, E = Error>(
-	promise: Promise<T>,
+	fn: () => Promise<T>,
 ): Promise<Result<T, E>> => {
 	try {
-		const data = await promise;
+		const data = await fn();
 
 		return [data, null];
 	} catch (err: unknown) {
