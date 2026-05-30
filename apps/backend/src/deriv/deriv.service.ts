@@ -1,7 +1,9 @@
 import { Injectable } from "@nestjs/common";
+import { WsException } from "@nestjs/websockets";
 import { CURRENCY } from "@repo/db/enums";
 import { DerivRequestPayload, orgTokenKey } from "@repo/deriv";
 import { Server } from "socket.io";
+import { RedisService } from "src/iam/redis/redis.service";
 import { CurrencyTokenService } from "./currency-token.service";
 import { DerivOrgConnection } from "./deriv-org-connection";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
@@ -15,6 +17,7 @@ export class DerivService {
 		private readonly derivOrgPoolService: DerivOrgPoolService,
 		private readonly currencyTokenService: CurrencyTokenService,
 		private readonly transactionService: TransactionService,
+		private readonly redisService: RedisService,
 	) {}
 
 	async authorize({ orgId, tokenId }: { tokenId: string; orgId: string }) {
@@ -53,6 +56,27 @@ export class DerivService {
 		const { data, options } = transferFundsDto;
 
 		if (data.dry_run === 0) {
+			const lockKey = this.transferLockKey(
+				orgId,
+				transferFundsDto.data.transfer_to,
+			);
+
+			const ttlSeconds = 60 * 30;
+
+			const acquired = await this.redisService.acquireLock(
+				lockKey,
+				transferFundsDto.data.amount.toString(),
+				ttlSeconds,
+			);
+
+			if (!acquired && !transferFundsDto.options.ignoreDuplicatePayment) {
+				throw new WsException(
+					"Dupliate detected! Your Organisation has sent a payment to this account within last 30 minutes",
+				);
+			} else if (!acquired && transferFundsDto.options.ignoreDuplicatePayment) {
+				await this.redisService.setExpiry(lockKey, ttlSeconds);
+			}
+
 			const inserted = await this.transactionService.createPending({
 				clientId: data.transfer_to,
 				amount: data.amount.toString(),
@@ -81,6 +105,10 @@ export class DerivService {
 			name: "paymentagent_transfer",
 			payload: data as DerivRequestPayload<"paymentagent_transfer">,
 		});
+	}
+
+	private transferLockKey(orgId: string, transferTo: string) {
+		return `transferLock:${orgId}:${transferTo}`;
 	}
 
 	async authorizeSocket(token: string, orgSocket: DerivOrgConnection) {

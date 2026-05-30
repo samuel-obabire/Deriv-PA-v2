@@ -1,6 +1,7 @@
 "use client";
 
 import { Rate } from "@repo/db";
+import useCurrency from "@/hooks/useCurrency";
 import useTransferFlow from "@/hooks/useTransferFlow";
 import TransferDetails from "./TransferDetails";
 import TransferError from "./TransferError";
@@ -19,7 +20,10 @@ const TransferToClient = ({ rate }: TransferToClientProps) => {
 		onTransferSubmit,
 		onValidation,
 		state,
+		setIgnoreDuplicatePayment,
 	} = useTransferFlow();
+
+	const { selectedCurrency } = useCurrency();
 
 	const renderStep = () => {
 		const { step, transferData, isPending } = state;
@@ -30,7 +34,10 @@ const TransferToClient = ({ rate }: TransferToClientProps) => {
 					<TransferToClientForm
 						rate={rate}
 						isPending={isPending}
+						ignoreDuplicatePayment={state.options.ignoreDuplicatePayment}
+						onIgnoreDuplicateChange={setIgnoreDuplicatePayment}
 						initialData={transferData}
+						activeCurrency={selectedCurrency as string}
 						onSubmit={onValidation}
 					/>
 				);

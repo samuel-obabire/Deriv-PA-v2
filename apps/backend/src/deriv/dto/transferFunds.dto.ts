@@ -16,6 +16,7 @@ const TransferFundsSchema = z.object({
 	}),
 	options: z.object({
 		idempotencyKey: z.uuid(),
+		ignoreDuplicatePayment: z.boolean().optional(),
 	}),
 });
 

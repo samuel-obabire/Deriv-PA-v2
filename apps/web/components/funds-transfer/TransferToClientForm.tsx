@@ -22,6 +22,8 @@ import { TransferData } from "./types";
 type TransferToClientFormProps = {
 	rate: Rate;
 	isPending: boolean;
+	ignoreDuplicatePayment: boolean;
+	onIgnoreDuplicateChange: (value: boolean) => void;
 	initialData: {
 		clientAccount: string;
 		amount: string;
@@ -29,6 +31,7 @@ type TransferToClientFormProps = {
 		description?: string;
 	};
 	onSubmit: (data: TransferData) => Promise<void>;
+	activeCurrency: string;
 };
 
 const computeNgn = (usdValue: string, depositRate: number): string => {
@@ -45,10 +48,13 @@ const computeUsdAmount = (
 };
 
 const TransferToClientForm = ({
+	ignoreDuplicatePayment,
 	initialData,
 	isPending,
+	onIgnoreDuplicateChange,
 	onSubmit,
 	rate,
+	activeCurrency,
 }: TransferToClientFormProps) => {
 	const form = useForm<z.infer<typeof TransferToClientSchema>>({
 		resolver: zodResolver(TransferToClientSchema),
@@ -145,7 +151,9 @@ const TransferToClientForm = ({
 								return (
 									<Field data-invalid={fieldState.invalid}>
 										<div className="flex items-center justify-between">
-											<FieldLabel htmlFor="amount">Amount (USD)</FieldLabel>
+											<FieldLabel htmlFor="amount">
+												Amount ({activeCurrency})
+											</FieldLabel>
 											<div className="flex items-center gap-1.5">
 												<Switch
 													size="sm"
@@ -181,7 +189,8 @@ const TransferToClientForm = ({
 						<div className="flex items-center gap-2.5">
 							<div className="h-px flex-1 bg-border" />
 							<span className="flex items-center gap-1 text-xs text-muted-foreground">
-								<ArrowUpDown className="size-3" />1 USD = {rate.deposit} NGN
+								<ArrowUpDown className="size-3" />1 {activeCurrency}={" "}
+								{rate.deposit} NGN
 							</span>
 							<div className="h-px flex-1 bg-border" />
 						</div>
@@ -234,6 +243,20 @@ const TransferToClientForm = ({
 							</Field>
 						)}
 					/>
+
+					<Field>
+						<div className="flex items-center justify-between">
+							<FieldLabel htmlFor="ignore-duplicate-payment">
+								Ignore duplicate payment
+							</FieldLabel>
+							<Switch
+								size="sm"
+								id="ignore-duplicate-payment"
+								checked={ignoreDuplicatePayment}
+								onCheckedChange={onIgnoreDuplicateChange}
+							/>
+						</div>
+					</Field>
 				</FieldGroup>
 			</form>
 
