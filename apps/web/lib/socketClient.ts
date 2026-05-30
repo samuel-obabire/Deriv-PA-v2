@@ -12,7 +12,7 @@ type Listener<T> = (data: T) => void;
 
 type TransferFundsPayload = {
 	data: DerivRequestPayload<"paymentagent_transfer">;
-	options: { idempotencyKey: string };
+	options: { idempotencyKey: string; ignoreDuplicatePayment?: boolean };
 };
 
 class SocketClient {
@@ -103,7 +103,7 @@ class SocketClient {
 
 	transferFunds(
 		data: DerivRequestPayload<"paymentagent_transfer">,
-		options: { idempotencyKey: string },
+		options: { idempotencyKey: string; ignoreDuplicatePayment?: boolean },
 	) {
 		return this.request<"paymentagent_transfer", TransferFundsPayload>(
 			"paymentagent_transfer",

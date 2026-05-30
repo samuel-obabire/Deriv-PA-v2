@@ -16,6 +16,9 @@ const initialState: State = {
 	},
 	errorMessage: "",
 	isPending: false,
+	options: {
+		ignoreDuplicatePayment: false,
+	},
 };
 
 const transferReducer = (state: State, action: Action): State => {
@@ -32,7 +35,15 @@ const transferReducer = (state: State, action: Action): State => {
 		case "setPending":
 			return { ...state, isPending: action.payload };
 		case "setIdempotencyKey":
-			return { ...state, idempotencyKey: action.payload };
+			return {
+				...state,
+				options: { ...state.options, idempotencyKey: action.payload },
+			};
+		case "setIgnoreDuplicatePayment":
+			return {
+				...state,
+				options: { ...state.options, ignoreDuplicatePayment: action.payload },
+			};
 		case "reset":
 			return initialState;
 		default:
@@ -49,7 +60,10 @@ const useTransferFlow = () => {
 	const transfer = (
 		data: TransferData,
 		dryRun: boolean,
-		idempotencyKey: string,
+		options: {
+			idempotencyKey: string;
+			ignoreDuplicatePayment?: boolean;
+		},
 	) => {
 		if (!socketClient) throw new Error("Socket disconnected");
 
@@ -62,12 +76,19 @@ const useTransferFlow = () => {
 				transfer_to: data.clientAccount,
 				description: data.description,
 			},
-			{ idempotencyKey },
+			options,
 		);
 	};
 
 	const setPending = (pending: boolean) => {
 		dispatch({ type: "setPending", payload: pending });
+	};
+
+	const setIgnoreDuplicatePayment = (ignoreDuplicatePayment: boolean) => {
+		dispatch({
+			type: "setIgnoreDuplicatePayment",
+			payload: ignoreDuplicatePayment,
+		});
 	};
 
 	const onValidation = async (transferData: TransferData) => {
@@ -76,7 +97,7 @@ const useTransferFlow = () => {
 		const idempotencyKey = crypto.randomUUID();
 
 		const [validationResult, error] = await tryCatch(() =>
-			transfer(transferData, true, idempotencyKey),
+			transfer(transferData, true, { idempotencyKey }),
 		);
 
 		setPending(false);
@@ -102,13 +123,16 @@ const useTransferFlow = () => {
 	};
 
 	const onTransferSubmit = async () => {
-		const { idempotencyKey } = state;
+		const { idempotencyKey } = state.options;
 		if (!idempotencyKey) return;
 
 		setPending(true);
 
 		const [, error] = await tryCatch(() =>
-			transfer(state.transferData, false, idempotencyKey),
+			transfer(state.transferData, false, {
+				idempotencyKey,
+				ignoreDuplicatePayment: state.options.ignoreDuplicatePayment,
+			}),
 		);
 
 		setPending(false);
@@ -133,6 +157,7 @@ const useTransferFlow = () => {
 
 	const onTransferCancel = () => {
 		dispatch({ type: "setStep", payload: 1 });
+		dispatch({ type: "setIgnoreDuplicatePayment", payload: false });
 	};
 
 	const clearError = () => {
@@ -146,6 +171,7 @@ const useTransferFlow = () => {
 		onTransferCancel,
 		onTransferSubmit,
 		clearError,
+		setIgnoreDuplicatePayment,
 	};
 };
 

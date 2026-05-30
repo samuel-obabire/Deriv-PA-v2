@@ -91,4 +91,20 @@ export class RedisService
 		// if key already exists → fetch existing value
 		return await this.redisClient.get(key);
 	}
+
+	async acquireLock(key: string, value: string, ttlSeconds: number) {
+		const result = await this.redisClient.set(
+			key,
+			value,
+			"EX",
+			ttlSeconds,
+			"NX",
+		);
+
+		return result === "OK";
+	}
+
+	async setExpiry(key: string, ttlSeconds: number) {
+		return await this.redisClient.expire(key, ttlSeconds);
+	}
 }

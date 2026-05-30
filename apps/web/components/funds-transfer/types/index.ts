@@ -6,6 +6,7 @@ export type Action =
 	| { type: "setError"; payload: string }
 	| { type: "setPending"; payload: boolean }
 	| { type: "setIdempotencyKey"; payload: string }
+	| { type: "setIgnoreDuplicatePayment"; payload: boolean }
 	| { type: "reset" };
 
 export type TransferData = {
@@ -21,5 +22,8 @@ export type State = {
 	transferData: TransferData;
 	errorMessage?: string;
 	isPending: boolean;
-	idempotencyKey?: string;
+	options: {
+		idempotencyKey?: string;
+		ignoreDuplicatePayment: boolean;
+	};
 };
