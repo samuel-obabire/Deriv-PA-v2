@@ -16,7 +16,7 @@ export class WithdrawalRequestService {
 	) {}
 
 	async create(createWithdrawalRequestDto: CreateWithdrawalRequestDto) {
-		const parsed = this.parserService.derivParser(
+		const parsed = await this.parserService.derivParser(
 			createWithdrawalRequestDto.plain,
 		);
 
