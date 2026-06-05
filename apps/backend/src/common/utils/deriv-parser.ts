@@ -47,8 +47,10 @@ export const resolveClientName = async (
 
 		if (!response.ok) return null;
 
-		const data = (await response.json()) as PaymentAgentActionResponse;
-		return data.clientName ?? null;
+		const result = (await response.json()) as {
+			data: PaymentAgentActionResponse;
+		};
+		return result.data.clientName ?? null;
 	} catch (error) {
 		console.error(
 			`[resolveClientName] Failed to resolve name for ${loginid}:`,
