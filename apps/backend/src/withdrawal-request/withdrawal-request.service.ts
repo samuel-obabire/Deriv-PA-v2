@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { Rate, withdrawalRequest } from "@repo/db";
 
 import { mul, sub } from "src/common/utils/decimal";
@@ -9,6 +9,8 @@ import { CreateWithdrawalRequestDto } from "./dto/create-withdrawal-request.dto"
 
 @Injectable()
 export class WithdrawalRequestService {
+	private readonly logger = new Logger(WithdrawalRequestService.name);
+
 	constructor(
 		private readonly databaseService: DatabaseService,
 		private readonly rateService: RateService,
@@ -19,6 +21,8 @@ export class WithdrawalRequestService {
 		const parsed = await this.parserService.derivParser(
 			createWithdrawalRequestDto.plain,
 		);
+
+		this.logger.log(`parsed: ${JSON.stringify(parsed)}`);
 
 		const { amount, cr, name, currency } = parsed;
 
