@@ -4,7 +4,8 @@ import { listMembers } from "@/lib/api/members";
 import { verifySession } from "@/lib/session";
 
 const MembersManagment = async () => {
-	const session = await verifySession();
+	const session = await verifySession("organization", "update");
+
 	const organizationId = session.session.activeOrganizationId as string;
 
 	const membersPromise = listMembers(organizationId);

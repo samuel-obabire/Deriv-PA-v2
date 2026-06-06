@@ -13,4 +13,12 @@ export const serverApi = {
 				body: JSON.stringify(payload),
 			},
 		),
+	revokeToken: (userId: string) =>
+		fetchHandler<void>(
+			`${clientEnv.NEXT_PUBLIC_SERVER_URL}/authentication/revoke-token`,
+			{
+				method: "POST",
+				body: JSON.stringify({ userId }),
+			},
+		),
 };

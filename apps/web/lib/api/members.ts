@@ -32,6 +32,20 @@ export const addMember = async ({
 		headers: await headers(),
 	});
 
+export const updateMemberRole = async ({
+	memberId,
+	role,
+	organizationId,
+}: {
+	memberId: string;
+	role: Exclude<RoleNames, "owner">;
+	organizationId: string;
+}) =>
+	auth.api.updateMemberRole({
+		body: { memberId, role: [role], organizationId },
+		headers: await headers(),
+	});
+
 export const getActiveMemberRole = async () =>
 	auth.api.getActiveMemberRole({ headers: await headers() });
 
