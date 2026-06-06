@@ -50,8 +50,8 @@ export const sidebarConfig: SidebarGroup[] = [
 				permission: { resource: "organization", action: "update" },
 			},
 			{
-				title: "Staff Management",
-				href: ROUTES.ORGANIZATION_STAFF,
+				title: "Organization Members",
+				href: ROUTES.ORGANIZATION_MEMBERS,
 				icon: Users,
 				permission: { resource: "member", action: "create" },
 			},

@@ -6,7 +6,7 @@ import { cache } from "react";
 import { hasRoleStatement } from "@/components/nav/sidebar/utils";
 import { auth } from "./auth";
 import ROUTES from "./constants/routes";
-import { ResourcePermission } from "./permissions";
+import { PermissionType, ResourcePermission } from "./permissions";
 
 /**
  * 	Skips cookie-cached session data and fetches fresh session state from the database
@@ -26,7 +26,10 @@ export const getSession = async () => {
  * @returns Session
  */
 export const verifySession = cache(
-	async (resource?: string, action?: string) => {
+	async <R extends keyof PermissionType>(
+		resource?: R,
+		action?: NonNullable<PermissionType[R]>[number],
+	) => {
 		const session = await auth.api.getSession({
 			headers: await headers(),
 		});

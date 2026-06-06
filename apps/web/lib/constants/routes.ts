@@ -13,7 +13,7 @@ const ROUTES = {
 	SUMMARY: "/summary",
 	SETTINGS_RATES: "/settings/rate",
 	ORGANIZATION: "/organization",
-	ORGANIZATION_STAFF: "/organization/staff",
+	ORGANIZATION_MEMBERS: "/settings/members",
 	DERIV_TOKENS: "/settings/deriv-tokens",
 
 	GET_ACCESS_TOKEN: `${clientEnv.NEXT_PUBLIC_URL}/api/token`,
