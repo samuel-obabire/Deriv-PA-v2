@@ -15,7 +15,7 @@ const ConnectionRefresher = ({ children }: PropsWithChildren) => {
 		lockRef.current = true;
 
 		try {
-			if (accessToken && !isTokenValid(accessToken)) {
+			if ((accessToken && !isTokenValid(accessToken)) || !socket?.connected) {
 				await refreshToken();
 			}
 		} finally {
@@ -23,10 +23,10 @@ const ConnectionRefresher = ({ children }: PropsWithChildren) => {
 				lockRef.current = false;
 			}, 1000);
 		}
-	}, [accessToken, isTokenValid, refreshToken]);
+	}, [accessToken, isTokenValid, refreshToken, socket]);
 
 	useEffect(() => {
-		if (!accessToken || !socket) return;
+		if (!accessToken) return;
 
 		const onVisibilityChange = () => {
 			if (document.visibilityState === "visible") safeCheck();
@@ -60,7 +60,7 @@ const ConnectionRefresher = ({ children }: PropsWithChildren) => {
 			window.removeEventListener("touchstart", onUserInteraction);
 			window.removeEventListener("click", onUserInteraction);
 		};
-	}, [accessToken, safeCheck, socket]);
+	}, [accessToken, safeCheck]);
 
 	return <div>{children}</div>;
 };
