@@ -15,7 +15,7 @@ const ConnectionRefresher = ({ children }: PropsWithChildren) => {
 		lockRef.current = true;
 
 		try {
-			if ((accessToken && !isTokenValid(accessToken)) || !socket?.connected) {
+			if ((accessToken && !isTokenValid(accessToken)) || !socket) {
 				await refreshToken();
 			}
 		} finally {
