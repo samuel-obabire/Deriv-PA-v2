@@ -101,6 +101,14 @@ class SocketClient {
 		};
 	}
 
+	dispose() {
+		for (const [event, handler] of this.socketHandlers) {
+			this.socket.off(event as string, handler);
+		}
+		this.socketHandlers.clear();
+		this.subscriptions.clear();
+	}
+
 	transferFunds(
 		data: DerivRequestPayload<"paymentagent_transfer">,
 		options: { idempotencyKey: string; ignoreDuplicatePayment?: boolean },

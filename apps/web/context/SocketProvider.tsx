@@ -3,7 +3,6 @@
 import {
 	createContext,
 	ReactNode,
-	useCallback,
 	useEffect,
 	useRef,
 	useState,
@@ -29,71 +28,92 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 	const [socketClient, setSocketClient] = useState<SocketClient | null>(null);
 	const [isPending, startTransition] = useTransition();
 
-	const socketRef = useRef<Socket | null>(null);
+	const instanceRef = useRef<Socket | null>(null);
 	const clientRef = useRef<SocketClient | null>(null);
+	const tokenRef = useRef<string | null>(null);
 
 	const { accessToken } = useAccessToken();
 
-	const connectSocket = useCallback((token: string): Socket => {
-		const newSocket = io(clientEnv.NEXT_PUBLIC_SERVER_URL, {
-			auth: { accessToken: token },
+	// Keep tokenRef current so the auth callback always sends the latest token,
+	// even on socket.io's internal reconnect attempts.
+	tokenRef.current = accessToken;
+
+	// Create a single socket instance for the lifetime of this provider.
+	// autoConnect: false — we connect manually once we have a token.
+	// auth callback — called on every connect/reconnect attempt, always picks up
+	// the latest token from the ref so we never reconnect with a stale token.
+	useEffect(() => {
+		const instance = io(clientEnv.NEXT_PUBLIC_SERVER_URL, {
+			auth: (cb) => cb({ accessToken: tokenRef.current }),
 			transports: ["websocket"],
+			autoConnect: false,
 		});
 
-		socketRef.current = newSocket;
+		instanceRef.current = instance;
 
-		const handleConnect = async () => {
-			const client = clientRef.current ?? new SocketClient(newSocket);
+		const handleConnect = () => {
+			const client = new SocketClient(instance);
 			clientRef.current = client;
 
-			try {
-				startTransition(async () => {
-					await client.authorize({ authorize: "" });
-					setSocket(newSocket);
-					setSocketClient(client);
+			client
+				.authorize({ authorize: "" })
+				.then(() => {
+					// Guard against a reconnect cycle that superseded this client
+					// while authorize was in-flight.
+					if (clientRef.current !== client) return;
+					startTransition(() => {
+						setSocket(instance);
+						setSocketClient(client);
+					});
+				})
+				.catch(() => {
+					instance.disconnect();
 				});
-			} catch {
-				newSocket.disconnect();
-			}
-		};
-
-		const handleReconnect = async () => {
-			try {
-				await clientRef.current?.authorize({ authorize: "" });
-			} catch {
-				newSocket.disconnect();
-			}
 		};
 
 		const handleDisconnect = () => {
+			clientRef.current?.dispose();
+			clientRef.current = null;
 			startTransition(() => {
 				setSocket(null);
 				setSocketClient(null);
 			});
-			socketRef.current = null;
-			clientRef.current = null;
 		};
 
-		newSocket.on("connect", handleConnect);
-		newSocket.io.on("reconnect", handleReconnect);
-		newSocket.on("disconnect", handleDisconnect);
+		const handleConnectError = (err: Error) => {
+			// Permanently stop retrying only for server-side auth rejections.
+			// Network errors are retried automatically by socket.io's backoff.
+			if (
+				err.message === "Missing auth params" ||
+				err.message === "Access denied"
+			) {
+				instance.disconnect();
+			}
+		};
 
-		newSocket.on("connect_error", () => {
-			newSocket.disconnect();
-		});
-
-		return newSocket;
-	}, []);
-
-	useEffect(() => {
-		if (!accessToken) return;
-
-		const socketInstance = connectSocket(accessToken);
+		instance.on("connect", handleConnect);
+		instance.on("disconnect", handleDisconnect);
+		instance.on("connect_error", handleConnectError);
 
 		return () => {
-			socketInstance.disconnect();
+			instance.disconnect();
+			instance.removeAllListeners();
+			instanceRef.current = null;
 		};
-	}, [accessToken, connectSocket]);
+	}, []);
+
+	// Connect when a token first becomes available, or reconnect when the token
+	// changes and socket.io has stopped retrying (e.g. after an auth rejection).
+	// If socket.io is already in its retry loop (instance.active === true),
+	// we skip the explicit connect — the next attempt will pick up the new token
+	// from tokenRef automatically via the auth callback.
+	useEffect(() => {
+		const instance = instanceRef.current;
+		if (!accessToken || !instance) return;
+		if (!instance.connected && !instance.active) {
+			instance.connect();
+		}
+	}, [accessToken]);
 
 	return (
 		<SocketContext.Provider value={{ socket, socketClient, isPending }}>
