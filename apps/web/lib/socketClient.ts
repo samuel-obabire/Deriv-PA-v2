@@ -16,10 +16,12 @@ type TransferFundsPayload = {
 };
 
 class SocketClient {
+	// biome-ignore lint/suspicious/noExplicitAny: heterogeneous event map — each event has its own response type
 	private subscriptions = new Map<
 		DerivSubcriptionEndpoint,
 		Set<Listener<any>>
 	>();
+	// biome-ignore lint/suspicious/noExplicitAny: heterogeneous event map — each event has its own response type
 	private socketHandlers = new Map<
 		DerivSubcriptionEndpoint,
 		(data: any) => void

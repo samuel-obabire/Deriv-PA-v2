@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { formatUSD } from "@/utils/formatCurrency";
 import { TransferData } from "./types";
 
 type TransferDetailsProps = {
@@ -8,6 +9,7 @@ type TransferDetailsProps = {
 	isPending: boolean;
 	onBack: () => void;
 	onProceed: () => void;
+	currency: string;
 };
 
 const TransferDetails = ({
@@ -15,6 +17,7 @@ const TransferDetails = ({
 	isPending,
 	onBack,
 	onProceed,
+	currency,
 }: TransferDetailsProps) => {
 	return (
 		<div className="flex flex-col gap-6">
@@ -22,7 +25,9 @@ const TransferDetails = ({
 				<p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
 					Transfer Amount
 				</p>
-				<p className="text-5xl font-bold tracking-tight">{data.amount}</p>
+				<p className="text-5xl font-bold tracking-tight">
+					{formatUSD(data.amount)} <span className="text-2xl">{currency}</span>
+				</p>
 			</div>
 
 			<div className="rounded-xl border border-accent">

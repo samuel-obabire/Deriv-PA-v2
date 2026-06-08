@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import useSocket from "@/hooks/useSocket";
 import { CURRENCY_ICON } from "@/lib/utils/deriv";
+import { formatUSD } from "@/utils/formatCurrency";
 
 const Balance = ({ currency }: { currency: string | null }) => {
 	const [balance, setBalance] = useState<number | null>(null);
@@ -42,9 +43,7 @@ const Balance = ({ currency }: { currency: string | null }) => {
 					{isPending || balance === null ? (
 						<span className="h-4 w-20 animate-pulse rounded bg-muted" />
 					) : (
-						<span className="text-success text-bold">
-							{balance.toFixed(2)} {currency}
-						</span>
+						<span className="text-success text-bold">{formatUSD(balance)}</span>
 					)}
 				</div>
 
