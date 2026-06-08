@@ -4,6 +4,7 @@ import { CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { formatUSD } from "@/utils/formatCurrency";
 
 import { TransferData } from "./types";
 
@@ -26,7 +27,9 @@ const TransferResult = ({ transferData, onReset }: TransferResultProps) => {
 			<div className="rounded-lg border border-accent p-4 flex flex-col gap-3">
 				<div className="flex justify-between items-center">
 					<span className="text-sm text-muted-foreground">Amount</span>
-					<span className="text-base font-semibold">{transferData.amount}</span>
+					<span className="text-base font-semibold">
+						{formatUSD(transferData.amount)}
+					</span>
 				</div>
 				<Separator />
 				<div className="flex justify-between items-center">

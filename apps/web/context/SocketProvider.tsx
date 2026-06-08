@@ -28,16 +28,28 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 	const [socketClient, setSocketClient] = useState<SocketClient | null>(null);
 	const [isPending, startTransition] = useTransition();
 
+	const instanceRef = useRef<Socket | null>(null);
 	const clientRef = useRef<SocketClient | null>(null);
+	const tokenRef = useRef<string | null>(null);
 
 	const { accessToken } = useAccessToken();
 
+	// Keep tokenRef current so the auth callback always sends the latest token,
+	// even on socket.io's internal reconnect attempts.
+	tokenRef.current = accessToken;
+
+	// Create a single socket instance for the lifetime of this provider.
+	// autoConnect: false — we connect manually once we have a token.
+	// auth callback — called on every connect/reconnect attempt, always picks up
+	// the latest token from the ref so we never reconnect with a stale token.
 	useEffect(() => {
 		const instance = io(clientEnv.NEXT_PUBLIC_SERVER_URL, {
 			auth: (cb) => cb({ accessToken }),
 			transports: ["websocket"],
 			autoConnect: false,
 		});
+
+		instanceRef.current = instance;
 
 		const handleConnect = () => {
 			const client = new SocketClient(instance);
@@ -62,10 +74,10 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 		const handleDisconnect = () => {
 			clientRef.current?.dispose();
 			clientRef.current = null;
-			startTransition(() => {
-				setSocket(null);
-				setSocketClient(null);
-			});
+			// startTransition(() => {
+			setSocket(null);
+			setSocketClient(null);
+			// });
 		};
 
 		const handleConnectError = (err: Error) => {
@@ -83,12 +95,24 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 		instance.on("disconnect", handleDisconnect);
 		instance.on("connect_error", handleConnectError);
 
-		if (accessToken) instance.connect();
-
 		return () => {
 			instance.disconnect();
 			instance.removeAllListeners();
+			instanceRef.current = null;
 		};
+	}, [accessToken]);
+
+	// Connect when a token first becomes available, or reconnect when the token
+	// changes and socket.io has stopped retrying (e.g. after an auth rejection).
+	// If socket.io is already in its retry loop (instance.active === true),
+	// we skip the explicit connect — the next attempt will pick up the new token
+	// from tokenRef automatically via the auth callback.
+	useEffect(() => {
+		const instance = instanceRef.current;
+		if (!accessToken || !instance) return;
+		if (!instance.connected && !instance.active) {
+			instance.connect();
+		}
 	}, [accessToken]);
 
 	return (

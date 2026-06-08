@@ -48,6 +48,7 @@ const TransferToClient = ({ rate }: TransferToClientProps) => {
 						data={transferData}
 						onBack={onTransferCancel}
 						onProceed={onTransferSubmit}
+						currency={selectedCurrency as string}
 					/>
 				);
 			case 3:
