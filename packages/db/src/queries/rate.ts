@@ -35,6 +35,8 @@ export const updateCurrentRate = async (values: InsertRate, db: DB) => {
 			withdrawal: values.withdrawal,
 			charge: values.charge,
 			smallAmount: values.smallAmount,
+			min: values.min,
+			max: values.max,
 			organizationId: values.organizationId,
 		})
 		.onConflictDoUpdate({
@@ -44,6 +46,8 @@ export const updateCurrentRate = async (values: InsertRate, db: DB) => {
 				withdrawal: values.withdrawal,
 				charge: values.charge,
 				smallAmount: values.smallAmount,
+				min: values.min,
+				max: values.max,
 				updatedAt: new Date(),
 			},
 		})

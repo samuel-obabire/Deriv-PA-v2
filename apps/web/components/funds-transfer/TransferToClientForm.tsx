@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { TransferToClientSchema } from "@/lib/validations/deriv/transfer-to-client";
+import { createTransferToClientSchema } from "@/lib/validations/deriv/transfer-to-client";
 import { TransferData } from "./types";
 
 type TransferToClientFormProps = {
@@ -56,8 +56,14 @@ const TransferToClientForm = ({
 	rate,
 	activeCurrency,
 }: TransferToClientFormProps) => {
-	const form = useForm<z.infer<typeof TransferToClientSchema>>({
-		resolver: zodResolver(TransferToClientSchema),
+	const schema = createTransferToClientSchema({
+		min: rate.min,
+		max: rate.max,
+		currency: activeCurrency,
+	});
+
+	const form = useForm<z.infer<typeof schema>>({
+		resolver: zodResolver(schema),
 		defaultValues: {
 			clientAccount: initialData.clientAccount,
 			amount: initialData.amount,
@@ -75,7 +81,7 @@ const TransferToClientForm = ({
 			: "";
 	});
 
-	const handleSubmit = async (data: z.infer<typeof TransferToClientSchema>) => {
+	const handleSubmit = async (data: z.infer<typeof schema>) => {
 		await onSubmit({ ...data, ngnAmount });
 	};
 

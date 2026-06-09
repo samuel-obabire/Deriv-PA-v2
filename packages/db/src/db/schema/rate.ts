@@ -20,6 +20,8 @@ export const rate = pgTable(
 		charge: integer("charge").notNull(),
 		smallAmount: integer("small_amount").notNull(),
 		withdrawal: integer("withdrawal").notNull(),
+		min: integer("min").notNull().default(10),
+		max: integer("max").notNull().default(1000),
 		createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
 			.defaultNow()
 			.notNull(),
