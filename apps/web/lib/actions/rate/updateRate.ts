@@ -23,7 +23,8 @@ export const updateRate = async (
 
 	if (error) return handleError(error);
 
-	const { deposit, withdrawal, charge, smallAmount } = validated.params;
+	const { deposit, withdrawal, charge, smallAmount, min, max } =
+		validated.params;
 
 	const [, updateError] = await tryCatch(() =>
 		updateCurrentRate(
@@ -32,6 +33,8 @@ export const updateRate = async (
 				withdrawal,
 				charge,
 				smallAmount,
+				min,
+				max,
 				organizationId: validated.session?.session
 					.activeOrganizationId as string,
 			},

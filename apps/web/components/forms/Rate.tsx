@@ -30,6 +30,8 @@ const RateForm = ({ onSubmit, rate }: RateFormProps) => {
 			withdrawal: rate?.withdrawal || 0,
 			charge: rate?.charge || 0,
 			smallAmount: rate?.smallAmount || 0,
+			min: rate?.min || 10,
+			max: rate?.max || 1000,
 		},
 	});
 
@@ -131,6 +133,48 @@ const RateForm = ({ onSubmit, rate }: RateFormProps) => {
 										<FieldError errors={[fieldState.error]} />
 									)}
 									<FieldDescription>Charge for small amounts</FieldDescription>
+								</Field>
+							)}
+						/>
+
+						<Controller
+							name="min"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor="min">
+										Minimum transfer amount ($)
+									</FieldLabel>
+									<Input
+										{...field}
+										id="min"
+										aria-invalid={fieldState.invalid}
+										className="no-ring"
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)}
+						/>
+
+						<Controller
+							name="max"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor="max">
+										Maximum transfer amount ($)
+									</FieldLabel>
+									<Input
+										{...field}
+										id="max"
+										aria-invalid={fieldState.invalid}
+										className="no-ring"
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
 								</Field>
 							)}
 						/>
