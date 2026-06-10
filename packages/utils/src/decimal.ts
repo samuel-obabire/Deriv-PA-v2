@@ -2,7 +2,10 @@ import { Decimal } from "decimal.js";
 
 type Rounding = Decimal.Rounding;
 
-const DEFAULT_ROUNDING: Rounding = Decimal.ROUND_DOWN;
+export const ROUND_DOWN = Decimal.ROUND_DOWN as Rounding;
+export const ROUND_HALF_UP = Decimal.ROUND_HALF_UP as Rounding;
+
+const DEFAULT_ROUNDING: Rounding = ROUND_DOWN;
 
 const configured = (rounding: Rounding) => Decimal.clone({ rounding });
 
@@ -29,3 +32,13 @@ export const div = (
 	b: Decimal.Value,
 	rounding: Rounding = DEFAULT_ROUNDING,
 ) => configured(rounding)(a).div(b);
+
+export const roundToNearest = (
+	value: Decimal.Value,
+	step: number,
+	rounding: Rounding = ROUND_HALF_UP,
+) =>
+	configured(rounding)(value)
+		.div(step)
+		.toDecimalPlaces(0, rounding)
+		.times(step);

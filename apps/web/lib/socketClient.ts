@@ -16,12 +16,11 @@ type TransferFundsPayload = {
 };
 
 class SocketClient {
-	// biome-ignore lint/suspicious/noExplicitAny: heterogeneous event map — each event has its own response type
 	private subscriptions = new Map<
 		DerivSubcriptionEndpoint,
 		Set<Listener<any>>
 	>();
-	// biome-ignore lint/suspicious/noExplicitAny: heterogeneous event map — each event has its own response type
+
 	private socketHandlers = new Map<
 		DerivSubcriptionEndpoint,
 		(data: any) => void
@@ -119,6 +118,10 @@ class SocketClient {
 			"paymentagent_transfer",
 			{ data, options },
 		);
+	}
+
+	getStatement(data: DerivRequestPayload<"statement">) {
+		return this.request("statement", data);
 	}
 
 	authorize(data: DerivRequestPayload<"authorize">) {
