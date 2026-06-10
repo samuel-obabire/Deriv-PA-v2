@@ -7,6 +7,7 @@ import { RedisService } from "src/iam/redis/redis.service";
 import { CurrencyTokenService } from "./currency-token.service";
 import { DerivOrgConnection } from "./deriv-org-connection";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
+import { StatementDto } from "./dto/statement.dto";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
 import { TransferFundsDto } from "./dto/transferFunds.dto";
 import { TransactionService } from "./transaction.service";
@@ -105,6 +106,24 @@ export class DerivService {
 			name: "paymentagent_transfer",
 			payload: data as DerivRequestPayload<"paymentagent_transfer">,
 		});
+	}
+
+	async getStatment(
+		orgId: string,
+		statementDto: StatementDto,
+		tokenId: string,
+	) {
+		const orgDerivSocket = this.derivOrgPoolService.getOrganizationSocket(
+			orgId,
+			tokenId,
+		);
+
+		const result = await orgDerivSocket.send({
+			name: "statement",
+			payload: statementDto,
+		});
+
+		return result;
 	}
 
 	private transferLockKey(orgId: string, transferTo: string) {

@@ -9,7 +9,7 @@ const ROUTES = {
 	RATE_SETTINGS: "/settings/rate",
 	TRANSFER_CLIENT: "/transfer-to-client",
 	TRANSFER_INTERNAL: "/transfer",
-	STATEMENT: "/statement",
+	STATEMENT: "/reports/statement",
 	SUMMARY: "/summary",
 	SETTINGS_RATES: "/settings/rate",
 	ORGANIZATION: "/organization",

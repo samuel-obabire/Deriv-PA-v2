@@ -29,6 +29,7 @@ import { TokenService } from "src/iam/authentication/token.service";
 import { DecodedJwtAccessToken } from "src/iam/types";
 import { DerivService } from "./deriv.service";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
+import { StatementDto } from "./dto/statement.dto";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
 import { TransferFundsDto } from "./dto/transferFunds.dto";
 import type { AuthenticatedSocket, AuthPayload } from "./types";
@@ -140,6 +141,19 @@ export class DerivGateway
 			dto,
 			client.data.tokenId,
 			client.data.userId,
+		);
+	}
+
+	@RequirePermission(Permissions.READ)
+	@SubscribeMessage(DerivSocketEvent.Statement)
+	statement(
+		@ConnectedSocket() client: AuthenticatedSocket,
+		@MessageBody() dto: StatementDto,
+	) {
+		return this.derivService.getStatment(
+			client.data.organizationId,
+			dto,
+			client.data.tokenId,
 		);
 	}
 
