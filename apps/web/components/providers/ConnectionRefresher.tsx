@@ -5,7 +5,7 @@ import useAccessToken from "@/hooks/useAccessToken";
 import useSocket from "@/hooks/useSocket";
 
 const ConnectionRefresher = ({ children }: PropsWithChildren) => {
-	const { socket } = useSocket();
+	const { socket, isSocketBusy } = useSocket();
 	const { accessToken, isTokenValid, refreshToken } = useAccessToken();
 
 	const lockRef = useRef(false);
@@ -15,7 +15,14 @@ const ConnectionRefresher = ({ children }: PropsWithChildren) => {
 		lockRef.current = true;
 
 		try {
-			if ((accessToken && !isTokenValid(accessToken)) || !socket) {
+			// Only refresh if the token is expired, or if the socket is truly dead
+			// (not connected and not actively trying to connect). Calling refreshToken()
+			// while socket.io is mid-connection destroys the in-flight attempt by
+			// triggering a new socket instance in SocketProvider, which loops on
+			// every touch event until the connection finally has a chance to land.
+			const tokenExpired = accessToken && !isTokenValid(accessToken);
+			const socketDead = !socket && !isSocketBusy();
+			if (tokenExpired || socketDead) {
 				await refreshToken();
 			}
 		} finally {
@@ -23,7 +30,7 @@ const ConnectionRefresher = ({ children }: PropsWithChildren) => {
 				lockRef.current = false;
 			}, 1000);
 		}
-	}, [accessToken, isTokenValid, refreshToken, socket]);
+	}, [accessToken, isTokenValid, refreshToken, socket, isSocketBusy]);
 
 	useEffect(() => {
 		if (!accessToken) return;

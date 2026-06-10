@@ -21,6 +21,7 @@ export const SocketContext = createContext<{
 	socket: Socket | null;
 	socketClient: SocketClient | null;
 	isPending: boolean;
+	isSocketBusy: () => boolean;
 } | null>(null);
 
 const SocketProvider = ({ children }: SocketProviderProps) => {
@@ -115,8 +116,18 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 		}
 	}, [accessToken]);
 
+	// Reads live from the ref so it never triggers re-renders.
+	// Returns true when socket.io is connected or actively trying to connect/reconnect,
+	// meaning a token refresh is not needed to unblock the connection.
+	const isSocketBusy = () => {
+		const instance = instanceRef.current;
+		return Boolean(instance?.connected || instance?.active);
+	};
+
 	return (
-		<SocketContext.Provider value={{ socket, socketClient, isPending }}>
+		<SocketContext.Provider
+			value={{ socket, socketClient, isPending, isSocketBusy }}
+		>
 			{children}
 		</SocketContext.Provider>
 	);
