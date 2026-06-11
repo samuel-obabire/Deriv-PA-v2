@@ -47,7 +47,7 @@ const TransferToClient = ({ rate }: TransferToClientProps) => {
 						isPending={isPending}
 						data={transferData}
 						onBack={onTransferCancel}
-						onProceed={onTransferSubmit}
+						onProceed={() => onTransferSubmit(rate.deposit)}
 						currency={selectedCurrency as string}
 					/>
 				);

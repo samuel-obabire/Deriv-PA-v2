@@ -2,6 +2,7 @@ import { CURRENCY } from "@repo/db/enums";
 import { tryCatch } from "@repo/utils";
 import { useReducer } from "react";
 import { Action, State, TransferData } from "@/components/funds-transfer/types";
+import { buildTransferDescription } from "@/lib/utils/transfer";
 import useCurrency from "./useCurrency";
 import useSocket from "./useSocket";
 
@@ -122,14 +123,20 @@ const useTransferFlow = () => {
 		});
 	};
 
-	const onTransferSubmit = async () => {
+	const onTransferSubmit = async (depositRate: number) => {
 		const { idempotencyKey } = state.options;
 		if (!idempotencyKey) return;
 
 		setPending(true);
 
+		const description = buildTransferDescription(
+			state.transferData.clientName ?? "",
+			depositRate,
+			state.transferData.description,
+		);
+
 		const [, error] = await tryCatch(() =>
-			transfer(state.transferData, false, {
+			transfer({ ...state.transferData, description }, false, {
 				idempotencyKey,
 				ignoreDuplicatePayment: state.options.ignoreDuplicatePayment,
 			}),
