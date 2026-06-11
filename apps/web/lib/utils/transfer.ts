@@ -1,4 +1,4 @@
-const sanitizeText = (text: string): string => text.replace(/[^a-zA-Z]/g, "");
+const sanitizeText = (text: string): string => text.replace(/[^a-zA-Z\s]/g, "");
 
 export const buildTransferDescription = (
 	clientName: string,

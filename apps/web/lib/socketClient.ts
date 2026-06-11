@@ -34,7 +34,13 @@ class SocketClient {
 	>(event: T, data: P) {
 		const { promise, reject, resolve } = createPromise();
 
+		// Reject immediately if the socket drops before the server acks —
+		// otherwise the ack callback never fires and callers hang indefinitely.
+		const onDisconnect = () => reject(new Error("Socket disconnected"));
+		this.socket.once("disconnect", onDisconnect);
+
 		this.socket.emit(event, data, (response: SocketResponse<T>) => {
+			this.socket.off("disconnect", onDisconnect);
 			if (!response.success) {
 				reject(new Error(response.error.message));
 			} else {
