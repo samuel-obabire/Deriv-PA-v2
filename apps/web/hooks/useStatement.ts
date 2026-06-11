@@ -1,6 +1,7 @@
 "use client";
 
 import {
+	DerivCurrency,
 	type DerivRequestPayload,
 	type StatementActionType,
 } from "@repo/deriv";
@@ -13,6 +14,7 @@ type StatementOptions = {
 	limit?: number;
 	offset?: number;
 	action_type?: StatementActionType;
+	currency: DerivCurrency;
 };
 
 const useStatement = () => {

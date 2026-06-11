@@ -28,7 +28,7 @@ export function extractRateFromAgentNote(
 	longcode: string | null | undefined,
 ): number | null {
 	if (!longcode) return null;
-	const match = longcode.match(/[Rr]ate[:\s=]+(\d+(?:\.\d+)?)/);
+	const match = longcode.match(/rate[:\s=]+(\d+(?:\.\d+)?)/i);
 	return match ? Number(match[1]) : null;
 }
 
@@ -49,7 +49,10 @@ export function calculateNairaEquivalent(
 
 	if (transaction.action_type === "withdrawal") {
 		if (extractedRate === null) return null;
-		const price = mul(absAmount, extractedRate, ROUND_HALF_UP).toNumber();
+		const price = roundToNearest(
+			mul(absAmount, extractedRate, ROUND_HALF_UP),
+			25,
+		).toNumber();
 		return absAmount < rate.smallAmount ? price + rate.charge : price;
 	}
 
