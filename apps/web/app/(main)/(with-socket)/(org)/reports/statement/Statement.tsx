@@ -28,7 +28,7 @@ const Statement = ({ rate }: Props) => {
 		isEmpty,
 	} = useStatementList({ statementType });
 
-	if (isConnecting || (isLoading && transactions.length === 0)) {
+	if ((isConnecting || isLoading) && transactions.length === 0) {
 		return (
 			<div className="mt-8 flex justify-center">
 				<Loader2 className="size-6 animate-spin text-muted-foreground" />
@@ -57,7 +57,7 @@ const Statement = ({ rate }: Props) => {
 
 			<div className="h-4" ref={sentinelRef} />
 
-			{isLoading && transactions.length > 0 && (
+			{(isLoading || isConnecting) && transactions.length > 0 && (
 				<div className="mt-4 flex justify-center py-2">
 					<Loader2 className="size-4 animate-spin text-muted-foreground" />
 				</div>

@@ -43,7 +43,7 @@ const StatementCardFront = ({ transaction, currency, onFlip }: FrontProps) => {
 
 	return (
 		<button type="button" className="w-full text-left" onClick={onFlip}>
-			<Card className="mx-2 my-1 flex min-h-48 w-full flex-col justify-between sm:mx-3 sm:my-2 sm:min-h-52">
+			<Card className="mx-2 my-1 flex min-h-48 flex-col justify-between sm:mx-3 sm:my-2 sm:min-h-52">
 				<CardHeader className="py-2 pt-5">
 					<div className="flex items-center justify-between">
 						{action_type === "deposit" ? (
@@ -143,7 +143,7 @@ const StatementCardBack = ({
 
 	return (
 		<Card
-			className="mx-2 my-1 flex min-h-48 w-full cursor-pointer items-center sm:mx-3 sm:my-2 sm:min-h-52"
+			className="mx-2 my-1 flex min-h-48 cursor-pointer items-center sm:mx-3 sm:my-2 sm:min-h-52"
 			onClick={onFlip}
 		>
 			<CardContent className="w-full space-y-3 pt-4">

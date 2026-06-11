@@ -1,6 +1,6 @@
 "use client";
 
-import type { StatementActionType } from "@repo/deriv";
+import type { DerivCurrency, StatementActionType } from "@repo/deriv";
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -21,10 +21,15 @@ const useStatementList = ({ statementType }: Params = {}) => {
 
 	const { selectedCurrency } = useCurrency();
 	const { socketClient } = useSocket();
+
 	const prevCurrencyRef = useRef<string | null>(null);
 	const prevTypeRef = useRef<StatementActionType | null | undefined>(null);
 
 	const [isLoading, getStatement] = useStatement();
+	const getStatementRef = useRef(getStatement);
+	getStatementRef.current = getStatement;
+
+	const socketReady = !!socketClient;
 
 	const { ref: sentinelRef, inView } = useInView({
 		threshold: 0.01,
@@ -32,38 +37,43 @@ const useStatementList = ({ statementType }: Params = {}) => {
 	});
 
 	useEffect(() => {
-		if (!selectedCurrency || !socketClient) return;
+		if (!socketReady || !selectedCurrency) return;
 
+		// Only reset + refetch when currency or type actually changes,
+		// not on every reconnect.
 		if (
-			prevCurrencyRef.current !== selectedCurrency ||
-			statementType !== prevTypeRef.current
-		) {
-			prevCurrencyRef.current = selectedCurrency;
-			prevTypeRef.current = statementType;
-			setTransactions([]);
-			setHasMore(true);
+			prevCurrencyRef.current === selectedCurrency &&
+			prevTypeRef.current === statementType
+		)
+			return;
 
-			(async () => {
-				const result = await getStatement({
-					limit: LIMIT,
-					action_type: statementType,
-				});
-				if (result?.transactions?.length) {
-					setTransactions(result.transactions as StatementTransaction[]);
-				}
-			})();
-		}
-	}, [selectedCurrency, socketClient, getStatement, statementType]);
+		prevCurrencyRef.current = selectedCurrency;
+		prevTypeRef.current = statementType;
+		setTransactions([]);
+		setHasMore(true);
+
+		(async () => {
+			const result = await getStatementRef.current({
+				limit: LIMIT,
+				action_type: statementType,
+				currency: selectedCurrency as DerivCurrency,
+			});
+			if (result?.transactions?.length) {
+				setTransactions(result.transactions as StatementTransaction[]);
+			}
+		})();
+	}, [socketReady, selectedCurrency, statementType]);
 
 	useEffect(() => {
-		if (!inView || !selectedCurrency || !socketClient || isLoading || !hasMore)
+		if (!inView || !selectedCurrency || !socketReady || isLoading || !hasMore)
 			return;
 
 		(async () => {
-			const result = await getStatement({
+			const result = await getStatementRef.current({
 				limit: LIMIT,
 				offset: transactions.length,
 				action_type: statementType,
+				currency: selectedCurrency as DerivCurrency,
 			});
 
 			if (result?.transactions?.length) {
@@ -78,10 +88,9 @@ const useStatementList = ({ statementType }: Params = {}) => {
 	}, [
 		inView,
 		selectedCurrency,
-		socketClient,
+		socketReady,
 		isLoading,
 		transactions.length,
-		getStatement,
 		hasMore,
 		statementType,
 	]);
