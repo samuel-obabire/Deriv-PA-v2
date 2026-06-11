@@ -13,12 +13,14 @@ import { isTokenValid } from "@/lib/utils/jwt";
 
 export const TokenContext = createContext<{
 	accessToken: string | null;
+	tokenCurrency: string | null;
 	isTokenValid: (token: string) => boolean;
 	refreshToken: () => Promise<void>;
 } | null>(null);
 
 const TokenProvider = ({ children }: PropsWithChildren) => {
 	const [accessToken, setAccessToken] = useState<string | null>(null);
+	const [tokenCurrency, setTokenCurrency] = useState<string | null>(null);
 	const { selectedCurrency } = useCurrency();
 
 	const setToken = useCallback((token: string) => {
@@ -33,6 +35,7 @@ const TokenProvider = ({ children }: PropsWithChildren) => {
 		if (!token) throw new Error("Unable to fetch accessToken");
 
 		setToken(token);
+		setTokenCurrency(selectedCurrency);
 	}, [setToken, selectedCurrency]);
 
 	const refreshToken = async () => {
@@ -47,6 +50,7 @@ const TokenProvider = ({ children }: PropsWithChildren) => {
 		<TokenContext.Provider
 			value={{
 				accessToken,
+				tokenCurrency,
 				isTokenValid,
 				refreshToken,
 			}}

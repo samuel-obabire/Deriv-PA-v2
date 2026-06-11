@@ -26,9 +26,9 @@ export const twoDpNumberNumeric = z
 export const descriptionField = z
 	.string()
 	.trim()
-	.regex(/^[0-9A-Za-z .,'-]{0,25}$/, {
+	.regex(/^[0-9A-Za-z .,'-]{0,200}$/, {
 		error:
-			"Description must be 25 characters or fewer and contain only letters, numbers, spaces, and .,'-",
+			"Description must be 200 characters or fewer and contain only letters, numbers, spaces, and .,'-",
 	})
 	.optional();
 

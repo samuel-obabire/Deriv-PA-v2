@@ -20,6 +20,7 @@ type SocketProviderProps = {
 export const SocketContext = createContext<{
 	socket: Socket | null;
 	socketClient: SocketClient | null;
+	connectedAccessToken: string | null;
 	isPending: boolean;
 	isSocketBusy: () => boolean;
 } | null>(null);
@@ -27,6 +28,9 @@ export const SocketContext = createContext<{
 const SocketProvider = ({ children }: SocketProviderProps) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
 	const [socketClient, setSocketClient] = useState<SocketClient | null>(null);
+	const [connectedAccessToken, setConnectedAccessToken] = useState<
+		string | null
+	>(null);
 	const [isPending, startTransition] = useTransition();
 
 	const instanceRef = useRef<Socket | null>(null);
@@ -65,6 +69,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 					startTransition(() => {
 						setSocket(instance);
 						setSocketClient(client);
+						setConnectedAccessToken(accessToken);
 					});
 				})
 				.catch(() => {
@@ -78,6 +83,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 			// startTransition(() => {
 			setSocket(null);
 			setSocketClient(null);
+			setConnectedAccessToken(null);
 			// });
 		};
 
@@ -126,7 +132,13 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 
 	return (
 		<SocketContext.Provider
-			value={{ socket, socketClient, isPending, isSocketBusy }}
+			value={{
+				socket,
+				socketClient,
+				connectedAccessToken,
+				isPending,
+				isSocketBusy,
+			}}
 		>
 			{children}
 		</SocketContext.Provider>
