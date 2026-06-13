@@ -53,6 +53,9 @@ const ConnectionRefresher = ({ children }: PropsWithChildren) => {
 		window.addEventListener("touchstart", onUserInteraction, {
 			passive: true,
 		});
+		window.addEventListener("pointerdown", onUserInteraction, {
+			passive: true,
+		});
 		window.addEventListener("click", onUserInteraction, {
 			passive: true,
 		});
@@ -65,6 +68,7 @@ const ConnectionRefresher = ({ children }: PropsWithChildren) => {
 			window.removeEventListener("pageshow", onPageShow);
 
 			window.removeEventListener("touchstart", onUserInteraction);
+			window.removeEventListener("pointerdown", onUserInteraction);
 			window.removeEventListener("click", onUserInteraction);
 		};
 	}, [accessToken, safeCheck]);
