@@ -4,39 +4,59 @@ import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
 import useAccessToken from "@/hooks/useAccessToken";
 import useSocket from "@/hooks/useSocket";
 
+// If the app was hidden longer than this, force a full token refresh on return
+// so the server-side Deriv session is always re-established. iOS can keep the
+// socket.io pipe alive while pausing the underlying WebSocket, leaving the
+// Deriv connection stale on the server even though the client thinks it's up.
+const STALE_AFTER_MS = 10_000;
+
 const ConnectionRefresher = ({ children }: PropsWithChildren) => {
 	const { socket, isSocketBusy } = useSocket();
 	const { accessToken, isTokenValid, refreshToken } = useAccessToken();
 
 	const lockRef = useRef(false);
+	const hiddenAtRef = useRef<number | null>(null);
 
-	const safeCheck = useCallback(async () => {
-		if (lockRef.current) return;
-		lockRef.current = true;
+	const safeCheck = useCallback(
+		async (force = false) => {
+			if (lockRef.current) return;
+			lockRef.current = true;
 
-		try {
-			// Only refresh if the token is expired, or if the socket is truly dead
-			// (not connected and not actively trying to connect). Calling refreshToken()
-			// while socket.io is mid-connection destroys the in-flight attempt by
-			// triggering a new socket instance in SocketProvider, which loops on
-			// every touch event until the connection finally has a chance to land.
-			const tokenExpired = accessToken && !isTokenValid(accessToken);
-			const socketDead = !socket && !isSocketBusy();
-			if (tokenExpired || socketDead) {
-				await refreshToken();
+			try {
+				// Only refresh if the token is expired, or if the socket is truly dead
+				// (not connected and not actively trying to connect/reconnect). Calling refreshToken()
+				// while socket.io is mid-connection destroys the in-flight attempt by
+				// triggering a new socket instance in SocketProvider, which loops on
+				// every touch event until the connection finally has a chance to land.
+				const tokenExpired = accessToken && !isTokenValid(accessToken);
+				const socketDead = !socket && !isSocketBusy();
+				if (force || tokenExpired || socketDead) {
+					await refreshToken();
+				}
+			} finally {
+				setTimeout(() => {
+					lockRef.current = false;
+				}, 1000);
 			}
-		} finally {
-			setTimeout(() => {
-				lockRef.current = false;
-			}, 1000);
-		}
-	}, [accessToken, isTokenValid, refreshToken, socket, isSocketBusy]);
+		},
+		[accessToken, isTokenValid, refreshToken, socket, isSocketBusy],
+	);
 
 	useEffect(() => {
 		if (!accessToken) return;
 
 		const onVisibilityChange = () => {
-			if (document.visibilityState === "visible") safeCheck();
+			if (document.visibilityState === "hidden") {
+				hiddenAtRef.current = Date.now();
+			} else {
+				const hiddenMs = hiddenAtRef.current
+					? Date.now() - hiddenAtRef.current
+					: 0;
+				hiddenAtRef.current = null;
+				// Force reconnect after a long background period
+
+				safeCheck(hiddenMs >= STALE_AFTER_MS);
+			}
 		};
 
 		const onFocus = () => safeCheck();
