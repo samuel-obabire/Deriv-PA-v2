@@ -22,6 +22,7 @@ export const SocketContext = createContext<{
 	socketClient: SocketClient | null;
 	connectedAccessToken: string | null;
 	isPending: boolean;
+	isConnecting: boolean;
 	isSocketBusy: () => boolean;
 } | null>(null);
 
@@ -32,6 +33,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 		string | null
 	>(null);
 	const [isPending, startTransition] = useTransition();
+	const [isConnecting, setIsConnecting] = useState(false);
 
 	const instanceRef = useRef<Socket | null>(null);
 	const clientRef = useRef<SocketClient | null>(null);
@@ -66,6 +68,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 					// Guard against a reconnect cycle that superseded this client
 					// while authorize was in-flight.
 					if (clientRef.current !== client) return;
+					setIsConnecting(false);
 					startTransition(() => {
 						setSocket(instance);
 						setSocketClient(client);
@@ -73,6 +76,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 					});
 				})
 				.catch(() => {
+					setIsConnecting(false);
 					instance.disconnect();
 				});
 		};
@@ -94,17 +98,24 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 				err.message === "Missing auth params" ||
 				err.message === "Access denied"
 			) {
+				setIsConnecting(false);
 				instance.disconnect();
 			}
 		};
 
+		// Socket.io fires this on every internal reconnect attempt so we can
+		// re-show the indicator after a disconnect while the manager retries.
+		const handleReconnectAttempt = () => setIsConnecting(true);
+
 		instance.on("connect", handleConnect);
 		instance.on("disconnect", handleDisconnect);
 		instance.on("connect_error", handleConnectError);
+		instance.io.on("reconnect_attempt", handleReconnectAttempt);
 
 		return () => {
 			instance.disconnect();
 			instance.removeAllListeners();
+			instance.io.off("reconnect_attempt", handleReconnectAttempt);
 			instanceRef.current = null;
 		};
 	}, [accessToken]);
@@ -118,6 +129,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 		const instance = instanceRef.current;
 		if (!accessToken || !instance) return;
 		if (!instance.connected && !instance.active) {
+			setIsConnecting(true);
 			instance.connect();
 		}
 	}, [accessToken]);
@@ -137,10 +149,29 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 				socketClient,
 				connectedAccessToken,
 				isPending,
+				isConnecting,
 				isSocketBusy,
 			}}
 		>
 			{children}
+			<div
+				className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 transition-all duration-300"
+				style={{
+					opacity: isConnecting ? 1 : 0,
+					transform: `translateX(-50%) translateY(${isConnecting ? "0" : "0.75rem"})`,
+					pointerEvents: isConnecting ? "auto" : "none",
+				}}
+			>
+				<div className="flex items-center gap-2 rounded-full border border-border bg-background/80 px-4 py-2 shadow-lg backdrop-blur-sm">
+					<span className="relative flex size-2">
+						<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-pending opacity-75" />
+						<span className="relative inline-flex size-2 rounded-full bg-pending" />
+					</span>
+					<span className="text-xs font-medium text-muted-foreground">
+						Connecting...
+					</span>
+				</div>
+			</div>
 		</SocketContext.Provider>
 	);
 };
