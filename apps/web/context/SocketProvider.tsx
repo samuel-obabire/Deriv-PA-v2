@@ -39,7 +39,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 	const clientRef = useRef<SocketClient | null>(null);
 	const tokenRef = useRef<string | null>(null);
 
-	const { accessToken } = useAccessToken();
+	const { accessToken, isPending: isTokenRefreshing } = useAccessToken();
 
 	// Keep tokenRef current so the auth callback always sends the latest token,
 	// even on socket.io's internal reconnect attempts.
@@ -126,13 +126,15 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 	// we skip the explicit connect — the next attempt will pick up the new token
 	// from tokenRef automatically via the auth callback.
 	useEffect(() => {
+		if (isTokenRefreshing) return;
+
 		const instance = instanceRef.current;
 		if (!accessToken || !instance) return;
 		if (!instance.connected && !instance.active) {
 			setIsConnecting(true);
 			instance.connect();
 		}
-	}, [accessToken]);
+	}, [accessToken, isTokenRefreshing]);
 
 	// Reads live from the ref so it never triggers re-renders.
 	// Returns true when socket.io is connected or actively trying to connect/reconnect,
