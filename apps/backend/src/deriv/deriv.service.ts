@@ -32,6 +32,7 @@ export class DerivService {
 		const orgConnection = new DerivOrgConnection({
 			orgId: orgId,
 			onDrop: this.derivOrgPoolService.onDrop.bind(this.derivOrgPoolService),
+			tokenId,
 		});
 
 		this.derivOrgPoolService.addToPool({

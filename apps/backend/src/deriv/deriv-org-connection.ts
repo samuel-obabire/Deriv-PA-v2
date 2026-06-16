@@ -19,21 +19,27 @@ export class DerivOrgConnection {
 	private keepAliveInterval = 30000;
 	private waitForSocketOpen = createPromise<void>();
 	readonly orgId: string;
+	readonly tokenId: string;
+	private lastUsedAt: number;
 
 	private requestHandlers = new Map<string, RequestHandler>();
 	private subscriptionHandlers = new Map<string, SubscriptionHandler>();
 
-	private onDrop: (orgId: string) => void;
+	private onDrop: (orgId: string, tokenId: string) => void;
 
 	constructor({
 		onDrop,
 		orgId,
+		tokenId,
 	}: {
 		orgId: string;
-		onDrop: (orgId: string) => void;
+		onDrop: (orgId: string, tokenId: string) => void;
+		tokenId: string;
 	}) {
 		this.orgId = orgId;
+		this.tokenId = tokenId;
 		this.onDrop = onDrop;
+		this.lastUsedAt = Date.now();
 
 		this.websocket = new WebSocket(
 			"wss://ws.derivws.com/websockets/v3?app_id=71728",
@@ -87,7 +93,15 @@ export class DerivOrgConnection {
 		this.keepAlive();
 	}
 
-	async send<T extends DerivEndpointName>({
+	async send<T extends DerivEndpointName>(args: {
+		name: T;
+		payload: DerivRequestPayload<T>;
+	}): Promise<DerivResponseData<T>> {
+		this.markUsed();
+		return this.dispatch(args);
+	}
+
+	private async dispatch<T extends DerivEndpointName>({
 		payload,
 	}: {
 		name: T;
@@ -114,6 +128,7 @@ export class DerivOrgConnection {
 		}
 
 		this.websocket.send(JSON.stringify({ ...payload, req_id: reqId }));
+
 		return promise;
 	}
 
@@ -160,7 +175,7 @@ export class DerivOrgConnection {
 		const intervalId = setInterval(async () => {
 			this.reqId = this.reqId + 1;
 
-			await this.send({
+			await this.dispatch({
 				name: "ping",
 				payload: {
 					ping: 1,
@@ -172,7 +187,15 @@ export class DerivOrgConnection {
 	}
 
 	isSocketClosingOrClosed() {
-		return ![2, 3].includes(this.websocket.readyState);
+		return [2, 3].includes(this.websocket.readyState);
+	}
+
+	markUsed() {
+		this.lastUsedAt = Date.now();
+	}
+
+	get socketLastUsedAt() {
+		return this.lastUsedAt;
 	}
 
 	disconnect() {
@@ -186,6 +209,6 @@ export class DerivOrgConnection {
 
 		this.requestHandlers.clear();
 		this.subscriptionHandlers.clear();
-		this.onDrop(this.orgId);
+		this.onDrop(this.orgId, this.tokenId);
 	}
 }

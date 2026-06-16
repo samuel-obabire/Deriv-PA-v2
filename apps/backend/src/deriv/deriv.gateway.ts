@@ -91,19 +91,21 @@ export class DerivGateway
 			this.logger.log(
 				`Member [${userId}] disconnected — org [${organizationId}]`,
 			);
+
 			if (!organizationId) return;
-
-			// Check remaining users in org room
-			const room = this.server.sockets.adapter.rooms.get(
-				orgTokenKey(client.data.organizationId, client.data.tokenId),
-			);
-
-			if (!room || room.size === 0) {
-				this.pool.cleanOrganisationPool(client.data.organizationId);
-				this.logger.log(`Cleaned up Deriv socket for org [${organizationId}]`);
-			}
 		} catch (err) {
 			this.logger.error(`Disconnect error: ${err}`);
+		}
+	}
+
+	evictIdleOrgConnection(organizationId: string, tokenId: string) {
+		const room = this.server.sockets.adapter.rooms.get(
+			orgTokenKey(organizationId, tokenId),
+		);
+
+		if (!room || room.size === 0) {
+			this.pool.evictOrgConnection(organizationId, tokenId);
+			this.logger.log(`Cleaned up Deriv socket for org [${organizationId}]`);
 		}
 	}
 

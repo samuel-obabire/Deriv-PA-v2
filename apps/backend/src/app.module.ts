@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_PIPE } from "@nestjs/core";
+import { ScheduleModule } from "@nestjs/schedule";
 import { ZodValidationPipe } from "nestjs-zod";
 import { AppService } from "./app.service";
 import { CommonModule } from "./common/common.module";
@@ -12,6 +13,7 @@ import { AuthenticationController } from "./iam/authentication/authentication.co
 import { IamModule } from "./iam/iam.module";
 import { OrganisationModule } from "./organisation/organisation.module";
 import { OrganisationService } from "./organisation/organisation.service";
+import { TaskModule } from "./task/task.module";
 
 @Module({
 	imports: [
@@ -25,6 +27,8 @@ import { OrganisationService } from "./organisation/organisation.service";
 		OrganisationModule,
 		IamModule,
 		CommonModule,
+		ScheduleModule.forRoot(),
+		TaskModule,
 	],
 	providers: [
 		AppService,

@@ -1,0 +1,28 @@
+import { Injectable } from "@nestjs/common";
+import { Cron, CronExpression } from "@nestjs/schedule";
+import { DerivGateway } from "src/deriv/deriv.gateway";
+import { DerivOrgPoolService } from "src/deriv/deriv-org-pool.service";
+
+@Injectable()
+export class TasksService {
+	constructor(
+		private readonly derivPool: DerivOrgPoolService,
+		private readonly derivGateway: DerivGateway,
+	) {}
+
+	@Cron(CronExpression.EVERY_5_MINUTES)
+	sweepIdleConnections() {
+		const now = Date.now();
+
+		this.derivPool.pool.forEach((orgConnections) => {
+			orgConnections.forEach((d) => {
+				const idleMs = now - d.socketLastUsedAt;
+
+				// close connections idle for at least 10 mins
+				if (idleMs > 10 * 60 * 1000) {
+					this.derivGateway.evictIdleOrgConnection(d.orgId, d.tokenId);
+				}
+			});
+		});
+	}
+}

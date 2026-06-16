@@ -7,7 +7,7 @@ type Connections = Map<string, DerivOrgConnection>;
 
 @Injectable()
 export class DerivOrgPoolService implements OnModuleDestroy {
-	private readonly pool = new Map<string, Connections>();
+	private readonly connectionPool = new Map<string, Connections>();
 
 	addToPool({
 		orgId,
@@ -24,6 +24,10 @@ export class DerivOrgPoolService implements OnModuleDestroy {
 		this.pool.get(orgId).set(orgTokenKey(orgId, tokenId), orgConnection);
 	}
 
+	get pool() {
+		return this.connectionPool;
+	}
+
 	getOrganizationSocket(orgId: string, tokenId: string) {
 		const clientSocket = this.pool.get(orgId)?.get(orgTokenKey(orgId, tokenId));
 		if (!clientSocket) throw new WsException("Org socket not found");
@@ -36,14 +40,21 @@ export class DerivOrgPoolService implements OnModuleDestroy {
 		return !!clientSocket;
 	}
 
-	onDrop(orgId: string) {
-		this.pool.delete(orgId);
+	onDrop(orgId: string, tokenId: string) {
+		const orgPool = this.pool.get(orgId);
+		if (!orgPool) return;
+		orgPool.delete(orgTokenKey(orgId, tokenId));
+		if (orgPool.size === 0) {
+			this.pool.delete(orgId);
+		}
+	}
+
+	evictOrgConnection(orgId: string, tokenId: string) {
+		this.pool.get(orgId)?.get(orgTokenKey(orgId, tokenId))?.disconnect();
 	}
 
 	cleanOrganisationPool(orgId: string) {
 		const orgPool = this.pool.get(orgId);
-
-		// todo: clean only unused socket
 		if (orgPool) {
 			orgPool.forEach((socket) => {
 				socket.disconnect();
