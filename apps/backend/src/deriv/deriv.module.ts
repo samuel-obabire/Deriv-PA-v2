@@ -10,7 +10,7 @@ import { TransactionService } from "./transaction.service";
 
 @Module({
 	imports: [OrganisationModule, IamModule, DatabaseModule],
-	exports: [DerivGateway],
+	exports: [DerivGateway, DerivOrgPoolService],
 	providers: [
 		CurrencyTokenService,
 		DerivGateway,
