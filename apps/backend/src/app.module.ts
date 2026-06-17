@@ -14,6 +14,7 @@ import { IamModule } from "./iam/iam.module";
 import { OrganisationModule } from "./organisation/organisation.module";
 import { OrganisationService } from "./organisation/organisation.service";
 import { TaskModule } from "./task/task.module";
+import { TransfersModule } from "./transfers/transfers.module";
 
 @Module({
 	imports: [
@@ -29,6 +30,7 @@ import { TaskModule } from "./task/task.module";
 		CommonModule,
 		ScheduleModule.forRoot(),
 		TaskModule,
+		TransfersModule,
 	],
 	providers: [
 		AppService,

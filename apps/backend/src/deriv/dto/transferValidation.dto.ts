@@ -6,18 +6,19 @@ import {
 import { createZodDto } from "nestjs-zod";
 import * as z from "zod";
 
-const TransferFundsSchema = z.object({
+const TransferValidationSchema = z.object({
 	data: transferFundsBaseSchema.extend({
 		amount: twoDpNumberNumeric,
 		paymentagent_transfer: z.literal(1),
 		currency: z.enum(derivCurrencies),
-		dry_run: z.literal(0),
+		dry_run: z.literal(1),
 		transfer_to: z.string(),
 	}),
 	options: z.object({
-		idempotencyKey: z.uuid(),
 		ignoreDuplicatePayment: z.boolean().optional(),
 	}),
 });
 
-export class TransferFundsDto extends createZodDto(TransferFundsSchema) {}
+export class TransferValidationDto extends createZodDto(
+	TransferValidationSchema,
+) {}

@@ -1,0 +1,1 @@
+ALTER TYPE "public"."transaction_status_enum" ADD VALUE 'cancelled';

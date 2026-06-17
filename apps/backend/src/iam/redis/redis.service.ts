@@ -107,4 +107,8 @@ export class RedisService
 	async setExpiry(key: string, ttlSeconds: number) {
 		return await this.redisClient.expire(key, ttlSeconds);
 	}
+
+	async checkLockExists(key: string): Promise<boolean> {
+		return (await this.redisClient.exists(key)) === 1;
+	}
 }

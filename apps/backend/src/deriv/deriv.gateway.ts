@@ -1,4 +1,6 @@
 import {
+	forwardRef,
+	Inject,
 	Logger,
 	UseFilters,
 	UseGuards,
@@ -27,11 +29,13 @@ import { WsInterceptor } from "src/common/interceptors/ws/ws.interceptor";
 import { RevocationService } from "src/iam/authentication/revocation.service";
 import { TokenService } from "src/iam/authentication/token.service";
 import { DecodedJwtAccessToken } from "src/iam/types";
+import { TransferQueueService } from "src/transfers/transfer-queue.service";
 import { DerivService } from "./deriv.service";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
 import { StatementDto } from "./dto/statement.dto";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
 import { TransferFundsDto } from "./dto/transferFunds.dto";
+import { TransferValidationDto } from "./dto/transferValidation.dto";
 import type { AuthenticatedSocket, AuthPayload } from "./types";
 
 @UsePipes(ZodValidationPipe)
@@ -57,6 +61,8 @@ export class DerivGateway
 		private readonly derivService: DerivService,
 		private readonly tokenService: TokenService,
 		private readonly revocationService: RevocationService,
+		@Inject(forwardRef(() => TransferQueueService))
+		private readonly transferQueueService: TransferQueueService,
 	) {}
 
 	afterInit() {
@@ -133,17 +139,30 @@ export class DerivGateway
 	}
 
 	@RequirePermission(Permissions.PAYMENTS)
+	@SubscribeMessage(DerivSocketEvent.ValidateTransfer)
+	validateTransfer(
+		@ConnectedSocket() client: AuthenticatedSocket,
+		@MessageBody() dto: TransferValidationDto,
+	) {
+		return this.derivService.validateTransfer(
+			client.data.organizationId,
+			dto,
+			client.data.tokenId,
+		);
+	}
+
+	@RequirePermission(Permissions.PAYMENTS)
 	@SubscribeMessage(DerivSocketEvent.TransferFunds)
 	transferFunds(
 		@ConnectedSocket() client: AuthenticatedSocket,
 		@MessageBody() dto: TransferFundsDto,
 	) {
-		return this.derivService.transferFunds(
-			client.data.organizationId,
-			dto,
-			client.data.tokenId,
-			client.data.userId,
-		);
+		return this.transferQueueService.scheduleTransfer({
+			orgId: client.data.organizationId,
+			transferFundsDto: dto,
+			tokenId: client.data.tokenId,
+			userId: client.data.userId,
+		});
 	}
 
 	@RequirePermission(Permissions.READ)

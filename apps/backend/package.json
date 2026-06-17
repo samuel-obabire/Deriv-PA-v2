@@ -20,6 +20,7 @@
 		"test:e2e": "jest --config ./test/jest-e2e.json"
 	},
 	"dependencies": {
+		"@nestjs/bullmq": "^11.0.4",
 		"@nestjs/common": "^11.1.18",
 		"@nestjs/config": "^4.0.3",
 		"@nestjs/core": "^11.1.18",
@@ -34,6 +35,7 @@
 		"@repo/typescript-config": "workspace:^",
 		"@repo/utils": "workspace:^",
 		"@types/pg": "^8.20.0",
+		"bullmq": "^5.78.1",
 		"decimal.js": "^10.6.0",
 		"dotenv": "^17.4.0",
 		"ioredis": "^5.10.1",

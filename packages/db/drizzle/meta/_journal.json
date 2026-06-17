@@ -15,6 +15,20 @@
 			"when": 1780996165775,
 			"tag": "0001_amazing_vapor",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1781709111109,
+			"tag": "0002_living_calypso",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "7",
+			"when": 1781709681071,
+			"tag": "0003_silly_dreaming_celestial",
+			"breakpoints": true
 		}
 	]
 }
