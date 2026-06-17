@@ -18,9 +18,9 @@ const TransferResult = ({ transferData, onReset }: TransferResultProps) => {
 		<div className="flex flex-col gap-6">
 			<div className="flex flex-col items-center gap-2 py-4">
 				<CheckCircle2 className="h-12 w-12 text-green-500" />
-				<h2 className="text-xl font-semibold">Transfer Successful</h2>
+				<h2 className="text-xl font-semibold">Transfer Submitted</h2>
 				<p className="text-sm text-muted-foreground">
-					Your funds have been sent
+					Your transfer is queued for processing
 				</p>
 			</div>
 

@@ -2,6 +2,7 @@
 
 import { Rate } from "@repo/db";
 import useCurrency from "@/hooks/useCurrency";
+import { NewTransferData } from "@/hooks/useRecentTransfers";
 import useTransferFlow from "@/hooks/useTransferFlow";
 import TransferDetails from "./TransferDetails";
 import TransferError from "./TransferError";
@@ -10,9 +11,13 @@ import TransferToClientForm from "./TransferToClientForm";
 
 type TransferToClientProps = {
 	rate: Rate;
+	onTransferSuccess: (data: NewTransferData) => void;
 };
 
-const TransferToClient = ({ rate }: TransferToClientProps) => {
+const TransferToClient = ({
+	rate,
+	onTransferSuccess,
+}: TransferToClientProps) => {
 	const {
 		clearError,
 		onReset,
@@ -47,7 +52,17 @@ const TransferToClient = ({ rate }: TransferToClientProps) => {
 						isPending={isPending}
 						data={transferData}
 						onBack={onTransferCancel}
-						onProceed={() => onTransferSubmit(rate.deposit)}
+						onProceed={() =>
+							onTransferSubmit(rate.deposit, (transactionId) => {
+								onTransferSuccess({
+									id: transactionId,
+									clientAccount: transferData.clientAccount,
+									clientName: transferData.clientName,
+									amount: transferData.amount,
+									currency: selectedCurrency ?? "",
+								});
+							})
+						}
 						currency={selectedCurrency as string}
 					/>
 				);
@@ -61,7 +76,7 @@ const TransferToClient = ({ rate }: TransferToClientProps) => {
 	};
 
 	return (
-		<div className="w-full max-w-112.5 mx-auto">
+		<div>
 			{renderStep()}
 
 			{state.errorMessage && (

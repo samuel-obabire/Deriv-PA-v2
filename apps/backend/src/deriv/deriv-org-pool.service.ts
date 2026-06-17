@@ -15,7 +15,7 @@ export class DerivOrgPoolService implements OnModuleDestroy {
 
 		const orgConnection = new DerivOrgConnection({
 			orgId: orgId,
-			onDrop: this.onDrop,
+			onDrop: this.onDrop.bind(this),
 			tokenId,
 		});
 

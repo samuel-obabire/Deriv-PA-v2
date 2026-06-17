@@ -1,21 +1,28 @@
-import { getOrganizationRate } from "@repo/db/queries";
+import { getOrganizationRate, getRecentTransfersByOrg } from "@repo/db/queries";
 import { Suspense } from "react";
-import TransferToClient from "@/components/funds-transfer/TransferToClient";
+import TransferSection from "@/components/funds-transfer/TransferSection";
 import RateNotConfigured from "@/components/ui/rate-not-configured";
 import { db } from "@/lib/db";
 import { verifySession } from "@/lib/session";
 
 const ProtectedTransferToClient = async () => {
 	const session = await verifySession();
+	const orgId = session.session.activeOrganizationId as string;
 
-	const rate = await getOrganizationRate(
-		session.session.activeOrganizationId as string,
-		db,
-	);
+	const [rate, initialTransfers] = await Promise.all([
+		getOrganizationRate(orgId, db),
+		getRecentTransfersByOrg(orgId, db),
+	]);
 
 	if (!rate) return <RateNotConfigured />;
 
-	return <TransferToClient rate={rate} />;
+	return (
+		<TransferSection
+			rate={rate}
+			orgId={orgId}
+			initialTransfers={initialTransfers}
+		/>
+	);
 };
 
 const TransferToClientPage = () => {
