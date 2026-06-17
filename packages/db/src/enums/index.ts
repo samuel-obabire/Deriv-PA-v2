@@ -25,6 +25,8 @@ export enum TRANSACTION_TYPE {
 
 export enum TRANSACTION_STATUS {
 	PENDING = "pending",
+	PROCESSING = "processing",
 	COMPLETED = "completed",
 	FAILED = "failed",
+	CANCELLED = "cancelled",
 }

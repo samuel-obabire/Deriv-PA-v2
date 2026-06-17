@@ -15,6 +15,11 @@ type TransferFundsPayload = {
 	options: { idempotencyKey: string; ignoreDuplicatePayment?: boolean };
 };
 
+type ValidateTransferPayload = {
+	data: DerivRequestPayload<"paymentagent_transfer">;
+	options: { ignoreDuplicatePayment?: boolean };
+};
+
 class SocketClient {
 	private subscriptions = new Map<
 		DerivSubcriptionEndpoint,
@@ -28,18 +33,13 @@ class SocketClient {
 
 	constructor(private socket: Socket) {}
 
-	private request<
-		T extends DerivEndpointName,
-		P extends object = DerivRequestPayload<T>,
-	>(event: T, data: P) {
+	private rawRequest<R>(event: string, data: object): Promise<R> {
 		const { promise, reject, resolve } = createPromise();
 
-		// Reject immediately if the socket drops before the server acks —
-		// otherwise the ack callback never fires and callers hang indefinitely.
 		const onDisconnect = () => reject(new Error("Socket disconnected"));
 		this.socket.once("disconnect", onDisconnect);
 
-		this.socket.emit(event, data, (response: SocketResponse<T>) => {
+		this.socket.emit(event, data, (response: SocketResponse) => {
 			this.socket.off("disconnect", onDisconnect);
 			if (!response.success) {
 				reject(new Error(response.error.message));
@@ -48,7 +48,14 @@ class SocketClient {
 			}
 		});
 
-		return promise as Promise<DerivResponseData<T>>;
+		return promise as Promise<R>;
+	}
+
+	private request<
+		T extends DerivEndpointName,
+		P extends object = DerivRequestPayload<T>,
+	>(event: T, data: P) {
+		return this.rawRequest<DerivResponseData<T>>(event, data);
 	}
 
 	async subscribe<T extends DerivSubcriptionEndpoint>(
@@ -114,6 +121,16 @@ class SocketClient {
 		}
 		this.socketHandlers.clear();
 		this.subscriptions.clear();
+	}
+
+	validateTransfer(
+		data: DerivRequestPayload<"paymentagent_transfer">,
+		options: { ignoreDuplicatePayment?: boolean } = {},
+	) {
+		return this.rawRequest<DerivResponseData<"paymentagent_transfer">>(
+			"validate-transfer",
+			{ data, options } satisfies ValidateTransferPayload,
+		);
 	}
 
 	transferFunds(

@@ -58,29 +58,6 @@ const useTransferFlow = () => {
 	const { socketClient } = useSocket();
 	const { selectedCurrency } = useCurrency();
 
-	const transfer = (
-		data: TransferData,
-		dryRun: boolean,
-		options: {
-			idempotencyKey: string;
-			ignoreDuplicatePayment?: boolean;
-		},
-	) => {
-		if (!socketClient) throw new Error("Socket disconnected");
-
-		return socketClient.transferFunds(
-			{
-				paymentagent_transfer: 1,
-				amount: Number(data.amount),
-				currency: selectedCurrency as CURRENCY,
-				dry_run: dryRun ? 1 : 0,
-				transfer_to: data.clientAccount,
-				description: data.description,
-			},
-			options,
-		);
-	};
-
 	const setPending = (pending: boolean) => {
 		dispatch({ type: "setPending", payload: pending });
 	};
@@ -93,12 +70,24 @@ const useTransferFlow = () => {
 	};
 
 	const onValidation = async (transferData: TransferData) => {
+		if (!socketClient) throw new Error("Socket disconnected");
+
 		setPending(true);
 
 		const idempotencyKey = crypto.randomUUID();
 
 		const [validationResult, error] = await tryCatch(() =>
-			transfer(transferData, true, { idempotencyKey }),
+			socketClient.validateTransfer(
+				{
+					paymentagent_transfer: 1,
+					amount: Number(transferData.amount),
+					currency: selectedCurrency as CURRENCY,
+					dry_run: 1,
+					transfer_to: transferData.clientAccount,
+					description: transferData.description,
+				},
+				{ ignoreDuplicatePayment: state.options.ignoreDuplicatePayment },
+			),
 		);
 
 		setPending(false);
@@ -124,6 +113,8 @@ const useTransferFlow = () => {
 	};
 
 	const onTransferSubmit = async (depositRate: number) => {
+		if (!socketClient) throw new Error("Socket disconnected");
+
 		const { idempotencyKey } = state.options;
 		if (!idempotencyKey) return;
 
@@ -136,10 +127,20 @@ const useTransferFlow = () => {
 		);
 
 		const [, error] = await tryCatch(() =>
-			transfer({ ...state.transferData, description }, false, {
-				idempotencyKey,
-				ignoreDuplicatePayment: state.options.ignoreDuplicatePayment,
-			}),
+			socketClient.transferFunds(
+				{
+					paymentagent_transfer: 1,
+					amount: Number(state.transferData.amount),
+					currency: selectedCurrency as CURRENCY,
+					dry_run: 0,
+					transfer_to: state.transferData.clientAccount,
+					description,
+				},
+				{
+					idempotencyKey,
+					ignoreDuplicatePayment: state.options.ignoreDuplicatePayment,
+				},
+			),
 		);
 
 		setPending(false);

@@ -23,16 +23,13 @@ const useClientName = (
 
 			setIsLoading(true);
 			const [result, fetchError] = await tryCatch(() =>
-				socketClient.transferFunds(
-					{
-						paymentagent_transfer: 1,
-						transfer_to: clientAccount,
-						currency: currency as CURRENCY,
-						amount: minAmount,
-						dry_run: 1, // important
-					},
-					{ idempotencyKey: crypto.randomUUID() },
-				),
+				socketClient.validateTransfer({
+					paymentagent_transfer: 1,
+					transfer_to: clientAccount,
+					currency: currency as CURRENCY,
+					amount: minAmount,
+					dry_run: 1,
+				}),
 			);
 			setIsLoading(false);
 
