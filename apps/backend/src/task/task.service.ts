@@ -10,7 +10,9 @@ export class TasksService {
 		private readonly derivGateway: DerivGateway,
 	) {}
 
-	@Cron(CronExpression.EVERY_5_MINUTES)
+	@Cron(CronExpression.EVERY_5_MINUTES, {
+		name: "idle-job-cleaner",
+	})
 	sweepIdleConnections() {
 		const now = Date.now();
 
