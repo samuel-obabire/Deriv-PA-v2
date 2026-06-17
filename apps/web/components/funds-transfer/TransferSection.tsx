@@ -20,8 +20,10 @@ const TransferSection = ({
 		useRecentTransfers(initialTransfers);
 
 	return (
-		<div className="w-full max-w-112.5 mx-auto flex flex-col gap-36">
-			<TransferToClient rate={rate} onTransferSuccess={addTransfer} />
+		<div className="w-full max-w-112.5 mx-auto flex flex-col gap-8">
+			<div className="min-h-[calc(100dvh-12rem)]">
+				<TransferToClient rate={rate} onTransferSuccess={addTransfer} />
+			</div>
 			<RecentTransfers
 				transfers={transfers}
 				orgId={orgId}

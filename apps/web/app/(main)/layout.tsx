@@ -11,7 +11,7 @@ export default async function AuditLayout({ children }: PropsWithChildren) {
 				<DesktopSideBar sessionPromise={sessionPromise} />
 			</Suspense>
 
-			<main className="overflow-y-auto">{children}</main>
+			<main className="overflow-y-auto h-full">{children}</main>
 		</div>
 	);
 }
