@@ -6,12 +6,12 @@ export default async function AuditLayout({ children }: PropsWithChildren) {
 	const sessionPromise = verifySession();
 
 	return (
-		<div className="lg:grid lg:grid-cols-[300px_1fr]">
+		<div className="lg:grid lg:grid-cols-[300px_1fr] h-dvh overflow-hidden">
 			<Suspense fallback={<div />}>
 				<DesktopSideBar sessionPromise={sessionPromise} />
 			</Suspense>
 
-			<main>{children}</main>
+			<main className="overflow-y-auto">{children}</main>
 		</div>
 	);
 }

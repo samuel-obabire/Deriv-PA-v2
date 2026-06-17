@@ -1,7 +1,7 @@
 import { TZDate } from "@date-fns/tz";
 import { format } from "date-fns";
 
-const formatDate = (date: Date) => {
+export const formatDate = (date: Date) => {
 	const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 	return format(new TZDate(date, tz), "Pp");

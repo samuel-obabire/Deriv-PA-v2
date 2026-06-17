@@ -1,3 +1,6 @@
+import { RequestError } from "../errors";
+import { ErrorResponse } from "../types/global";
+
 const fetchHandler = async <T>(
 	url: string,
 	options?: RequestInit,
@@ -19,13 +22,20 @@ const fetchHandler = async <T>(
 		});
 
 		if (!res.ok) {
-			throw new Error(`Request failed with status ${res.status}`);
+			const errorData = (await res.json().catch(() => null)) as ErrorResponse;
+
+			throw new RequestError(
+				res.status,
+				errorData?.error?.message ?? `Request failed with status ${res.status}`,
+			);
 		}
 
 		return (await res.json()) as T;
 	} catch (err) {
 		if (err instanceof Error && err.name === "AbortError") {
-			throw new Error("Request Aborted as server did not respond on time.");
+			throw new Error(
+				"Request aborted because the server did not respond in time.",
+			);
 		}
 
 		throw err;

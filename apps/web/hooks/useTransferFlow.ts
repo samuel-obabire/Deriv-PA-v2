@@ -112,7 +112,10 @@ const useTransferFlow = () => {
 		});
 	};
 
-	const onTransferSubmit = async (depositRate: number) => {
+	const onTransferSubmit = async (
+		depositRate: number,
+		onSuccess?: (transactionId: string) => void,
+	) => {
 		if (!socketClient) throw new Error("Socket disconnected");
 
 		const { idempotencyKey } = state.options;
@@ -126,7 +129,7 @@ const useTransferFlow = () => {
 			state.transferData.description,
 		);
 
-		const [, error] = await tryCatch(() =>
+		const [result, error] = await tryCatch(() =>
 			socketClient.transferFunds(
 				{
 					paymentagent_transfer: 1,
@@ -157,6 +160,9 @@ const useTransferFlow = () => {
 		}
 
 		dispatch({ type: "setStep", payload: 3 });
+
+		const transactionId = (result as unknown as { id: string }).id;
+		if (transactionId) onSuccess?.(transactionId);
 	};
 
 	const onReset = () => {
