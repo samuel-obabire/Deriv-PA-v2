@@ -47,7 +47,7 @@ export const sidebarConfig: SidebarGroup[] = [
 				title: "Organization",
 				href: ROUTES.ORGANIZATION,
 				icon: Building2,
-				permission: { resource: "organization", action: "update" },
+				permission: { resource: "ac", action: "read" },
 			},
 			{
 				title: "Organization Members",
