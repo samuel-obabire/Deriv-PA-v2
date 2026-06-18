@@ -39,6 +39,9 @@ const options = {
 			enabled: true,
 			maxAge: 5 * 60,
 		},
+
+		expiresIn: 60 * 60 * 24, // 24 hours
+		updateAge: 60 * 60, // Check every 60 minutes
 	},
 
 	hooks: {
