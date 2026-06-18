@@ -2,6 +2,7 @@ import * as schema from "@repo/db";
 import { getUser } from "@repo/db/queries";
 import { type BetterAuthOptions, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { customSession, Member, organization } from "better-auth/plugins";
 import { db } from "./db";
@@ -16,8 +17,10 @@ import {
 } from "./permissions";
 import { clientEnv } from "./validations/env/client";
 
+const APP_NAME = "DerivPA";
+
 const options = {
-	appName: "Adeluxe",
+	appName: APP_NAME,
 	baseURL: clientEnv.NEXT_PUBLIC_URL,
 
 	database: drizzleAdapter(db, {
@@ -34,8 +37,26 @@ const options = {
 	session: {
 		cookieCache: {
 			enabled: true,
-			maxAge: 15 * 60,
+			maxAge: 5 * 60,
 		},
+	},
+
+	hooks: {
+		after: createAuthMiddleware(async (ctx) => {
+			if (ctx.path.includes("sign-in") && ctx.context.newSession) {
+				const { session, user } = ctx.context.newSession;
+
+				const allSessions = await ctx.context.internalAdapter.listSessions(
+					user.id,
+				);
+
+				for (const s of allSessions) {
+					if (s.token !== session.token) {
+						await ctx.context.internalAdapter.deleteSession(s.token);
+					}
+				}
+			}
+		}),
 	},
 
 	databaseHooks: {
