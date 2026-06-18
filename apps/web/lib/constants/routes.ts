@@ -12,7 +12,7 @@ const ROUTES = {
 	STATEMENT: "/reports/statement",
 	SUMMARY: "/summary",
 	SETTINGS_RATES: "/settings/rate",
-	ORGANIZATION: "/organization",
+	ORGANIZATION: "/settings/organization",
 	ORGANIZATION_MEMBERS: "/settings/members",
 	DERIV_TOKENS: "/settings/deriv-tokens",
 
