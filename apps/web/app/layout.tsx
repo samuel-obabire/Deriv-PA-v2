@@ -19,8 +19,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-	title: "Adeluxe Monitor",
-	description: "Generated for Adeluxe",
+	title: "DerivPA",
+	description: "Payment agent management platform for Deriv partners",
 };
 
 export default function RootLayout({

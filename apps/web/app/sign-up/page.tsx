@@ -1,14 +1,6 @@
-"use client";
+import { redirect } from "next/navigation";
+import ROUTES from "@/lib/constants/routes";
 
-import Signup from "@/components/forms/Signup";
-import { signUp } from "@/lib/actions/auth/signup";
+const SignUpPage = () => redirect(ROUTES.SIGN_IN);
 
-const SignupPage = () => {
-	return (
-		<div className="container flex flex-center h-screen">
-			<Signup onSubmit={signUp} />
-		</div>
-	);
-};
-
-export default SignupPage;
+export default SignUpPage;

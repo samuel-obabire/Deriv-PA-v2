@@ -16,12 +16,21 @@ import {
 	RoleNames,
 } from "./permissions";
 import { clientEnv } from "./validations/env/client";
+import { serverEnv } from "./validations/env/server";
 
 const APP_NAME = "DerivPA";
 
 const options = {
 	appName: APP_NAME,
 	baseURL: clientEnv.NEXT_PUBLIC_URL,
+
+	socialProviders: {
+		google: {
+			prompt: "select_account",
+			clientId: serverEnv.GOOGLE_CLIENT_ID,
+			clientSecret: serverEnv.GOOGLE_CLIENT_SECRET,
+		},
+	},
 
 	database: drizzleAdapter(db, {
 		provider: "pg",
