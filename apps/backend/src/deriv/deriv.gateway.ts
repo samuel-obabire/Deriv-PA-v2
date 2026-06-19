@@ -32,6 +32,7 @@ import { DecodedJwtAccessToken } from "src/iam/types";
 import { TransferQueueService } from "src/transfers/transfer-queue.service";
 import { DerivService } from "./deriv.service";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
+import { ClientNameValidationDto } from "./dto/clientNameValidation.dto";
 import { StatementDto } from "./dto/statement.dto";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
 import { TransferFundsDto } from "./dto/transferFunds.dto";
@@ -145,6 +146,19 @@ export class DerivGateway
 		@MessageBody() dto: TransferValidationDto,
 	) {
 		return this.derivService.validateTransfer(
+			client.data.organizationId,
+			dto,
+			client.data.tokenId,
+		);
+	}
+
+	@RequirePermission(Permissions.READ)
+	@SubscribeMessage(DerivSocketEvent.ValidateClientName)
+	validateClientName(
+		@ConnectedSocket() client: AuthenticatedSocket,
+		@MessageBody() dto: ClientNameValidationDto,
+	) {
+		return this.derivService.validateClientName(
 			client.data.organizationId,
 			dto,
 			client.data.tokenId,

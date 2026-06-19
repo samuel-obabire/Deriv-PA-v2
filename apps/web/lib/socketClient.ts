@@ -3,6 +3,7 @@ import {
 	DerivEndpointName,
 	DerivRequestPayload,
 	DerivResponseData,
+	DerivSocketEvent,
 	DerivSubcriptionEndpoint,
 } from "@repo/deriv";
 import { Socket } from "socket.io-client";
@@ -18,6 +19,10 @@ type TransferFundsPayload = {
 type ValidateTransferPayload = {
 	data: DerivRequestPayload<"paymentagent_transfer">;
 	options: { ignoreDuplicatePayment?: boolean };
+};
+
+type ValidateClientNamePayload = {
+	data: DerivRequestPayload<"paymentagent_transfer"> & { dry_run: 1 };
 };
 
 class SocketClient {
@@ -128,8 +133,15 @@ class SocketClient {
 		options: { ignoreDuplicatePayment?: boolean } = {},
 	) {
 		return this.rawRequest<DerivResponseData<"paymentagent_transfer">>(
-			"validate-transfer",
+			DerivSocketEvent.ValidateTransfer,
 			{ data, options } satisfies ValidateTransferPayload,
+		);
+	}
+
+	validateClientName(data: ValidateClientNamePayload["data"]) {
+		return this.rawRequest<DerivResponseData<"paymentagent_transfer">>(
+			DerivSocketEvent.ValidateClientName,
+			{ data },
 		);
 	}
 
@@ -138,22 +150,22 @@ class SocketClient {
 		options: { idempotencyKey: string; ignoreDuplicatePayment?: boolean },
 	) {
 		return this.request<"paymentagent_transfer", TransferFundsPayload>(
-			"paymentagent_transfer",
+			DerivSocketEvent.TransferFunds,
 			{ data, options },
 		);
 	}
 
 	getStatement(data: DerivRequestPayload<"statement">) {
-		return this.request("statement", data);
+		return this.request(DerivSocketEvent.Statement, data);
 	}
 
 	authorize(data: DerivRequestPayload<"authorize">) {
-		return this.request("authorize", data);
+		return this.request(DerivSocketEvent.Authorize, data);
 	}
 
 	async subscribeBalance(onData: Listener<DerivResponseData<"balance">>) {
 		const [, cleanup] = await this.subscribe(
-			"balance",
+			DerivSocketEvent.Balance,
 			{
 				subscribe: 1,
 				balance: 1,
