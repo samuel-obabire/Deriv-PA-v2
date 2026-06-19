@@ -3,10 +3,10 @@
 import { tryCatch } from "@repo/utils";
 import * as z from "zod";
 import { ActionResponse, ErrorResponse } from "@/lib/types/global";
+import { SignUpSchema } from "@/lib/validations/auth/sign-up";
 import { auth } from "../../auth";
 import action from "../../handlers/action";
 import handleError from "../../http-errors";
-import { SignUpSchema } from "../../validations/auth/sign-up";
 
 export const signUp = async (
 	data: z.infer<typeof SignUpSchema>,
@@ -17,11 +17,11 @@ export const signUp = async (
 
 	if (validationError) return handleError(validationError) as ErrorResponse;
 
-	const [, userCreationError] = await tryCatch(() =>
+	const [, userSignUpError] = await tryCatch(() =>
 		auth.api.signUpEmail({ body: actionResult.params }),
 	);
 
-	if (userCreationError) return handleError(userCreationError) as ErrorResponse;
+	if (userSignUpError) return handleError(userSignUpError) as ErrorResponse;
 
 	return { success: true };
 };

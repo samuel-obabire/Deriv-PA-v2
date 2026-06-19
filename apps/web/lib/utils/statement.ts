@@ -59,7 +59,7 @@ export function calculateNairaEquivalent(
 	if (transaction.action_type === "deposit") {
 		const price = roundToNearest(
 			mul(absAmount, rate.withdrawal, ROUND_HALF_UP),
-			10,
+			5,
 		).toNumber();
 		return absAmount < rate.smallAmount ? price - rate.charge : price;
 	}

@@ -1,3 +1,5 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { tryCatch } from "@repo/utils";
 import Link from "next/link";
@@ -28,7 +30,10 @@ import { SignUpSchema } from "@/lib/validations/auth/sign-up";
 type SignupProps = {
 	onSubmit: (data: z.infer<typeof SignUpSchema>) => Promise<ActionResponse>;
 };
+
 const Signup = ({ onSubmit }: SignupProps) => {
+	const router = useRouter();
+
 	const form = useForm<z.infer<typeof SignUpSchema>>({
 		resolver: zodResolver(SignUpSchema),
 		defaultValues: {
@@ -39,8 +44,6 @@ const Signup = ({ onSubmit }: SignupProps) => {
 		},
 	});
 
-	const router = useRouter();
-
 	const handleSubmit = async (data: z.infer<typeof SignUpSchema>) => {
 		const [result, error] = await tryCatch(() => onSubmit(data));
 
@@ -48,7 +51,7 @@ const Signup = ({ onSubmit }: SignupProps) => {
 
 		if (result?.success) {
 			router.push(ROUTES.DASHBOARD);
-			return toast.success("signup complete");
+			return toast.success("Signup complete");
 		} else {
 			toast.error(result?.error?.message);
 		}
@@ -60,6 +63,7 @@ const Signup = ({ onSubmit }: SignupProps) => {
 				<CardTitle>Create Account</CardTitle>
 				<CardDescription>Create an account to start auditing</CardDescription>
 			</CardHeader>
+
 			<CardContent>
 				<form id="signup-form" onSubmit={form.handleSubmit(handleSubmit)}>
 					<FieldGroup>
@@ -71,7 +75,6 @@ const Signup = ({ onSubmit }: SignupProps) => {
 									<FieldLabel htmlFor="name">Name</FieldLabel>
 									<Input
 										{...field}
-										className="input-class"
 										id="name"
 										aria-invalid={fieldState.invalid}
 										placeholder="Adeluxe Hub"
@@ -91,7 +94,6 @@ const Signup = ({ onSubmit }: SignupProps) => {
 									<FieldLabel htmlFor="email">Email</FieldLabel>
 									<Input
 										{...field}
-										className="input-class"
 										id="email"
 										aria-invalid={fieldState.invalid}
 										placeholder="Enter email"
@@ -111,7 +113,6 @@ const Signup = ({ onSubmit }: SignupProps) => {
 									<FieldLabel htmlFor="password">Password</FieldLabel>
 									<Input
 										{...field}
-										className="input-class"
 										id="password"
 										type="password"
 										aria-invalid={fieldState.invalid}
@@ -129,10 +130,11 @@ const Signup = ({ onSubmit }: SignupProps) => {
 							control={form.control}
 							render={({ field, fieldState }) => (
 								<Field data-invalid={fieldState.invalid}>
-									<FieldLabel htmlFor="password">Confirm Password</FieldLabel>
+									<FieldLabel htmlFor="confirm-password">
+										Confirm Password
+									</FieldLabel>
 									<Input
 										{...field}
-										className="input-class"
 										id="confirm-password"
 										type="password"
 										aria-invalid={fieldState.invalid}
@@ -147,6 +149,7 @@ const Signup = ({ onSubmit }: SignupProps) => {
 					</FieldGroup>
 				</form>
 			</CardContent>
+
 			<CardFooter className="flex flex-col gap-3">
 				<Field orientation="responsive">
 					<Button form="signup-form" type="submit">

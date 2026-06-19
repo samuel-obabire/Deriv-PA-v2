@@ -2,7 +2,6 @@ import { clientEnv } from "../validations/env/client";
 
 const ROUTES = {
 	SIGN_IN: "/sign-in",
-	SIGN_UP: "/sign-up",
 	HOME: "/",
 	DASHBOARD: "/dashboard",
 	PAYOUTS: "/payouts",
