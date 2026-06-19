@@ -3,7 +3,7 @@
 
 import { type Rate } from "@repo/db";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -115,6 +115,10 @@ type BackProps = {
 	rate: Rate;
 	currency: string;
 	onFlip: () => void;
+	clientName: string | undefined;
+	isLoading: boolean;
+	error: boolean;
+	fetchName: () => Promise<void>;
 };
 
 const StatementCardBack = ({
@@ -122,10 +126,14 @@ const StatementCardBack = ({
 	rate,
 	currency,
 	onFlip,
+	clientName,
+	isLoading,
+	error,
+	fetchName,
 }: BackProps) => {
-	const { action_type, longcode } = transaction;
+	const { action_type, longcode, amount, transaction_time } = transaction;
 
-	const counterpartyAccount = extractCounterpartyCR(longcode ?? "");
+	const formattedAmount = formatAmount(amount as number, currency);
 	const extractedRate =
 		action_type === "withdrawal" ? extractRateFromAgentNote(longcode) : null;
 	const nairaEquivalent = calculateNairaEquivalent(
@@ -134,12 +142,11 @@ const StatementCardBack = ({
 		extractedRate,
 	);
 
-	const {
-		name: clientName,
-		isLoading,
-		error,
-		fetchName,
-	} = useClientName(counterpartyAccount, currency, rate.min);
+	useEffect(() => {
+		if (action_type === "deposit") {
+			fetchName();
+		}
+	}, [action_type, fetchName]);
 
 	return (
 		<Card
@@ -149,6 +156,21 @@ const StatementCardBack = ({
 			<CardContent className="w-full space-y-3 pt-4">
 				<div className="text-muted-foreground wrap-break-word text-xs leading-relaxed sm:text-sm">
 					{adjustUKDateInText(longcode ?? "")}
+				</div>
+
+				<div className="flex items-start justify-between gap-2">
+					<span className="text-muted-foreground text-xs leading-snug sm:text-sm">
+						{adjustUKDateInText(
+							new Date((transaction_time as number) * 1000)
+								.toUTCString()
+								.replace(/^[A-Za-z]+,\s/, ""),
+						)}
+					</span>
+					<span
+						className={`shrink-0 text-xs font-bold sm:text-sm ${(amount as number) >= 0 ? "text-green-500" : "text-blue-600"}`}
+					>
+						{(amount as number) >= 0 ? `+${formattedAmount}` : formattedAmount}
+					</span>
 				</div>
 
 				{nairaEquivalent !== null ? (
@@ -167,22 +189,27 @@ const StatementCardBack = ({
 				) : null}
 
 				{action_type === "deposit" ? (
-					<div className="flex flex-wrap items-center gap-2">
-						<Button
-							size="xs"
-							variant="outline"
-							onClick={fetchName}
-							disabled={isLoading}
-						>
-							{isLoading ? "..." : "Get Name"}
-						</Button>
-
-						{clientName || error ? (
-							<Copy value={clientName ?? ""}>
+					<div className="flex items-center justify-between gap-2 text-xs sm:text-sm">
+						<span className="shrink-0 font-medium">Client Name</span>
+						{isLoading ? (
+							<span className="text-muted-foreground text-xs">Fetching...</span>
+						) : clientName ? (
+							<Copy value={clientName}>
 								<span className="text-muted-foreground text-xs">
-									{error ? "Something went wrong" : clientName}
+									{clientName}
 								</span>
 							</Copy>
+						) : error ? (
+							<Button
+								size="xs"
+								variant="outline"
+								onClick={(e) => {
+									e.stopPropagation();
+									fetchName();
+								}}
+							>
+								Retry
+							</Button>
 						) : null}
 					</div>
 				) : null}
@@ -202,6 +229,18 @@ type Props = {
 const StatementCard = ({ transaction, currency, rate }: Props) => {
 	const [flipped, setFlipped] = useState(false);
 
+	const counterpartyAccount =
+		transaction.action_type === "deposit"
+			? extractCounterpartyCR(transaction.longcode ?? "")
+			: null;
+
+	const {
+		name: clientName,
+		isLoading,
+		error,
+		fetchName,
+	} = useClientName(counterpartyAccount, currency, rate.min);
+
 	return (
 		<div className="mx-auto w-full max-w-md sm:max-w-xl lg:max-w-2xl">
 			{!flipped ? (
@@ -216,6 +255,10 @@ const StatementCard = ({ transaction, currency, rate }: Props) => {
 					rate={rate}
 					currency={currency}
 					onFlip={() => setFlipped(false)}
+					clientName={clientName}
+					isLoading={isLoading}
+					error={error}
+					fetchName={fetchName}
 				/>
 			)}
 		</div>
