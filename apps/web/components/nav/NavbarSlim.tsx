@@ -16,7 +16,7 @@ const NavbarSlim = ({
 	return (
 		<nav className="flex items-center p-2 justify-between gap-8">
 			<div className="lg:hidden">
-				<SideBar role={session.user.role} />
+				<SideBar role={session.user.role} user={session.user} />
 			</div>
 
 			<div className="hidden lg:block">

@@ -8,7 +8,7 @@ const headerClassName = "bg-background h-16 top-0 sticky z-50";
 const LayoutHeader = async () => {
 	const session = await verifySession();
 
-	return <Navbar role={session.user.role} />;
+	return <Navbar role={session.user.role} user={session.user} />;
 };
 
 export default function WithBalanceLayout({ children }: PropsWithChildren) {

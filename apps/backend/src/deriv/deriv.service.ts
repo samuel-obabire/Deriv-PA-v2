@@ -6,6 +6,7 @@ import { RedisService } from "src/iam/redis/redis.service";
 import { CurrencyTokenService } from "./currency-token.service";
 import { DerivOrgConnection } from "./deriv-org-connection";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
+import { ClientNameValidationDto } from "./dto/clientNameValidation.dto";
 import { StatementDto } from "./dto/statement.dto";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
 import { TransferValidationDto } from "./dto/transferValidation.dto";
@@ -54,6 +55,24 @@ export class DerivService {
 				"Duplicate detected! Your Organisation has sent a payment to this account within last 30 minutes",
 			);
 		}
+
+		return orgDerivSocket.send({
+			name: "paymentagent_transfer",
+			payload: data,
+		});
+	}
+
+	async validateClientName(
+		orgId: string,
+		dto: ClientNameValidationDto,
+		tokenId: string,
+	) {
+		const orgDerivSocket = this.derivOrgPoolService.getOrganizationSocket(
+			orgId,
+			tokenId,
+		);
+
+		const { data } = dto;
 
 		return orgDerivSocket.send({
 			name: "paymentagent_transfer",

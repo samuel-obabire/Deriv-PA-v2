@@ -2,7 +2,7 @@
 
 import { type CURRENCY } from "@repo/db/enums";
 import { tryCatch } from "@repo/utils";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState, useTransition } from "react";
 
 import useSocket from "@/hooks/useSocket";
 
@@ -13,33 +13,36 @@ const useClientName = (
 ) => {
 	const { socketClient } = useSocket();
 	const [name, setName] = useState<string | undefined>();
-	const [isLoading, setIsLoading] = useState(false);
+	const [isPending, startTransition] = useTransition();
 	const [error, setError] = useState(false);
+	const isFetchingRef = useRef(false);
 
 	const fetchName = useCallback(async () => {
-		if (!socketClient || !clientAccount || name || isLoading) return;
+		if (!socketClient || !clientAccount || name || isFetchingRef.current)
+			return;
 
-		setIsLoading(true);
+		isFetchingRef.current = true;
 		setError(false);
-		const [result, fetchError] = await tryCatch(() =>
-			socketClient.validateTransfer({
-				paymentagent_transfer: 1,
-				transfer_to: clientAccount,
-				currency: currency as CURRENCY,
-				amount: minAmount,
-				dry_run: 1,
-			}),
-		);
-		setIsLoading(false);
+		startTransition(async () => {
+			const [result, fetchError] = await tryCatch(() =>
+				socketClient.validateClientName({
+					paymentagent_transfer: 1,
+					transfer_to: clientAccount,
+					currency: currency as CURRENCY,
+					amount: minAmount,
+					dry_run: 1,
+				}),
+			);
+			isFetchingRef.current = false;
+			if (!fetchError && result?.paymentagent_transfer === 2) {
+				setName(result.client_to_full_name ?? undefined);
+			} else {
+				setError(true);
+			}
+		});
+	}, [socketClient, clientAccount, currency, minAmount, name]);
 
-		if (!fetchError && result?.paymentagent_transfer === 2) {
-			setName(result.client_to_full_name ?? undefined);
-		} else {
-			setError(true);
-		}
-	}, [socketClient, clientAccount, currency, minAmount, name, isLoading]);
-
-	return { name, isLoading, error, fetchName };
+	return { name, isPending, error, fetchName };
 };
 
 export default useClientName;

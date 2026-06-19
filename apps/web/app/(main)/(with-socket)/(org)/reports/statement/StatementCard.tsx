@@ -203,6 +203,7 @@ const StatementCardBack = ({
 							<Button
 								size="xs"
 								variant="outline"
+								disabled={isLoading}
 								onClick={(e) => {
 									e.stopPropagation();
 									fetchName();
@@ -236,7 +237,7 @@ const StatementCard = ({ transaction, currency, rate }: Props) => {
 
 	const {
 		name: clientName,
-		isLoading,
+		isPending,
 		error,
 		fetchName,
 	} = useClientName(counterpartyAccount, currency, rate.min);
@@ -256,7 +257,7 @@ const StatementCard = ({ transaction, currency, rate }: Props) => {
 					currency={currency}
 					onFlip={() => setFlipped(false)}
 					clientName={clientName}
-					isLoading={isLoading}
+					isLoading={isPending}
 					error={error}
 					fetchName={fetchName}
 				/>

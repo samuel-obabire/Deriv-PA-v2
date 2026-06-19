@@ -17,18 +17,21 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
-import { Session } from "@/lib/auth";
+import { Session, User } from "@/lib/auth";
 import { RoleNames } from "@/lib/permissions";
 import Logout from "../../auth/Logout";
 import { SidebarGroup, SidebarItem } from "./types";
+import UserCard from "./UserCard";
 import { getSidebarForRole } from "./utils";
 
 const SidebarContent = ({
 	renderItems,
 	groups,
+	user,
 }: {
 	groups: SidebarGroup[];
 	renderItems: (items: SidebarItem[]) => ReactNode;
+	user: User;
 }) => {
 	return (
 		<div className="h-full flex flex-col justify-between p-4 pt-6 text-16-regular">
@@ -47,9 +50,12 @@ const SidebarContent = ({
 				))}
 			</div>
 
-			<div className="flex justify-between">
-				<ThemeToggler />
-				<Logout />
+			<div className="space-y-3">
+				<UserCard user={user} />
+				<div className="flex justify-between">
+					<ThemeToggler />
+					<Logout />
+				</div>
 			</div>
 		</div>
 	);
@@ -97,6 +103,7 @@ export const DesktopSideBar = ({
 		<aside className="hidden pt-10 lg:block h-dvh border-r shadow-sidebar-primary overflow-y-auto">
 			<SidebarContent
 				groups={groups}
+				user={session.user}
 				renderItems={(items) => {
 					return items.map((item) => {
 						const isActive = pathname === item.href;
@@ -117,7 +124,7 @@ export const DesktopSideBar = ({
 	);
 };
 
-const SideBar = ({ role }: { role: RoleNames }) => {
+const SideBar = ({ role, user }: { role: RoleNames; user: User }) => {
 	const pathname = usePathname();
 	const groups = getSidebarForRole(role);
 
@@ -132,6 +139,7 @@ const SideBar = ({ role }: { role: RoleNames }) => {
 				<SheetTitle className="sr-only">Navigation</SheetTitle>
 				<SidebarContent
 					groups={groups}
+					user={user}
 					renderItems={(items) => {
 						return items.map((item) => {
 							const isActive = pathname === item.href;
