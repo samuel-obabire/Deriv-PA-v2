@@ -67,7 +67,13 @@ const TransferToClient = ({
 					/>
 				);
 			case 3:
-				return <TransferResult transferData={transferData} onReset={onReset} />;
+				return (
+					<TransferResult
+						currency={selectedCurrency as string}
+						transferData={transferData}
+						onReset={onReset}
+					/>
+				);
 			default: {
 				const exhaustiveStep: never = step;
 				throw new Error(`Unhandled step: ${exhaustiveStep}`);
