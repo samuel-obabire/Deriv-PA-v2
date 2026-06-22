@@ -55,7 +55,8 @@ const options = {
 
 	hooks: {
 		after: createAuthMiddleware(async (ctx) => {
-			if (ctx.path.includes("sign-in") && ctx.context.newSession) {
+			if (ctx.context.newSession) {
+				// destroy other sessions on sign-in
 				const { session, user } = ctx.context.newSession;
 
 				const allSessions = await ctx.context.internalAdapter.listSessions(
