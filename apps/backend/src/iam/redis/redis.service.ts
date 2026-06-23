@@ -42,8 +42,12 @@ export class RedisService
 			NX?: boolean;
 		},
 	) {
-		if (typeof options.ttlSeconds === "number") {
+		if (typeof options.ttlSeconds === "number" && options.NX) {
+			await this.redisClient.set(key, value, "EX", options.ttlSeconds, "NX");
+		} else if (typeof options.ttlSeconds === "number") {
 			await this.redisClient.set(key, value, "EX", options.ttlSeconds);
+		} else if (options.NX) {
+			await this.redisClient.set(key, value, "NX");
 		} else {
 			await this.redisClient.set(key, value);
 		}
@@ -61,8 +65,7 @@ export class RedisService
 		return this.redisClient.incr(key);
 	}
 
-	async validate(id: string, expectedValue: string) {
-		const storedValue = await this.redisClient.get(id);
+	async validate(storedValue: string, expectedValue: string) {
 		if (storedValue !== expectedValue) throw new InvalidatedValueError();
 		return storedValue;
 	}
@@ -71,12 +74,8 @@ export class RedisService
 		await this.redisClient.del(id);
 	}
 
-	async consume(id: string, expectedValue: string) {
-		const stored = await this.validate(id, expectedValue);
-
-		await this.invalidate(id);
-
-		return stored;
+	async consume(id: string) {
+		return await this.redisClient.getdel(id);
 	}
 
 	async getOrSet(key: string, value: string) {

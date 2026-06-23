@@ -19,7 +19,7 @@ import {
 	WsException,
 } from "@nestjs/websockets";
 import { DerivSocketEvent, orgTokenKey } from "@repo/deriv";
-import { Permissions } from "@repo/utils";
+import { Permissions, WsAuthError } from "@repo/utils";
 import { ZodValidationPipe } from "nestjs-zod";
 import { Server, Socket } from "socket.io";
 import { RequirePermission } from "src/common/decorators/permissions.decorator";
@@ -196,7 +196,7 @@ export class DerivGateway
 		const { accessToken } = socket.handshake.auth as Partial<AuthPayload>;
 
 		if (!accessToken) {
-			throw new WsException("Missing auth params");
+			throw new WsException(WsAuthError.MissingAuthParams);
 		}
 
 		const { organizationId, permissions, sub, tokenId, version } =
@@ -205,7 +205,7 @@ export class DerivGateway
 		const userVersion = await this.revocationService.getVersion(sub);
 
 		if (userVersion !== version.toString()) {
-			throw new WsException("Access denied");
+			throw new WsException(WsAuthError.AccessDenied);
 		}
 
 		socket.data = {
