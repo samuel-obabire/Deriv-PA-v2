@@ -1,7 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { ConfigType } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
+import { WsException } from "@nestjs/websockets";
+import { WsAuthError } from "@repo/utils";
 import jwtConfig from "../jwt/jwt.config";
+import { RedisService } from "../redis/redis.service";
 
 @Injectable()
 export class TokenService {
@@ -9,9 +12,10 @@ export class TokenService {
 		@Inject(jwtConfig.KEY)
 		private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
 		private readonly jwtService: JwtService,
+		private readonly redisService: RedisService,
 	) {}
 
-	async signToken<T>(sub: string, expiresIn: number, payload: T) {
+	private async signToken<T>(sub: string, expiresIn: number, payload: T) {
 		return this.jwtService.signAsync(
 			{ sub, ...payload },
 			{
@@ -38,10 +42,34 @@ export class TokenService {
 			},
 		);
 
+		await this.registerToken(accessToken, sub);
+
 		return { accessToken };
 	}
 
 	async verifyToken<T extends object>(token: string) {
-		return this.jwtService.verifyAsync<T>(token, this.jwtConfiguration);
+		const decoded = await this.jwtService.verifyAsync<T>(
+			token,
+			this.jwtConfiguration,
+		);
+
+		await this.consumeToken(token);
+
+		return decoded;
+	}
+
+	private async registerToken(token: string, value: string) {
+		await this.redisService.insert(token, value, {
+			ttlSeconds: this.jwtConfiguration.accessTokenTtl,
+			NX: true,
+		});
+	}
+
+	private async consumeToken(token: string) {
+		const stored: string | null = await this.redisService.consume(token);
+
+		if (!stored) {
+			throw new WsException(WsAuthError.InvalidToken);
+		}
 	}
 }

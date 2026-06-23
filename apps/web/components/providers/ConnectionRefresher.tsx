@@ -12,7 +12,7 @@ const STALE_AFTER_MS = 10_000;
 
 const ConnectionRefresher = ({ children }: PropsWithChildren) => {
 	const { socket, isSocketBusy } = useSocket();
-	const { accessToken, isTokenValid, refreshToken } = useAccessToken();
+	const { accessToken, refreshToken } = useAccessToken();
 
 	const lockRef = useRef(false);
 	const hiddenAtRef = useRef<number | null>(null);
@@ -23,14 +23,14 @@ const ConnectionRefresher = ({ children }: PropsWithChildren) => {
 			lockRef.current = true;
 
 			try {
-				// Only refresh if the token is expired, or if the socket is truly dead
+				// Only refresh  if the socket is truly dead
 				// (not connected and not actively trying to connect/reconnect). Calling refreshToken()
 				// while socket.io is mid-connection destroys the in-flight attempt by
 				// triggering a new socket instance in SocketProvider, which loops on
 				// every touch event until the connection finally has a chance to land.
-				const tokenExpired = accessToken && !isTokenValid(accessToken);
+				// const tokenExpired = accessToken && !isTokenValid(accessToken);
 				const socketDead = !socket && !isSocketBusy();
-				if (force || tokenExpired || socketDead) {
+				if (force || socketDead) {
 					await refreshToken();
 				}
 			} finally {
@@ -39,7 +39,7 @@ const ConnectionRefresher = ({ children }: PropsWithChildren) => {
 				}, 1000);
 			}
 		},
-		[accessToken, isTokenValid, refreshToken, socket, isSocketBusy],
+		[refreshToken, socket, isSocketBusy],
 	);
 
 	useEffect(() => {

@@ -1,5 +1,6 @@
 "use client";
 
+import { WsAuthError } from "@repo/utils";
 import {
 	createContext,
 	ReactNode,
@@ -84,19 +85,19 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 		const handleDisconnect = () => {
 			clientRef.current?.dispose();
 			clientRef.current = null;
-			// startTransition(() => {
+
 			setSocket(null);
 			setSocketClient(null);
 			setConnectedAccessToken(null);
-			// });
 		};
 
 		const handleConnectError = (err: Error) => {
 			// Permanently stop retrying only for server-side auth rejections.
 			// Network errors are retried automatically by socket.io's backoff.
 			if (
-				err.message === "Missing auth params" ||
-				err.message === "Access denied"
+				err.message === WsAuthError.MissingAuthParams ||
+				err.message === WsAuthError.AccessDenied ||
+				err.message === WsAuthError.InvalidToken
 			) {
 				setIsConnecting(false);
 				instance.disconnect();
