@@ -46,12 +46,14 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 	}, []);
 
 	const connect = useCallback(async () => {
-		if (destroyedRef.current) return;
+		// Lock onto the exact instance assigned to this connection cycle
+		const operationalInstance = socketRef.current;
 
-		const instance = socketRef.current;
-
-		// REMOVED instance.active guard to prevent iOS background freeze blockades
-		if (!instance || instance.connected || connectingRef.current) {
+		if (
+			!operationalInstance ||
+			operationalInstance.connected ||
+			connectingRef.current
+		) {
 			return;
 		}
 
@@ -63,33 +65,46 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 		try {
 			const accessToken = await fetchAccessToken();
 
-			if (destroyedRef.current) return;
+			// CRUCIAL GUARD: If the route unmounted/remounted while fetching the token,
+			// socketRef.current will point to a different instance. Abort immediately.
+			if (destroyedRef.current || socketRef.current !== operationalInstance) {
+				return;
+			}
 
 			if (!accessToken) {
 				cleanupAuthorizedClient();
 				setIsConnecting(false);
+				connectingRef.current = false;
 				return;
 			}
 
-			instance.auth = {
+			operationalInstance.auth = {
 				accessToken,
 			};
 
-			instance.connect();
+			operationalInstance.connect();
 		} catch {
-			setIsConnecting(false);
+			if (socketRef.current === operationalInstance) {
+				setIsConnecting(false);
+				connectingRef.current = false;
+			}
 		} finally {
-			connectingRef.current = false;
+			// Only release the lock if this thread still owns the active socket instance
+			if (socketRef.current === operationalInstance) {
+				connectingRef.current = false;
+			}
 		}
 	}, [cleanupAuthorizedClient, fetchAccessToken]);
 
 	useEffect(() => {
 		destroyedRef.current = false;
+		connectingRef.current = false; // Reset the lock cleanly on fresh route mount
 
 		const instance = io(clientEnv.NEXT_PUBLIC_SERVER_URL, {
 			transports: ["websocket"],
 			autoConnect: false,
 			reconnection: false, // Intentionally false for one-time-use tokens
+			forceNew: true, // Bypasses Socket.IO's internal manager caching mechanism
 		});
 
 		socketRef.current = instance;
@@ -98,8 +113,6 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 			if (!socketRef.current) return;
 
 			if (!socketRef.current.connected) {
-				// If Socket.IO is stuck in a "ghost" active state from browser freezing JS,
-				// explicitly calling disconnect() resets internal timers and state instantly.
 				if (socketRef.current.active) {
 					socketRef.current.disconnect();
 				}
@@ -127,7 +140,9 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 			} catch {
 				instance.disconnect();
 			} finally {
-				setIsConnecting(false);
+				if (socketRef.current === instance) {
+					setIsConnecting(false);
+				}
 			}
 		};
 
@@ -157,7 +172,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 			) {
 				const accessToken = await fetchAccessToken();
 
-				if (destroyedRef.current) return;
+				if (destroyedRef.current || socketRef.current !== instance) return;
 
 				if (!accessToken) {
 					instance.disconnect();
@@ -207,6 +222,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 
 		return () => {
 			destroyedRef.current = true;
+			connectingRef.current = false;
 
 			document.removeEventListener(
 				"visibilitychange",
