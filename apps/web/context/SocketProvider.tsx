@@ -4,12 +4,13 @@ import { WsAuthError } from "@repo/utils";
 import {
 	createContext,
 	ReactNode,
+	useCallback,
 	useEffect,
 	useRef,
 	useState,
-	useTransition,
 } from "react";
 import { io, Socket } from "socket.io-client";
+
 import useAccessToken from "@/hooks/useAccessToken";
 import SocketClient from "@/lib/socketClient";
 import { clientEnv } from "@/lib/validations/env/client";
@@ -21,147 +22,193 @@ type SocketProviderProps = {
 export const SocketContext = createContext<{
 	socket: Socket | null;
 	socketClient: SocketClient | null;
-	connectedAccessToken: string | null;
-	isPending: boolean;
 	isConnecting: boolean;
-	isSocketBusy: () => boolean;
 } | null>(null);
 
 const SocketProvider = ({ children }: SocketProviderProps) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
 	const [socketClient, setSocketClient] = useState<SocketClient | null>(null);
-	const [connectedAccessToken, setConnectedAccessToken] = useState<
-		string | null
-	>(null);
-	const [isPending, startTransition] = useTransition();
 	const [isConnecting, setIsConnecting] = useState(false);
 
-	const instanceRef = useRef<Socket | null>(null);
+	const socketRef = useRef<Socket | null>(null);
 	const clientRef = useRef<SocketClient | null>(null);
-	const tokenRef = useRef<string | null>(null);
+	const destroyedRef = useRef(false);
+	const connectingRef = useRef(false);
 
-	const { accessToken, isPending: isTokenRefreshing } = useAccessToken();
+	const { fetchAccessToken } = useAccessToken();
 
-	// Keep tokenRef current so the auth callback always sends the latest token,
-	// even on socket.io's internal reconnect attempts.
-	tokenRef.current = accessToken;
+	const cleanupAuthorizedClient = useCallback(() => {
+		clientRef.current?.dispose();
+		clientRef.current = null;
 
-	// Create a single socket instance for the lifetime of this provider.
-	// autoConnect: false — we connect manually once we have a token.
-	// auth callback — called on every connect/reconnect attempt, always picks up
-	// the latest token from the ref so we never reconnect with a stale token.
+		setSocket(null);
+		setSocketClient(null);
+	}, []);
+
+	const connect = useCallback(async () => {
+		cleanupAuthorizedClient();
+
+		if (destroyedRef.current) return;
+
+		const instance = socketRef.current;
+
+		if (!instance || instance.connected || connectingRef.current) return;
+
+		connectingRef.current = true;
+		setIsConnecting(true);
+
+		try {
+			const accessToken = await fetchAccessToken();
+
+			if (destroyedRef.current) return;
+
+			if (!accessToken) {
+				cleanupAuthorizedClient();
+				return;
+			}
+
+			instance.auth = {
+				accessToken,
+			};
+
+			instance.connect();
+		} finally {
+			connectingRef.current = false;
+		}
+	}, [cleanupAuthorizedClient, fetchAccessToken]);
+
 	useEffect(() => {
+		destroyedRef.current = false;
+
 		const instance = io(clientEnv.NEXT_PUBLIC_SERVER_URL, {
-			auth: (cb) => cb({ accessToken }),
 			transports: ["websocket"],
 			autoConnect: false,
+			reconnection: false,
 		});
 
-		instanceRef.current = instance;
+		socketRef.current = instance;
 
-		const handleConnect = () => {
-			const client = new SocketClient(instance);
-			clientRef.current = client;
+		const handleConnect = async () => {
+			try {
+				const client = new SocketClient(instance);
 
-			client
-				.authorize({ authorize: "" })
-				.then(() => {
-					// Guard against a reconnect cycle that superseded this client
-					// while authorize was in-flight.
-					if (clientRef.current !== client) return;
-					setIsConnecting(false);
-					startTransition(() => {
-						setSocket(instance);
-						setSocketClient(client);
-						setConnectedAccessToken(accessToken);
-					});
-				})
-				.catch(() => {
-					setIsConnecting(false);
-					instance.disconnect();
+				await client.authorize({
+					authorize: "",
 				});
+
+				if (destroyedRef.current || !instance.connected) {
+					client.dispose();
+					return;
+				}
+
+				clientRef.current = client;
+
+				setSocket(instance);
+				setSocketClient(client);
+			} catch {
+				instance.disconnect();
+			} finally {
+				setIsConnecting(false);
+			}
 		};
 
 		const handleDisconnect = () => {
-			clientRef.current?.dispose();
-			clientRef.current = null;
-
-			setSocket(null);
-			setSocketClient(null);
-			setConnectedAccessToken(null);
+			cleanupAuthorizedClient();
+			setIsConnecting(false);
 		};
 
-		const handleConnectError = (err: Error) => {
-			// Permanently stop retrying only for server-side auth rejections.
-			// Network errors are retried automatically by socket.io's backoff.
+		const handleConnectError = async (err: Error) => {
+			if (destroyedRef.current) return;
+
 			if (
 				err.message === WsAuthError.MissingAuthParams ||
 				err.message === WsAuthError.AccessDenied ||
 				err.message === WsAuthError.InvalidToken
 			) {
-				setIsConnecting(false);
-				instance.disconnect();
+				const accessToken = await fetchAccessToken();
+
+				if (destroyedRef.current) return;
+
+				if (!accessToken) {
+					instance.disconnect();
+					setIsConnecting(false);
+					return;
+				}
+
+				instance.auth = {
+					accessToken,
+				};
+
+				instance.connect();
+				return;
+			}
+
+			setIsConnecting(false);
+		};
+
+		const handleVisibilityReconnect = () => {
+			if (document.visibilityState === "visible") {
+				connect();
 			}
 		};
 
-		// Socket.io fires this on every internal reconnect attempt so we can
-		// re-show the indicator after a disconnect while the manager retries.
-		const handleReconnectAttempt = () => setIsConnecting(true);
+		const handleFocusReconnect = () => {
+			connect();
+		};
+
+		const handleOnlineReconnect = () => {
+			connect();
+		};
 
 		instance.on("connect", handleConnect);
 		instance.on("disconnect", handleDisconnect);
 		instance.on("connect_error", handleConnectError);
-		instance.io.on("reconnect_attempt", handleReconnectAttempt);
+
+		document.addEventListener("visibilitychange", handleVisibilityReconnect);
+
+		window.addEventListener("focus", handleFocusReconnect);
+		window.addEventListener("online", handleOnlineReconnect);
+
+		connect();
 
 		return () => {
-			instance.disconnect();
+			destroyedRef.current = true;
+
+			document.removeEventListener(
+				"visibilitychange",
+				handleVisibilityReconnect,
+			);
+
+			window.removeEventListener("focus", handleFocusReconnect);
+			window.removeEventListener("online", handleOnlineReconnect);
+
 			instance.removeAllListeners();
-			instance.io.off("reconnect_attempt", handleReconnectAttempt);
-			instanceRef.current = null;
+			instance.disconnect();
+
+			clientRef.current?.dispose();
+
+			clientRef.current = null;
+			socketRef.current = null;
 		};
-	}, [accessToken]);
-
-	// Connect when a token first becomes available, or reconnect when the token
-	// changes and socket.io has stopped retrying (e.g. after an auth rejection).
-	// If socket.io is already in its retry loop (instance.active === true),
-	// we skip the explicit connect — the next attempt will pick up the new token
-	// from tokenRef automatically via the auth callback.
-	useEffect(() => {
-		if (isTokenRefreshing) return;
-
-		const instance = instanceRef.current;
-		if (!accessToken || !instance) return;
-		if (!instance.connected && !instance.active) {
-			setIsConnecting(true);
-			instance.connect();
-		}
-	}, [accessToken, isTokenRefreshing]);
-
-	// Reads live from the ref so it never triggers re-renders.
-	// Returns true when socket.io is connected or actively trying to connect/reconnect,
-	// meaning a token refresh is not needed to unblock the connection.
-	const isSocketBusy = () => {
-		const instance = instanceRef.current;
-		return Boolean(instance?.connected || instance?.active);
-	};
+	}, [cleanupAuthorizedClient, connect, fetchAccessToken]);
 
 	return (
 		<SocketContext.Provider
 			value={{
 				socket,
 				socketClient,
-				connectedAccessToken,
-				isPending,
 				isConnecting,
-				isSocketBusy,
 			}}
 		>
 			{children}
+
 			<div
 				className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 transition-all duration-300"
 				style={{
 					opacity: isConnecting ? 1 : 0,
-					transform: `translateX(-50%) translateY(${isConnecting ? "0" : "0.75rem"})`,
+					transform: `translateX(-50%) translateY(${
+						isConnecting ? "0" : "0.75rem"
+					})`,
 					pointerEvents: isConnecting ? "auto" : "none",
 				}}
 			>
@@ -170,6 +217,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 						<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-pending opacity-75" />
 						<span className="relative inline-flex size-2 rounded-full bg-pending" />
 					</span>
+
 					<span className="text-xs font-medium text-muted-foreground">
 						Connecting...
 					</span>
