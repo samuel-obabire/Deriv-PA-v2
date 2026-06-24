@@ -10,7 +10,7 @@ import { formatUSD } from "@/utils/formatCurrency";
 const Balance = ({ currency }: { currency: string | null }) => {
 	const [balance, setBalance] = useState<number | null>(null);
 
-	const { socket, socketClient, isPending } = useSocket();
+	const { socket, socketClient, isConnecting } = useSocket();
 
 	const fn = useCallback(async () => {
 		if (!socket || !socketClient) return;
@@ -40,7 +40,7 @@ const Balance = ({ currency }: { currency: string | null }) => {
 			<div className="flex gap-2 items-center">
 				<div className="flex flex-col">
 					<span className="text-accent-foreground">Real</span>
-					{isPending || balance === null ? (
+					{isConnecting || balance === null ? (
 						<span className="h-4 w-20 animate-pulse rounded bg-muted" />
 					) : (
 						<span className="text-success text-bold">{formatUSD(balance)}</span>
