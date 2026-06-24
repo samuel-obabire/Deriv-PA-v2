@@ -46,13 +46,20 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 	}, []);
 
 	const connect = useCallback(async () => {
-		cleanupAuthorizedClient();
-
 		if (destroyedRef.current) return;
 
 		const instance = socketRef.current;
 
-		if (!instance || instance.connected || connectingRef.current) return;
+		if (
+			!instance ||
+			instance.connected ||
+			instance.active ||
+			connectingRef.current
+		) {
+			return;
+		}
+
+		cleanupAuthorizedClient();
 
 		connectingRef.current = true;
 		setIsConnecting(true);
@@ -64,6 +71,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 
 			if (!accessToken) {
 				cleanupAuthorizedClient();
+				setIsConnecting(false);
 				return;
 			}
 
@@ -72,6 +80,8 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 			};
 
 			instance.connect();
+		} catch {
+			setIsConnecting(false);
 		} finally {
 			connectingRef.current = false;
 		}
@@ -87,6 +97,12 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 		});
 
 		socketRef.current = instance;
+
+		const reconnectIfNeeded = () => {
+			if (!socketRef.current?.connected) {
+				connect();
+			}
+		};
 
 		const handleConnect = async () => {
 			try {
@@ -112,9 +128,20 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 			}
 		};
 
-		const handleDisconnect = () => {
+		const handleDisconnect = (reason: string) => {
 			cleanupAuthorizedClient();
+
+			if (destroyedRef.current) return;
+
 			setIsConnecting(false);
+
+			if (reason === "io client disconnect") {
+				return;
+			}
+
+			if (document.visibilityState === "visible" && navigator.onLine) {
+				connect();
+			}
 		};
 
 		const handleConnectError = async (err: Error) => {
@@ -139,7 +166,10 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 					accessToken,
 				};
 
-				instance.connect();
+				if (!instance.connected && !instance.active) {
+					instance.connect();
+				}
+
 				return;
 			}
 
@@ -148,16 +178,16 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 
 		const handleVisibilityReconnect = () => {
 			if (document.visibilityState === "visible") {
-				connect();
+				reconnectIfNeeded();
 			}
 		};
 
 		const handleFocusReconnect = () => {
-			connect();
+			reconnectIfNeeded();
 		};
 
 		const handleOnlineReconnect = () => {
-			connect();
+			reconnectIfNeeded();
 		};
 
 		instance.on("connect", handleConnect);
@@ -167,6 +197,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 		document.addEventListener("visibilitychange", handleVisibilityReconnect);
 
 		window.addEventListener("focus", handleFocusReconnect);
+		window.addEventListener("pageshow", handleFocusReconnect);
 		window.addEventListener("online", handleOnlineReconnect);
 
 		connect();
@@ -180,6 +211,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 			);
 
 			window.removeEventListener("focus", handleFocusReconnect);
+			window.removeEventListener("pageshow", handleFocusReconnect);
 			window.removeEventListener("online", handleOnlineReconnect);
 
 			instance.removeAllListeners();
