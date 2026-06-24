@@ -1,64 +1,46 @@
 "use client";
 
-import {
-	createContext,
-	PropsWithChildren,
-	useCallback,
-	useEffect,
-	useState,
-	useTransition,
-} from "react";
+import { tryCatch } from "@repo/utils";
+import { createContext, PropsWithChildren, useState } from "react";
 import useCurrency from "@/hooks/useCurrency";
 import { getValidAccessToken } from "@/lib/api/token";
-import { isTokenValid } from "@/lib/utils/jwt";
 
 export const TokenContext = createContext<{
 	accessToken: string | null;
 	tokenCurrency: string | null;
-	isPending: boolean;
-	isTokenValid: (token: string) => boolean;
-	refreshToken: () => Promise<void>;
+	fetchAccessToken: () => Promise<string | null>;
 } | null>(null);
 
 const TokenProvider = ({ children }: PropsWithChildren) => {
 	const [accessToken, setAccessToken] = useState<string | null>(null);
 	const [tokenCurrency, setTokenCurrency] = useState<string | null>(null);
 	const { selectedCurrency } = useCurrency();
-	const [isPending, startTransition] = useTransition();
 
-	const setToken = useCallback((token: string) => {
-		setAccessToken(token);
-	}, []);
+	const fetchAccessToken = async () => {
+		if (!selectedCurrency) return null;
 
-	const fetchToken = useCallback(async () => {
-		if (!selectedCurrency) return;
+		const [accessToken] = await tryCatch(() =>
+			getValidAccessToken(selectedCurrency),
+		);
 
-		startTransition(async () => {
-			const token = await getValidAccessToken(selectedCurrency);
+		if (!accessToken) {
+			setAccessToken(null);
+			setTokenCurrency(null);
 
-			if (!token) throw new Error("Unable to fetch accessToken");
-
-			setToken(token);
+			return null;
+		} else {
+			setAccessToken(accessToken);
 			setTokenCurrency(selectedCurrency);
-		});
-	}, [setToken, selectedCurrency]);
-
-	const refreshToken = async () => {
-		await fetchToken();
+			return accessToken;
+		}
 	};
-
-	useEffect(() => {
-		fetchToken();
-	}, [fetchToken]);
 
 	return (
 		<TokenContext.Provider
 			value={{
 				accessToken,
 				tokenCurrency,
-				isTokenValid,
-				refreshToken,
-				isPending,
+				fetchAccessToken,
 			}}
 		>
 			{children}

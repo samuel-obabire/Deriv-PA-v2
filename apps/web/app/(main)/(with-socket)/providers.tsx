@@ -1,7 +1,6 @@
 import { getAllOrganizationCurrencies } from "@repo/db/queries";
 import { SettingsIcon, WalletIcon } from "lucide-react";
 import { PropsWithChildren } from "react";
-import ConnectionRefresher from "@/components/providers/ConnectionRefresher";
 import EmptyState from "@/components/ui/empty-state";
 import CurrencyProvider from "@/context/CurrencyProvider";
 import SocketProvider from "@/context/SocketProvider";
@@ -39,7 +38,10 @@ export default async function WithSocketProviders({
 		<CurrencyProvider currencyList={currencyList}>
 			<TokenProvider>
 				<SocketProvider>
-					<ConnectionRefresher>{children}</ConnectionRefresher>
+					{/* <ConnectionRefresher> */}
+					{children}
+
+					{/* </ConnectionRefresher> */}
 				</SocketProvider>
 			</TokenProvider>
 		</CurrencyProvider>
