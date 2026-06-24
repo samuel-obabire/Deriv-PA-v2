@@ -50,12 +50,8 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 
 		const instance = socketRef.current;
 
-		if (
-			!instance ||
-			instance.connected ||
-			instance.active ||
-			connectingRef.current
-		) {
+		// REMOVED instance.active guard to prevent iOS background freeze blockades
+		if (!instance || instance.connected || connectingRef.current) {
 			return;
 		}
 
@@ -93,13 +89,20 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
 		const instance = io(clientEnv.NEXT_PUBLIC_SERVER_URL, {
 			transports: ["websocket"],
 			autoConnect: false,
-			reconnection: false,
+			reconnection: false, // Intentionally false for one-time-use tokens
 		});
 
 		socketRef.current = instance;
 
 		const reconnectIfNeeded = () => {
-			if (!socketRef.current?.connected) {
+			if (!socketRef.current) return;
+
+			if (!socketRef.current.connected) {
+				// If Socket.IO is stuck in a "ghost" active state from browser freezing JS,
+				// explicitly calling disconnect() resets internal timers and state instantly.
+				if (socketRef.current.active) {
+					socketRef.current.disconnect();
+				}
 				connect();
 			}
 		};
