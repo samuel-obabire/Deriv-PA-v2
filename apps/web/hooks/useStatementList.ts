@@ -1,24 +1,26 @@
 "use client";
 
-import type { DerivCurrency, StatementActionType } from "@repo/deriv";
+import type { DerivCurrency } from "@repo/deriv";
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
 import useAccessToken from "@/hooks/useAccessToken";
 import useCurrency from "@/hooks/useCurrency";
 import useSocket from "@/hooks/useSocket";
-import useStatement from "@/hooks/useStatement";
+import useStatement, { StatementOptions } from "@/hooks/useStatement";
 import type { StatementTransaction } from "@/lib/utils/statement";
 
 const LIMIT = 100;
 
-type Params = {
-	statementType?: StatementActionType;
-};
+export type FilteredStatementOptions = Pick<
+	StatementOptions,
+	"action_type" | "date_from" | "date_to"
+>;
 
-const useStatementList = ({ statementType }: Params = {}) => {
+const useStatementList = () => {
 	const [transactions, setTransactions] = useState<StatementTransaction[]>([]);
 	const [hasMore, setHasMore] = useState(true);
+	const [filters, setFilters] = useState<FilteredStatementOptions>({});
 
 	const { selectedCurrency } = useCurrency();
 	const { socketClient } = useSocket();
@@ -41,11 +43,11 @@ const useStatementList = ({ statementType }: Params = {}) => {
 
 		// Wait until the token matches the selected currency before fetching,
 		// so we never fetch via the wrong account's socket during a currency switch.
-		// Pure reconnects (same currency) are caught by prevFetchKeyRef and never
+		// Pure reconnects (same currency/filters) are caught by prevFetchKeyRef and never
 		// trigger a reload.
 		if (tokenCurrency !== selectedCurrency) return;
 
-		const fetchKey = `${selectedCurrency}|${statementType}`;
+		const fetchKey = `${selectedCurrency}|${filters.action_type}|${filters.date_from}|${filters.date_to}`;
 		if (prevFetchKeyRef.current === fetchKey) return;
 		prevFetchKeyRef.current = fetchKey;
 
@@ -56,15 +58,15 @@ const useStatementList = ({ statementType }: Params = {}) => {
 		(async () => {
 			const result = await getStatementRef.current({
 				limit: LIMIT,
-				action_type: statementType,
 				currency: selectedCurrency as DerivCurrency,
+				...filters,
 			});
 			if (fetchGenerationRef.current !== generation) return;
 			if (result?.transactions?.length) {
 				setTransactions(result.transactions as StatementTransaction[]);
 			}
 		})();
-	}, [socketClient, tokenCurrency, selectedCurrency, statementType]);
+	}, [socketClient, tokenCurrency, selectedCurrency, filters]);
 
 	useEffect(() => {
 		if (!inView || !selectedCurrency || !socketClient || isLoading || !hasMore)
@@ -76,7 +78,7 @@ const useStatementList = ({ statementType }: Params = {}) => {
 			const result = await getStatementRef.current({
 				limit: LIMIT,
 				offset: transactions.length,
-				action_type: statementType,
+				...filters,
 				currency: selectedCurrency as DerivCurrency,
 			});
 
@@ -98,8 +100,12 @@ const useStatementList = ({ statementType }: Params = {}) => {
 		isLoading,
 		transactions.length,
 		hasMore,
-		statementType,
+		filters,
 	]);
+
+	const applyFilters = (f: FilteredStatementOptions) => {
+		setFilters(f);
+	};
 
 	return {
 		transactions,
@@ -108,6 +114,8 @@ const useStatementList = ({ statementType }: Params = {}) => {
 		currency: selectedCurrency,
 		isConnecting: !socketClient,
 		isEmpty: !!socketClient && !isLoading && transactions.length === 0,
+		filters,
+		applyFilters,
 	};
 };
 

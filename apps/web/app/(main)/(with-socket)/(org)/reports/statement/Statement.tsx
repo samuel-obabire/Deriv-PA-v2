@@ -1,12 +1,8 @@
 "use client";
 
 import type { Rate } from "@repo/db";
-import type { StatementActionType } from "@repo/deriv";
 import { Loader2 } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-
-import useStatementList from "@/hooks/useStatementList";
-
+import useStatementOptions from "@/hooks/useStatementOptions";
 import StatementCard from "./StatementCard";
 
 type Props = {
@@ -14,11 +10,6 @@ type Props = {
 };
 
 const Statement = ({ rate }: Props) => {
-	const searchParams = useSearchParams();
-	const statementType = (searchParams.get("type") ?? undefined) as
-		| StatementActionType
-		| undefined;
-
 	const {
 		transactions,
 		isLoading,
@@ -26,7 +17,7 @@ const Statement = ({ rate }: Props) => {
 		currency,
 		isConnecting,
 		isEmpty,
-	} = useStatementList({ statementType });
+	} = useStatementOptions();
 
 	if ((isConnecting || isLoading) && transactions.length === 0) {
 		return (
