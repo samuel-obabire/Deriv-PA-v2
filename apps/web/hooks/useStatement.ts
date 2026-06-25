@@ -10,11 +10,13 @@ import { useCallback, useState } from "react";
 
 import useSocket from "@/hooks/useSocket";
 
-type StatementOptions = {
+export type StatementOptions = {
 	limit?: number;
 	offset?: number;
 	action_type?: StatementActionType;
 	currency: DerivCurrency;
+	date_from?: number;
+	date_to?: number;
 };
 
 const useStatement = () => {
