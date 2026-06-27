@@ -2,12 +2,16 @@
 "use client";
 
 import { type Rate } from "@repo/db";
+import {
+	Button,
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+	Copy,
+} from "@repo/ui";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { useEffect, useState } from "react";
-
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Copy from "@/components/ui/copy";
 import useClientName from "@/hooks/useClientName";
 import {
 	adjustUKDateInText,

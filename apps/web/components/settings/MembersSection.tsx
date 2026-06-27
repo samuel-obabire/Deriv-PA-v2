@@ -1,14 +1,8 @@
 "use client";
 
+import { Badge, Card, CardDescription, CardHeader, CardTitle } from "@repo/ui";
 import Link from "next/link";
 import { use } from "react";
-import { Badge } from "@/components/ui/badge";
-import {
-	Card,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { addMember } from "@/lib/actions/organization/addMember";
 import type { ListMembersResult } from "@/lib/api/members";
 import AddMemberForm from "../forms/AddMember";

@@ -2,12 +2,10 @@
 
 import type { Transaction } from "@repo/db";
 import { TRANSACTION_STATUS } from "@repo/db/enums";
+import { Badge, Button, Separator } from "@repo/ui";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { transfersApi } from "@/lib/api/transfers";
 import { formatDate } from "@/utils/date";
 import { formatUSD } from "@/utils/formatCurrency";

@@ -14,7 +14,8 @@
 			"!dist",
 			"!build",
 			"!**/*.css",
-			"!apps/web/components/ui"
+			"!apps/web/components/ui",
+			"!packages/ui*"
 		]
 	},
 	"formatter": {

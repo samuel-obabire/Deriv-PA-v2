@@ -1,29 +1,27 @@
 "use client";
 
 import { STATEMENT_ACTION_TYPE } from "@repo/deriv";
-import { endOfDay, format, getUnixTime } from "date-fns";
-import { SlidersHorizontal, X } from "lucide-react";
-import { useState } from "react";
-import { DateRange } from "react-day-picker";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Label } from "@/components/ui/label";
 import {
+	Button,
+	Calendar,
+	Label,
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import {
+	Separator,
 	Sheet,
 	SheetContent,
 	SheetFooter,
 	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
-} from "@/components/ui/sheet";
+} from "@repo/ui";
+import { endOfDay, format, getUnixTime } from "date-fns";
+import { SlidersHorizontal, X } from "lucide-react";
+import { useState } from "react";
+import { DateRange } from "react-day-picker";
 import { FilteredStatementOptions } from "@/hooks/useStatementList";
 import { StatementDate } from "./StatementFilter";
 

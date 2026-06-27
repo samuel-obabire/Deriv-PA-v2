@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui";
 import { formatUSD } from "@/utils/formatCurrency";
 import { TransferData } from "./types";
 

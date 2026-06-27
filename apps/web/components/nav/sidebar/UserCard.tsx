@@ -1,5 +1,5 @@
+import { Badge } from "@repo/ui";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
 import { User } from "@/lib/auth";
 
 const UserCard = ({ user }: { user: User }) => {

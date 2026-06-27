@@ -1,12 +1,11 @@
 "use client";
 
+import { Button } from "@repo/ui";
 import { tryCatch } from "@repo/utils";
 import { LogOut } from "lucide-react";
-
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import ROUTES from "@/lib/constants/routes";
-import { Button } from "../ui/button";
 
 const Logout = () => {
 	const handleSignout = async () => {

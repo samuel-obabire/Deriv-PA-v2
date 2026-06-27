@@ -1,16 +1,16 @@
 "use client";
 
-import { tryCatch } from "@repo/utils";
-import { Building2, Loader2 } from "lucide-react";
-import { useTransition } from "react";
-import { toast } from "sonner";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui";
+import { tryCatch } from "@repo/utils";
+import { Building2, Loader2 } from "lucide-react";
+import { useTransition } from "react";
+import { toast } from "sonner";
 import { type Organization } from "@/lib/auth-client";
 
 type OrganizationSwitcherProps = {

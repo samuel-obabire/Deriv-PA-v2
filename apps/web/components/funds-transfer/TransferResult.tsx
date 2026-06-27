@@ -1,9 +1,8 @@
 "use client";
 
+import { Button, Separator } from "@repo/ui";
 import { CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import ROUTES from "@/lib/constants/routes";
 import { formatUSD } from "@/utils/formatCurrency";
 import { TransferData } from "./types";

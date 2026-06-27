@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import {
+	Button,
 	Dialog,
 	DialogClose,
 	DialogContent,
@@ -8,7 +8,7 @@ import {
 	DialogHeader,
 	DialogPortal,
 	DialogTitle,
-} from "@/components/ui/dialog";
+} from "@repo/ui";
 
 interface TransferErrorProps {
 	open: boolean;

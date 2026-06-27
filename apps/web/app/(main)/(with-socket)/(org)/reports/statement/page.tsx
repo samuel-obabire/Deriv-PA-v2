@@ -1,6 +1,5 @@
 import { getOrganizationRate } from "@repo/db/queries";
 import { Suspense } from "react";
-
 import RateNotConfigured from "@/components/ui/rate-not-configured";
 import StatementOptionsProvider from "@/context/StatementOptionsProvider";
 import { db } from "@/lib/db";

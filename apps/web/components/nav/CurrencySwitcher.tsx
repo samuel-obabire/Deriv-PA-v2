@@ -1,11 +1,7 @@
 import { Currency } from "@repo/db";
+import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui";
 import Image from "next/image";
 import { useState } from "react";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
 import useCurrency from "@/hooks/useCurrency";
 import { CURRENCY_ICON } from "@/lib/utils/deriv";
 import Balance from "./Balance";
