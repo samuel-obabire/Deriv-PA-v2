@@ -23,7 +23,7 @@
 	},
 	"packageManager": "pnpm@11.9.0",
 	"engines": {
-		"node": ">=20.9.0"
+		"node": ">=22.13.0"
 	},
 	"lint-staged": {
 		"**/*.{ts,tsx,js,jsx,json,css}": "biome check . --write"
