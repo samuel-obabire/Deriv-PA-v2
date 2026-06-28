@@ -1,6 +1,6 @@
+import { UnauthorizedError, ValidationError } from "@repo/lib/errors";
 import { type ZodType } from "zod";
 import { auth } from "../auth";
-import { UnauthorizedError, ValidationError } from "../errors";
 import { getSession } from "../session";
 
 type ActionProps<T> = {

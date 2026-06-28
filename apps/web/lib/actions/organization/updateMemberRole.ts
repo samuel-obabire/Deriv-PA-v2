@@ -2,16 +2,16 @@
 
 import "server-only";
 
+import { UnauthorizedError } from "@repo/lib/errors";
+import handleError from "@repo/lib/http-errors";
 import { tryCatch } from "@repo/utils";
 import { revalidatePath } from "next/cache";
 import * as z from "zod";
 import { updateMemberRole as authUpdateMemberRole } from "@/lib/api/members";
 import { serverApi } from "@/lib/api/server-api";
 import ROUTES from "@/lib/constants/routes";
-import { UnauthorizedError } from "@/lib/errors";
 import action from "@/lib/handlers/action";
 import { hasPermission } from "@/lib/has-permission";
-import handleError from "@/lib/http-errors";
 import { ActionResponse } from "@/lib/types/global";
 import { UpdateMemberRoleSchema } from "@/lib/validations/organization";
 

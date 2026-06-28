@@ -38,7 +38,7 @@ export class UnauthorizedError extends RequestError {
 }
 
 export class ForbiddenError extends RequestError {
-	constructor(resource: string, message: string = "Forbidden") {
+	constructor(_resource: string, message: string = "Forbidden") {
 		super(403, message);
 
 		this.name = "ForbiddenError";

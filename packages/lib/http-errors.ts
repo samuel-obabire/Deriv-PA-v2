@@ -1,9 +1,9 @@
 import { APIError } from "better-auth";
 import { NextResponse } from "next/server";
 import z, { ZodError } from "zod";
-import logger from "@/utils/logger";
 import { RequestError, ValidationError } from "./errors";
-import { ApiResponse, ErrorResponse } from "./types/global";
+import logger from "./logger";
+import type { ApiResponse, ErrorResponse } from "./types";
 
 export type ResponseType = "api" | "server";
 
@@ -11,7 +11,7 @@ const formatResponse = (
 	responseType: ResponseType,
 	statusCode: number,
 	message: string,
-) => {
+): ApiResponse | ErrorResponse => {
 	const errorResponse: ErrorResponse = {
 		success: false,
 		error: {
@@ -22,13 +22,17 @@ const formatResponse = (
 
 	return responseType === "server"
 		? errorResponse
-		: NextResponse.json(errorResponse, { status: statusCode });
+		: (NextResponse.json(errorResponse, {
+				status: statusCode,
+			}) as unknown as ApiResponse);
 };
 
 function handleError(error: unknown, responseType: "api"): ApiResponse;
 function handleError(error: unknown, responseType?: "server"): ErrorResponse;
-
-function handleError(error: unknown, responseType: ResponseType = "server") {
+function handleError(
+	error: unknown,
+	responseType: ResponseType = "server",
+): ApiResponse | ErrorResponse {
 	logger.error(error);
 
 	if (error instanceof ZodError) {

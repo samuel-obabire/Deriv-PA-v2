@@ -1,5 +1,5 @@
 import { RequestError } from "../errors";
-import { ErrorResponse } from "../types/global";
+import type { ErrorResponse } from "../types";
 
 const fetchHandler = async <T>(
 	url: string,

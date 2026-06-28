@@ -15,6 +15,7 @@
 		"@hookform/resolvers": "^5.4.0",
 		"@repo/db": "workspace:^",
 		"@repo/deriv": "workspace:^",
+		"@repo/lib": "workspace:*",
 		"@repo/ui": "workspace:*",
 		"@repo/utils": "workspace:^",
 		"@tailwindcss/postcss": "^4.3.1",

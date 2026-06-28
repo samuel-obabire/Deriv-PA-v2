@@ -1,5 +1,5 @@
+import fetchHandler from "@repo/lib/handlers/fetch";
 import ROUTES from "../constants/routes";
-import fetchHandler from "../handlers/fetchHandler";
 import { ActionResponse } from "../types/global";
 
 export const tokenService = {
