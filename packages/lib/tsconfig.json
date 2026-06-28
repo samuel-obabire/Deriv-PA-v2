@@ -1,0 +1,10 @@
+{
+	"extends": "@repo/typescript-config/nextjs.json",
+	"compilerOptions": {
+		"moduleResolution": "Bundler",
+		"module": "ESNext",
+		"noEmit": true
+	},
+	"include": ["**/*.ts"],
+	"exclude": ["node_modules"]
+}

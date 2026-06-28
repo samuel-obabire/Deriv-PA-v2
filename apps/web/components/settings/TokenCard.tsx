@@ -1,6 +1,16 @@
 "use client";
 
 import { CURRENCY } from "@repo/db/enums";
+import {
+	Button,
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+	cn,
+	Input,
+} from "@repo/ui";
 import { tryCatch } from "@repo/utils";
 import { KeyRound, Pencil, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
@@ -8,16 +18,6 @@ import { toast } from "sonner";
 import { createOrganizationCurrency } from "@/lib/actions/currency/createOrganizationCurrency";
 import { deleteOrganizationCurrency } from "@/lib/actions/currency/deleteOrganizationCurrency";
 import { updateOrganizationCurrency } from "@/lib/actions/currency/updateOrganizationCurrency";
-import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "../ui/card";
-import { Input } from "../ui/input";
 
 type TokenState = "empty" | "set" | "editing";
 

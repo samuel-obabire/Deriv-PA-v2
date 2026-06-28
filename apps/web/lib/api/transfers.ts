@@ -1,4 +1,4 @@
-import fetchHandler from "../handlers/fetchHandler";
+import fetchHandler from "@repo/lib/handlers/fetch";
 import { clientEnv } from "../validations/env/client";
 
 export const transfersApi = {

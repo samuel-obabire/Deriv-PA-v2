@@ -1,7 +1,7 @@
 import { getAllOrganizationCurrencies } from "@repo/db/queries";
+import { EmptyState } from "@repo/ui";
 import { SettingsIcon, WalletIcon } from "lucide-react";
 import { PropsWithChildren } from "react";
-import EmptyState from "@/components/ui/empty-state";
 import CurrencyProvider from "@/context/CurrencyProvider";
 import SocketProvider from "@/context/SocketProvider";
 import TokenProvider from "@/context/TokenProvider";

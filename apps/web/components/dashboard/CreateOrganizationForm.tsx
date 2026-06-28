@@ -1,12 +1,11 @@
 "use client";
 
+import { Button, Input } from "@repo/ui";
 import { tryCatch } from "@repo/utils";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { OrganizationWithMembers } from "@/lib/auth-client";
 import { ActionResponse } from "@/lib/types/global";
 import { CreateOrgSchema } from "@/lib/validations/organization";

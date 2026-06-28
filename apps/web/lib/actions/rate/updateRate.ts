@@ -1,11 +1,11 @@
 "use server";
 
 import { updateCurrentRate } from "@repo/db/queries";
+import handleError from "@repo/lib/http-errors";
 import { tryCatch } from "@repo/utils";
 import * as z from "zod";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
-import handleError from "@/lib/http-errors";
 import { ActionResponse } from "@/lib/types/global";
 import { RateUpdateSchema } from "@/lib/validations/rate";
 

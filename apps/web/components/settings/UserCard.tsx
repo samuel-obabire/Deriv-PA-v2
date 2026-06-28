@@ -1,14 +1,14 @@
 "use client";
 
-import { User } from "@/lib/auth";
-import { Button } from "../ui/button";
 import {
+	Button,
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "../ui/card";
+} from "@repo/ui";
+import { User } from "@/lib/auth";
 
 type UserCardProps = {
 	user: User;

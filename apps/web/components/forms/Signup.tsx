@@ -1,28 +1,26 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { tryCatch } from "@repo/utils";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
 import {
+	Button,
 	Card,
 	CardContent,
 	CardDescription,
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
-import {
 	Field,
 	FieldError,
 	FieldGroup,
 	FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+	Input,
+} from "@repo/ui";
+import { tryCatch } from "@repo/utils";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 import ROUTES from "@/lib/constants/routes";
 import { ActionResponse } from "@/lib/types/global";
 import { SignUpSchema } from "@/lib/validations/auth/sign-up";

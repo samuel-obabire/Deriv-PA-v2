@@ -1,12 +1,12 @@
 "use server";
 
+import handleError from "@repo/lib/http-errors";
 import { tryCatch } from "@repo/utils";
 import * as z from "zod";
 import { ActionResponse, ErrorResponse } from "@/lib/types/global";
 import { SignUpSchema } from "@/lib/validations/auth/sign-up";
 import { auth } from "../../auth";
 import action from "../../handlers/action";
-import handleError from "../../http-errors";
 
 export const signUp = async (
 	data: z.infer<typeof SignUpSchema>,

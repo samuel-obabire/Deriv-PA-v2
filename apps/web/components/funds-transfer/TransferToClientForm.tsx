@@ -2,20 +2,20 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Rate } from "@repo/db";
+import {
+	Button,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+	Input,
+	Switch,
+} from "@repo/ui";
 import { div, mul, sub } from "@repo/utils";
 import { ArrowUpDown } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-	Field,
-	FieldError,
-	FieldGroup,
-	FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { createTransferToClientSchema } from "@/lib/validations/deriv/transfer-to-client";
 import { TransferData } from "./types";
 

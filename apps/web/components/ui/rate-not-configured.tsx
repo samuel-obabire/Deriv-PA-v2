@@ -2,7 +2,7 @@ import { PercentIcon, SettingsIcon } from "lucide-react";
 
 import ROUTES from "@/lib/constants/routes";
 
-import EmptyState from "./empty-state";
+import { EmptyState } from "@repo/ui";
 
 const RateNotConfigured = () => (
 	<EmptyState

@@ -1,0 +1,10 @@
+{
+	"extends": "@repo/typescript-config/react-library.json",
+	"compilerOptions": {
+		"moduleResolution": "Bundler",
+		"module": "ESNext",
+		"noEmit": true
+	},
+	"include": ["src", "index.ts"],
+	"exclude": ["node_modules"]
+}
