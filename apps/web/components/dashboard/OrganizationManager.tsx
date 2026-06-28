@@ -35,6 +35,8 @@ const OrganizationManager = () => {
 			setUserActiveOrganization({ orgId: newActiveOrgId }),
 		]);
 
+		await refetch();
+
 		router.refresh();
 	};
 
