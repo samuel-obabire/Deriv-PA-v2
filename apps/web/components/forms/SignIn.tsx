@@ -1,7 +1,6 @@
 "use client";
 
-import { Button } from "@repo/ui";
-import { Loader2 } from "lucide-react";
+import { GoogleSignInButton } from "@repo/ui";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -53,24 +52,10 @@ const SignIn = () => {
 					</div>
 
 					<div className="mt-8">
-						<Button
-							variant="outline"
-							className="w-full h-11 gap-3 font-medium text-sm"
+						<GoogleSignInButton
 							onClick={handleGoogleSignIn}
-							disabled={isPending}
-						>
-							{isPending ? (
-								<Loader2 className="size-4 animate-spin" />
-							) : (
-								<Image
-									src="/asset/google.svg"
-									alt="Google"
-									width={20}
-									height={20}
-								/>
-							)}
-							{isPending ? "Redirecting to Google…" : "Continue with Google"}
-						</Button>
+							isPending={isPending}
+						/>
 					</div>
 
 					<p className="mt-8 text-center text-xs text-muted-foreground leading-relaxed">

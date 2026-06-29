@@ -1,7 +1,7 @@
 const ROUTES = {
 	SIGN_IN: "/sign-in",
 	HOME: "/",
-	DASHBOARD: "/dashboard",
-};
+	KYC: "/kyc",
+} as const;
 
 export default ROUTES;
