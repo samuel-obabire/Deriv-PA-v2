@@ -1,6 +1,7 @@
 import {
 	ArrowRightLeft,
 	Building2,
+	ClipboardCheck,
 	FileText,
 	LayoutDashboard,
 	Settings,
@@ -60,6 +61,12 @@ export const sidebarConfig: SidebarGroup[] = [
 				href: ROUTES.SETTINGS_RATES,
 				icon: Settings,
 				permission: { resource: "settings", action: "manage" },
+			},
+			{
+				title: "KYC Invitations",
+				href: ROUTES.KYC_INVITATIONS,
+				icon: ClipboardCheck,
+				permission: { resource: "organization", action: "update" },
 			},
 			{
 				title: "Deriv Tokens",

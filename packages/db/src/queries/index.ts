@@ -1,3 +1,5 @@
+export * from "./clientKycInvitation";
+export * from "./clientKycRecord";
 export * from "./currency";
 export * from "./pagination";
 export * from "./rate";

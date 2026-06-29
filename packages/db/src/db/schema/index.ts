@@ -1,4 +1,6 @@
 export * from "./account";
+export * from "./clientKycInvitation";
+export * from "./clientKycRecord";
 export * from "./currency";
 export * from "./invitation";
 export * from "./member";

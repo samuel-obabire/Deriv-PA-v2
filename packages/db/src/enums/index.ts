@@ -1,3 +1,22 @@
+export enum KYC_STATUS {
+	UNVERIFIED = "unverified",
+	PENDING_REVIEW = "pending_review",
+	VERIFIED = "verified",
+	REJECTED = "rejected",
+}
+
+export enum KYC_DOCUMENT_TYPE {
+	NATIONAL_ID = "national_id",
+	INTERNATIONAL_PASSPORT = "international_passport",
+	DRIVERS_LICENSE = "drivers_license",
+	VOTERS_CARD = "voters_card",
+}
+
+export enum CLIENT_CUSTOMER_TYPE {
+	EXISTING = "existing",
+	NEW = "new",
+}
+
 export enum PAYOUT_STATUS {
 	UNMATCHED = "UNMATCHED",
 	MATCHED = "MATCHED",

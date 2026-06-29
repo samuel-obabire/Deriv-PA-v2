@@ -1,5 +1,7 @@
 import { relations } from "drizzle-orm";
 import { account } from "./account";
+import { clientKycInvitation } from "./clientKycInvitation";
+import { clientKycRecord } from "./clientKycRecord";
 import { currency } from "./currency";
 import { invitation } from "./invitation";
 import { member } from "./member";
@@ -33,7 +35,29 @@ export const accountRelations = relations(account, ({ one }) => ({
 export const organizationRelations = relations(organization, ({ many }) => ({
 	members: many(member),
 	invitations: many(invitation),
+	clientKycInvitations: many(clientKycInvitation),
+	clientKycRecords: many(clientKycRecord),
 }));
+
+export const clientKycRecordRelations = relations(
+	clientKycRecord,
+	({ one }) => ({
+		organization: one(organization, {
+			fields: [clientKycRecord.organizationId],
+			references: [organization.id],
+		}),
+	}),
+);
+
+export const clientKycInvitationRelations = relations(
+	clientKycInvitation,
+	({ one }) => ({
+		organization: one(organization, {
+			fields: [clientKycInvitation.organizationId],
+			references: [organization.id],
+		}),
+	}),
+);
 
 export const memberRelations = relations(member, ({ one }) => ({
 	organization: one(organization, {
