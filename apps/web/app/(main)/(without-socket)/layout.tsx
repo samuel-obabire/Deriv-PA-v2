@@ -7,7 +7,7 @@ export default async function PagesLayout({ children }: PropsWithChildren) {
 
 	return (
 		<>
-			<header className="bg-background h-16 top-0 sticky z-50">
+			<header className="bg-background h-16 top-0 sticky z-50 border-b border-border">
 				<Suspense fallback={<div />}>
 					<NavbarSlim sessionPromise={sessionPromise} />
 				</Suspense>

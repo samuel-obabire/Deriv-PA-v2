@@ -3,10 +3,11 @@ import { Suspense } from "react";
 import RateSection from "@/components/settings/RateSection";
 import RateSkeleton from "@/components/skeletons/RateSkeleton";
 import { db } from "@/lib/db";
-import { verifySession } from "@/lib/session";
+import { requirePermission, verifySession } from "@/lib/session";
 
 const SettingsPage = async () => {
-	const session = await verifySession("organization", "update");
+	const session = await verifySession();
+	requirePermission(session, "organization", "update");
 
 	const ratePromise = getOrganizationRate(
 		session.session.activeOrganizationId as string,
@@ -14,21 +15,17 @@ const SettingsPage = async () => {
 	);
 
 	return (
-		<div className="container max-w-2xl  space-y-6 mt-8">
-			{/* <section className="space-y-4">
-				<h2 className="title text-2xl">Account</h2>
+		<div className="container max-w-2xl py-8 space-y-8">
+			<header className="space-y-1">
+				<h1 className="title">Currency Rates</h1>
+				<p className="text-sm text-muted-foreground">
+					Configure exchange rates used to calculate client payouts.
+				</p>
+			</header>
 
-				<Suspense fallback={<AccountSkeleton />}>
-					<AccountSection sessionPromise={sessionPromise} />
-				</Suspense>
-			</section> */}
-
-			<section className="space-y-4">
-				<h2 className="title text-2xl">Currency Rates</h2>
-				<Suspense fallback={<RateSkeleton />}>
-					<RateSection ratePromise={ratePromise} />
-				</Suspense>
-			</section>
+			<Suspense fallback={<RateSkeleton />}>
+				<RateSection ratePromise={ratePromise} />
+			</Suspense>
 		</div>
 	);
 };

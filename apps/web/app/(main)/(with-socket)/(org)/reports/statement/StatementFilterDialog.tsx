@@ -88,7 +88,7 @@ const StatementFilterDialog = ({
 				side="bottom"
 				showCloseButton={false}
 				aria-describedby={undefined}
-				className="mx-auto flex max-h-[90dvh] w-full max-w-lg flex-col rounded-t-2xl px-0 pb-0"
+				className="mx-auto flex max-h-[90dvh] w-full max-w-lg flex-col rounded-t-2xl px-0 pb-0 animate-in slide-in-from-bottom"
 			>
 				<SheetHeader className="shrink-0 border-b px-5 pb-3 pt-1">
 					<div className="flex items-center justify-between">

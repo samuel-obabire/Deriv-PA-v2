@@ -14,6 +14,7 @@ const ROUTES = {
 	ORGANIZATION: "/settings/organization",
 	ORGANIZATION_MEMBERS: "/settings/members",
 	DERIV_TOKENS: "/settings/deriv-tokens",
+	KYC_INVITATIONS: "/settings/kyc-invitations",
 
 	GET_ACCESS_TOKEN: `${clientEnv.NEXT_PUBLIC_URL}/api/token`,
 };

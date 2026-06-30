@@ -27,8 +27,10 @@ const ProtectedTransferToClient = async () => {
 
 const TransferToClientPage = () => {
 	return (
-		<div className="container py-6 space-y-6">
-			<h1 className="title text-18-medium text-center">Transfer To Client</h1>
+		<div className="container py-8 space-y-8">
+			<header className="space-y-1">
+				<h1 className="title">Transfer to Client</h1>
+			</header>
 
 			<Suspense fallback={null}>
 				<ProtectedTransferToClient />

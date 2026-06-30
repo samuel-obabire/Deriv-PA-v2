@@ -8,6 +8,7 @@ export * from "./src/components/ui/copy";
 export * from "./src/components/ui/dialog";
 export * from "./src/components/ui/dropdown-menu";
 export * from "./src/components/ui/empty-state";
+export * from "./src/components/ui/google-sign-in-button";
 export * from "./src/components/ui/field";
 export * from "./src/components/ui/input";
 export * from "./src/components/ui/label";
