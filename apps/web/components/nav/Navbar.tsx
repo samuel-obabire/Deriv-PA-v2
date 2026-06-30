@@ -7,16 +7,14 @@ import SideBar from "./sidebar";
 
 const Navbar = ({ role, user }: { role: RoleNames; user: User }) => {
 	return (
-		<nav className="flex items-center p-2  justify-between gap-8">
-			<div className={`lg:hidden`}>
+		<nav className="flex h-full items-center px-4 gap-4">
+			<div className="lg:hidden">
 				<SideBar role={role} user={user} />
 			</div>
 
-			<div className={`hidden lg:block`}>
-				<div>DerivPay</div>
+			<div className="ml-auto">
+				<CurrencySwitcher />
 			</div>
-
-			<CurrencySwitcher />
 		</nav>
 	);
 };

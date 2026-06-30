@@ -24,9 +24,11 @@ const Logout = () => {
 		<Button
 			onClick={handleSignout}
 			variant="ghost"
-			className="cursor-pointer flex gap-3"
+			size="sm"
+			className="gap-1.5 text-muted-foreground hover:text-foreground"
 		>
-			Logout <LogOut strokeWidth={3} />
+			<LogOut className="size-3.5" />
+			Sign out
 		</Button>
 	);
 };

@@ -4,52 +4,42 @@ import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 import { hasRoleStatement } from "@/components/nav/sidebar/utils";
-import { auth } from "./auth";
+import { auth, type Session } from "./auth";
 import ROUTES from "./constants/routes";
-import { PermissionType, ResourcePermission } from "./permissions";
+import { type PermissionType, type ResourcePermission } from "./permissions";
 
-/**
- * 	Skips cookie-cached session data and fetches fresh session state from the database
- *  @returns Session
- */
+// Always bypasses cookie cache. Use when you need fresh session state
 export const getSession = async () => {
 	return await auth.api.getSession({
 		headers: await headers(),
-
-		// always get fresh session
 		query: { disableCookieCache: true, disableRefresh: true },
 	});
 };
 
-/**
- * May return session from cookie cache
- * @returns Session
- */
-export const verifySession = cache(
-	async <R extends keyof PermissionType>(
-		resource?: R,
-		action?: NonNullable<PermissionType[R]>[number],
-	) => {
-		const session = await auth.api.getSession({
-			headers: await headers(),
-		});
+export const verifySession = cache(async () => {
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
 
-		if (!session) redirect(ROUTES.SIGN_IN);
+	if (!session) redirect(ROUTES.SIGN_IN);
 
-		if (
-			resource &&
-			action &&
-			!hasRoleStatement(session.user.role, {
-				resource,
-				action,
-			} as ResourcePermission)
-		) {
-			notFound();
-		}
+	return session;
+});
 
-		return session;
-	},
-);
+export const requirePermission = <R extends keyof PermissionType>(
+	session: Session,
+	resource: R,
+	action: NonNullable<PermissionType[R]>[number],
+) => {
+	if (
+		!hasRoleStatement(session.user.role, {
+			resource,
+			action,
+		} as ResourcePermission)
+	) {
+		notFound();
+	}
+};
 
 export const requireActiveOrg = async () => {
 	const session = await verifySession();

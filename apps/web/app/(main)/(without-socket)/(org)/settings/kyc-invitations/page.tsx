@@ -1,29 +1,29 @@
 import { Suspense } from "react";
 import KycInvitationSection from "@/components/settings/KycInvitationSection";
-import { verifySession } from "@/lib/session";
+import { requirePermission, verifySession } from "@/lib/session";
 
 const KycInvitationContent = async () => {
-	await verifySession("organization", "update");
-
-	return (
-		<Suspense fallback={<div>Loading...</div>}>
-			<KycInvitationSection />
-		</Suspense>
-	);
+	const session = await verifySession();
+	requirePermission(session, "organization", "update");
+	return <KycInvitationSection />;
 };
 
 const KycInvitationsPage = () => {
 	return (
-		<div className="container max-w-2xl space-y-6 mt-8">
-			<section className="space-y-4">
-				<h2 className="title text-2xl">KYC Invitations</h2>
+		<div className="container max-w-2xl py-8 space-y-8">
+			<header className="space-y-1">
+				<h1 className="title">KYC Invitations</h1>
 				<p className="text-sm text-muted-foreground">
-					Generate a one-time link for a client to complete their KYC
-					verification. The link expires 1 hour after creation.
+					Generate a link for a client to complete their KYC verification. The
+					link expires 1 hour after creation.
 				</p>
+			</header>
 
+			<Suspense
+				fallback={<div className="h-48 animate-pulse rounded-xl bg-muted" />}
+			>
 				<KycInvitationContent />
-			</section>
+			</Suspense>
 		</div>
 	);
 };

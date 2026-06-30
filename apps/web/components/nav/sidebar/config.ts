@@ -1,11 +1,11 @@
 import {
 	ArrowRightLeft,
+	BarChart3,
 	Building2,
 	ClipboardCheck,
 	FileText,
-	LayoutDashboard,
-	Settings,
-	ShieldCheck,
+	KeyRound,
+	SlidersHorizontal,
 	Users,
 } from "lucide-react";
 import ROUTES from "@/lib/constants/routes";
@@ -30,7 +30,7 @@ export const sidebarConfig: SidebarGroup[] = [
 			{
 				title: "Summary",
 				href: ROUTES.SUMMARY,
-				icon: LayoutDashboard,
+				icon: BarChart3,
 				permission: { resource: "ac", action: "read" },
 			},
 			{
@@ -51,15 +51,15 @@ export const sidebarConfig: SidebarGroup[] = [
 				permission: { resource: "ac", action: "read" },
 			},
 			{
-				title: "Organization Members",
+				title: "Members",
 				href: ROUTES.ORGANIZATION_MEMBERS,
 				icon: Users,
 				permission: { resource: "member", action: "create" },
 			},
 			{
-				title: "Rate Management",
+				title: "Rates",
 				href: ROUTES.SETTINGS_RATES,
-				icon: Settings,
+				icon: SlidersHorizontal,
 				permission: { resource: "settings", action: "manage" },
 			},
 			{
@@ -71,7 +71,7 @@ export const sidebarConfig: SidebarGroup[] = [
 			{
 				title: "Deriv Tokens",
 				href: ROUTES.DERIV_TOKENS,
-				icon: ShieldCheck,
+				icon: KeyRound,
 				permission: { resource: "auth_provider", action: "manage" },
 			},
 		],

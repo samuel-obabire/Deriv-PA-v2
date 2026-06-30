@@ -1,13 +1,12 @@
 import { Suspense } from "react";
 import MembersSection from "@/components/settings/MembersSection";
 import { listMembers } from "@/lib/api/members";
-import { verifySession } from "@/lib/session";
+import { requirePermission, verifySession } from "@/lib/session";
 
-const MembersManagment = async () => {
-	const session = await verifySession("organization", "update");
-
+const MembersContent = async () => {
+	const session = await verifySession();
+	requirePermission(session, "organization", "update");
 	const organizationId = session.session.activeOrganizationId as string;
-
 	const membersPromise = listMembers(organizationId);
 
 	return (
@@ -19,12 +18,15 @@ const MembersManagment = async () => {
 
 const OrganizationMembersPage = () => {
 	return (
-		<div className="container max-w-2xl space-y-6 mt-8">
-			<section className="space-y-4">
-				<h2 className="title text-2xl">Members</h2>
+		<div className="container max-w-2xl py-8 space-y-8">
+			<header className="space-y-1">
+				<h1 className="title">Members</h1>
+				<p className="text-sm text-muted-foreground">
+					Manage who has access to your organization.
+				</p>
+			</header>
 
-				<MembersManagment />
-			</section>
+			<MembersContent />
 		</div>
 	);
 };

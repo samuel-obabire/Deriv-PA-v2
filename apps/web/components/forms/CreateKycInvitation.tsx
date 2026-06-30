@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CLIENT_CUSTOMER_TYPE } from "@repo/db/enums";
 import {
 	Button,
 	Card,
@@ -42,7 +43,7 @@ const CreateKycInvitationForm = ({
 	const form = useForm<z.infer<typeof CreateKycInviteSchema>>({
 		resolver: zodResolver(CreateKycInviteSchema),
 		defaultValues: {
-			customerType: "new",
+			customerType: CLIENT_CUSTOMER_TYPE.NEW,
 		},
 	});
 

@@ -4,6 +4,7 @@ import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
+	cn,
 	Sheet,
 	SheetClose,
 	SheetContent,
@@ -11,53 +12,34 @@ import {
 	SheetTrigger,
 } from "@repo/ui";
 import { ChevronDown, LucideIcon, Menu } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { ReactNode, use } from "react";
+import Logout from "@/components/auth/Logout";
 import ThemeToggler from "@/components/theme/ThemeToggler";
 import { Session, User } from "@/lib/auth";
 import { RoleNames } from "@/lib/permissions";
-import Logout from "../../auth/Logout";
 import { SidebarGroup, SidebarItem } from "./types";
 import UserCard from "./UserCard";
 import { getSidebarForRole } from "./utils";
 
-const SidebarContent = ({
-	renderItems,
-	groups,
-	user,
-}: {
-	groups: SidebarGroup[];
-	renderItems: (items: SidebarItem[]) => ReactNode;
-	user: User;
-}) => {
-	return (
-		<div className="h-full flex flex-col justify-between p-4 pt-6 text-16-regular">
-			<div className="space-y-8">
-				{groups.map((group) => (
-					<Collapsible key={group.title} defaultOpen={group.defaultOpen}>
-						<CollapsibleTrigger className="flex w-full items-center justify-between no-ring font-semibold text-muted-foreground mb-2">
-							{group.title}
-							<ChevronDown className="w-4 h-4 transition-transform data-[state=open]:rotate-180" />
-						</CollapsibleTrigger>
-
-						<CollapsibleContent className="space-y-1">
-							{renderItems(group.items)}
-						</CollapsibleContent>
-					</Collapsible>
-				))}
-			</div>
-
-			<div className="space-y-3">
-				<UserCard user={user} />
-				<div className="flex justify-between">
-					<ThemeToggler />
-					<Logout />
-				</div>
-			</div>
+const BrandMark = () => (
+	<div className="flex h-16 shrink-0 items-center border-b border-sidebar-border px-5">
+		<div className="flex items-center gap-2.5">
+			<Image
+				src="/asset/logo.svg"
+				alt="DerivPA"
+				width={26}
+				height={26}
+				priority
+			/>
+			<span className="font-space font-semibold text-[15px] tracking-tight">
+				DerivPA
+			</span>
 		</div>
-	);
-};
+	</div>
+);
 
 const SideBarLink = ({
 	Icon,
@@ -75,13 +57,75 @@ const SideBarLink = ({
 		<Link
 			href={href}
 			{...props}
-			className={`flex items-center gap-2 px-3 py-2 rounded-md transition
-											${isActive ? "bg-muted font-medium" : "hover:bg-muted/50"}
-											`}
+			className={cn(
+				"relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors duration-150",
+				isActive
+					? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+					: "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
+			)}
 		>
-			{Icon && <Icon className="w-4 h-4" />}
-			{title}
+			{isActive && (
+				<span
+					className="absolute left-0 inset-y-1.5 w-0.5 rounded-full bg-primary"
+					aria-hidden="true"
+				/>
+			)}
+			{Icon && (
+				<Icon
+					className={cn(
+						"size-4 shrink-0 transition-colors",
+						isActive ? "text-primary" : "",
+					)}
+				/>
+			)}
+			<span className="truncate">{title}</span>
 		</Link>
+	);
+};
+
+const SidebarContent = ({
+	renderItems,
+	groups,
+	user,
+}: {
+	groups: SidebarGroup[];
+	renderItems: (items: SidebarItem[]) => ReactNode;
+	user: User;
+}) => {
+	return (
+		<div className="flex h-full flex-col">
+			<BrandMark />
+
+			<nav className="flex-1 overflow-y-auto px-3 py-4">
+				<div className="space-y-5">
+					{groups.map((group) => (
+						<Collapsible
+							key={group.title}
+							defaultOpen={group.defaultOpen ?? true}
+						>
+							<CollapsibleTrigger className="no-ring group mb-1 flex w-full items-center justify-between px-3 py-0.5">
+								<span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+									{group.title}
+								</span>
+								<ChevronDown className="size-3.5 text-muted-foreground/40 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+							</CollapsibleTrigger>
+
+							<CollapsibleContent className="space-y-0.5 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 duration-150">
+								{renderItems(group.items)}
+							</CollapsibleContent>
+						</Collapsible>
+					))}
+				</div>
+			</nav>
+
+			<div className="shrink-0 border-t border-sidebar-border p-3 space-y-2">
+				<UserCard user={user} />
+				<div className="flex items-center justify-between px-1">
+					<ThemeToggler />
+					<Logout />
+				</div>
+			</div>
+		</div>
 	);
 };
 
@@ -91,21 +135,19 @@ export const DesktopSideBar = ({
 	sessionPromise: Promise<Session | null>;
 }) => {
 	const pathname = usePathname();
-
 	const session = use(sessionPromise);
 	if (!session) return null;
 
 	const groups = getSidebarForRole(session.user.role);
 
 	return (
-		<aside className="hidden pt-10 lg:block h-dvh border-r shadow-sidebar-primary overflow-y-auto">
+		<aside className="hidden lg:flex flex-col h-dvh border-r border-sidebar-border bg-sidebar overflow-hidden">
 			<SidebarContent
 				groups={groups}
 				user={session.user}
 				renderItems={(items) => {
 					return items.map((item) => {
 						const isActive = pathname === item.href;
-
 						return (
 							<SideBarLink
 								Icon={item.icon}
@@ -129,11 +171,19 @@ const SideBar = ({ role, user }: { role: RoleNames; user: User }) => {
 	return (
 		<Sheet>
 			<SheetTrigger asChild>
-				<button type="button" aria-label="Open menu">
-					<Menu />
+				<button
+					type="button"
+					aria-label="Open menu"
+					className="flex items-center justify-center rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+				>
+					<Menu className="size-5" />
 				</button>
 			</SheetTrigger>
-			<SheetContent side="left" aria-describedby={undefined}>
+			<SheetContent
+				side="left"
+				className="w-72 p-0 animate-in slide-in-from-left"
+				aria-describedby={undefined}
+			>
 				<SheetTitle className="sr-only">Navigation</SheetTitle>
 				<SidebarContent
 					groups={groups}
@@ -141,7 +191,6 @@ const SideBar = ({ role, user }: { role: RoleNames; user: User }) => {
 					renderItems={(items) => {
 						return items.map((item) => {
 							const isActive = pathname === item.href;
-
 							return (
 								<SheetClose key={item.href} asChild>
 									<SideBarLink

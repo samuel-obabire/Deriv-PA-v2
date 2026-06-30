@@ -35,7 +35,9 @@ const MembersSection = ({ membersPromise }: MembersSectionProps) => {
 			</div>
 
 			<div className="space-y-3">
-				<h3 className="title text-lg">Add Member</h3>
+				<h2 className="font-space text-base font-semibold tracking-tight">
+					Add Member
+				</h2>
 				<AddMemberForm onSubmit={addMember} />
 			</div>
 		</div>

@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import UpdateMemberRoleForm from "@/components/forms/UpdateMemberRole";
 import { updateMemberRole } from "@/lib/actions/organization/updateMemberRole";
 import { listMembers } from "@/lib/api/members";
-import { verifySession } from "@/lib/session";
+import { requirePermission, verifySession } from "@/lib/session";
 
 type MemberProfilePageProps = {
 	params: Promise<{ userId: string }>;
@@ -40,18 +40,22 @@ const MemberProfile = async ({
 };
 
 const MemberProfilePage = async ({ params }: MemberProfilePageProps) => {
-	const session = await verifySession("organization", "update");
+	const session = await verifySession();
+	requirePermission(session, "organization", "update");
 	const { userId } = await params;
 	const organizationId = session.session.activeOrganizationId as string;
 
 	return (
-		<div className="container max-w-2xl space-y-6 mt-8">
-			<section className="space-y-4">
-				<h2 className="title text-2xl">Member Profile</h2>
-				<Suspense fallback={<div>Loading...</div>}>
-					<MemberProfile userId={userId} organizationId={organizationId} />
-				</Suspense>
-			</section>
+		<div className="container max-w-2xl py-8 space-y-8">
+			<header className="space-y-1">
+				<h1 className="title">Member Profile</h1>
+			</header>
+
+			<Suspense
+				fallback={<div className="h-32 animate-pulse rounded-xl bg-muted" />}
+			>
+				<MemberProfile userId={userId} organizationId={organizationId} />
+			</Suspense>
 		</div>
 	);
 };

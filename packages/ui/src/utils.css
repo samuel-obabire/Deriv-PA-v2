@@ -75,12 +75,12 @@
 }
 
 @utility btn {
-  @apply cursor-pointer   !rounded-lg  !text-16-bold !p-5 transition-transform duration-200 active:scale-[97%];
+  @apply cursor-pointer rounded-lg text-16-bold p-5 transition-transform duration-200 active:scale-[97%];
 }
 
 @layer components {
   .title {
-    @apply font-space text-4xl font-bold tracking-tight;
+    @apply font-space text-2xl font-bold tracking-tight;
   }
 
   .title-subtext {
