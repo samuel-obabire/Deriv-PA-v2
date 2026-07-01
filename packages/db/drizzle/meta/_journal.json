@@ -43,6 +43,13 @@
 			"when": 1782913281980,
 			"tag": "0005_worthless_johnny_blaze",
 			"breakpoints": true
+		},
+		{
+			"idx": 6,
+			"version": "7",
+			"when": 1782920087640,
+			"tag": "0006_modern_wildside",
+			"breakpoints": true
 		}
 	]
 }

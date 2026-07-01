@@ -5,6 +5,7 @@ import {
 	ClipboardCheck,
 	FileText,
 	KeyRound,
+	ShieldCheck,
 	SlidersHorizontal,
 	Users,
 } from "lucide-react";
@@ -66,6 +67,12 @@ export const sidebarConfig: SidebarGroup[] = [
 				title: "KYC Invitations",
 				href: ROUTES.KYC_INVITATIONS,
 				icon: ClipboardCheck,
+				permission: { resource: "organization", action: "update" },
+			},
+			{
+				title: "KYC Review",
+				href: ROUTES.KYC,
+				icon: ShieldCheck,
 				permission: { resource: "organization", action: "update" },
 			},
 			{

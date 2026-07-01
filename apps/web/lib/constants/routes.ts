@@ -15,6 +15,8 @@ const ROUTES = {
 	ORGANIZATION_MEMBERS: "/settings/members",
 	DERIV_TOKENS: "/settings/deriv-tokens",
 	KYC_INVITATIONS: "/settings/kyc-invitations",
+	KYC: "/kyc",
+	KYC_REVIEW: (recordId: string) => `/kyc/review/${recordId}`,
 
 	GET_ACCESS_TOKEN: `${clientEnv.NEXT_PUBLIC_URL}/api/token`,
 };

@@ -7,13 +7,21 @@ import {
 	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
-import { KYC_DOCUMENT_TYPE, KYC_STATUS } from "../../enums";
+import {
+	KYC_DOCUMENT_TYPE,
+	KYC_REJECTION_REASON,
+	KYC_STATUS,
+} from "../../enums";
 import { organization } from "./organization";
 
 export const kycStatusEnum = pgEnum("kyc_status_enum", KYC_STATUS);
 export const kycDocumentTypeEnum = pgEnum(
 	"kyc_document_type_enum",
 	KYC_DOCUMENT_TYPE,
+);
+export const kycRejectionReasonEnum = pgEnum(
+	"kyc_rejection_reason_enum",
+	KYC_REJECTION_REASON,
 );
 
 export const clientKycRecord = pgTable(
@@ -32,6 +40,7 @@ export const clientKycRecord = pgTable(
 		idFrontUrl: text("id_front_url"),
 		idBackUrl: text("id_back_url"),
 		selfieVideoUrl: text("selfie_video_url"),
+		rejectionReason: kycRejectionReasonEnum("rejection_reason"),
 		createdAt: timestamp("created_at", {
 			precision: 6,
 			withTimezone: true,

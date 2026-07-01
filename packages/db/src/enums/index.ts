@@ -5,6 +5,14 @@ export enum KYC_STATUS {
 	REJECTED = "rejected",
 }
 
+export enum KYC_REJECTION_REASON {
+	BLURRY_DOCUMENT = "blurry_document",
+	DOCUMENT_EXPIRED = "document_expired",
+	NAME_MISMATCH = "name_mismatch",
+	INCOMPLETE_SUBMISSION = "incomplete_submission",
+	FRAUDULENT_DOCUMENT = "fraudulent_document",
+}
+
 export enum KYC_DOCUMENT_TYPE {
 	NATIONAL_ID = "national_id",
 	INTERNATIONAL_PASSPORT = "international_passport",

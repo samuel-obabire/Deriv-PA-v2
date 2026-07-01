@@ -4,6 +4,7 @@ import type {
 	ClientKycRecordUpdateData,
 	InsertClientKycRecord,
 } from "../db/schema/clientKycRecord";
+import { KYC_STATUS } from "../enums";
 import type { DB } from "../types";
 import {
 	getUniqueConstraintName,
@@ -44,6 +45,21 @@ export const getClientKycRecordsByOrg = async (
 		.select()
 		.from(clientKycRecord)
 		.where(eq(clientKycRecord.organizationId, organizationId));
+};
+
+export const getClientKycRecordsPendingReview = async (
+	organizationId: string,
+	db: DB,
+) => {
+	return db
+		.select()
+		.from(clientKycRecord)
+		.where(
+			and(
+				eq(clientKycRecord.organizationId, organizationId),
+				eq(clientKycRecord.status, KYC_STATUS.PENDING_REVIEW),
+			),
+		);
 };
 
 export const updateClientKycRecord = async (
