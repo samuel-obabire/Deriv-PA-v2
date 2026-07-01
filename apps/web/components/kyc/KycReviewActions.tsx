@@ -55,7 +55,6 @@ const KycReviewActions = ({ recordId }: Props) => {
 			}
 			toast.success("KYC record rejected");
 			router.push(ROUTES.KYC);
-			router.refresh();
 		});
 	};
 
@@ -66,6 +65,7 @@ const KycReviewActions = ({ recordId }: Props) => {
 					<Button
 						variant="outline"
 						className="flex-1 gap-2 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+						disabled={isPending}
 					>
 						<XCircle className="size-4" />
 						Reject
@@ -103,13 +103,13 @@ const KycReviewActions = ({ recordId }: Props) => {
 
 			<ConfirmDialog
 				trigger={
-					<Button className="flex-1 gap-2">
+					<Button className="flex-1 gap-2" disabled={isPending}>
 						<CheckCircle2 className="size-4" />
 						Approve
 					</Button>
 				}
 				title="Approve KYC submission?"
-				description="This will mark the client as verified. This action cannot be undone."
+				description="This will mark the client as verified."
 				confirmLabel="Approve"
 				icon={<CheckCircle2 className="size-5 text-primary" />}
 				isPending={isPending}

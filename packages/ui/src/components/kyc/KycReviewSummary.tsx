@@ -13,6 +13,7 @@ type Props = {
 	idFrontUrl?: string | null;
 	idBackUrl?: string | null;
 	selfieVideoUrl?: string | null;
+	showPlaceholders?: boolean;
 };
 
 export const KycReviewSummary = ({
@@ -23,6 +24,7 @@ export const KycReviewSummary = ({
 	idFrontUrl,
 	idBackUrl,
 	selfieVideoUrl,
+	showPlaceholders = true,
 }: Props) => {
 	const hasDocuments = Boolean(documentTypeLabel);
 
@@ -44,38 +46,44 @@ export const KycReviewSummary = ({
 						value={documentTypeLabel ?? ""}
 					/>
 
-					<div>
-						<p className="text-xs text-muted-foreground">Front of document</p>
-						<div className="mt-1">
-							{idFrontUrl ? (
-								<KycReviewImage imageUrl={idFrontUrl} label="Front of document" />
-							) : (
-								<KycReviewImagePlaceholder />
-							)}
+					{(idFrontUrl || showPlaceholders) && (
+						<div>
+							<p className="text-xs text-muted-foreground">Front of document</p>
+							<div className="mt-1">
+								{idFrontUrl ? (
+									<KycReviewImage imageUrl={idFrontUrl} label="Front of document" />
+								) : (
+									<KycReviewImagePlaceholder />
+								)}
+							</div>
 						</div>
-					</div>
+					)}
 
-					<div>
-						<p className="text-xs text-muted-foreground">Back of document</p>
-						<div className="mt-1">
-							{idBackUrl ? (
-								<KycReviewImage imageUrl={idBackUrl} label="Back of document" />
-							) : (
-								<KycReviewImagePlaceholder />
-							)}
+					{(idBackUrl || showPlaceholders) && (
+						<div>
+							<p className="text-xs text-muted-foreground">Back of document</p>
+							<div className="mt-1">
+								{idBackUrl ? (
+									<KycReviewImage imageUrl={idBackUrl} label="Back of document" />
+								) : (
+									<KycReviewImagePlaceholder />
+								)}
+							</div>
 						</div>
-					</div>
+					)}
 
-					<div>
-						<p className="text-xs text-muted-foreground">Selfie video</p>
-						<div className="mt-1">
-							{selfieVideoUrl ? (
-								<KycReviewVideo videoUrl={selfieVideoUrl} />
-							) : (
-								<KycReviewVideoPlaceholder />
-							)}
+					{(selfieVideoUrl || showPlaceholders) && (
+						<div>
+							<p className="text-xs text-muted-foreground">Selfie video</p>
+							<div className="mt-1">
+								{selfieVideoUrl ? (
+									<KycReviewVideo videoUrl={selfieVideoUrl} />
+								) : (
+									<KycReviewVideoPlaceholder />
+								)}
+							</div>
 						</div>
-					</div>
+					)}
 				</KycReviewSection>
 			)}
 		</div>

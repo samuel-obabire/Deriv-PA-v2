@@ -1,5 +1,5 @@
 import {
-	ArrowRightLeft,
+	Banknote,
 	BarChart3,
 	Building2,
 	ClipboardCheck,
@@ -20,7 +20,7 @@ export const sidebarConfig: SidebarGroup[] = [
 			{
 				title: "Transfer to Client",
 				href: ROUTES.TRANSFER_CLIENT,
-				icon: ArrowRightLeft,
+				icon: Banknote,
 				permission: { resource: "payment", action: "create" },
 			},
 		],
@@ -43,10 +43,10 @@ export const sidebarConfig: SidebarGroup[] = [
 		],
 	},
 	{
-		title: "Settings",
+		title: "Organization",
 		items: [
 			{
-				title: "Organization",
+				title: "General",
 				href: ROUTES.ORGANIZATION,
 				icon: Building2,
 				permission: { resource: "ac", action: "read" },
@@ -57,23 +57,33 @@ export const sidebarConfig: SidebarGroup[] = [
 				icon: Users,
 				permission: { resource: "member", action: "create" },
 			},
+		],
+	},
+	{
+		title: "KYC",
+		items: [
 			{
-				title: "Rates",
-				href: ROUTES.SETTINGS_RATES,
-				icon: SlidersHorizontal,
-				permission: { resource: "settings", action: "manage" },
-			},
-			{
-				title: "KYC Invitations",
+				title: "Invitations",
 				href: ROUTES.KYC_INVITATIONS,
 				icon: ClipboardCheck,
 				permission: { resource: "organization", action: "update" },
 			},
 			{
-				title: "KYC Review",
+				title: "Review",
 				href: ROUTES.KYC,
 				icon: ShieldCheck,
 				permission: { resource: "organization", action: "update" },
+			},
+		],
+	},
+	{
+		title: "Settings",
+		items: [
+			{
+				title: "Rates",
+				href: ROUTES.SETTINGS_RATES,
+				icon: SlidersHorizontal,
+				permission: { resource: "settings", action: "manage" },
 			},
 			{
 				title: "Deriv Tokens",

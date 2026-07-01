@@ -32,10 +32,23 @@ const VideoSelfie = ({ defaultValues, onBack, onNext }: Props) => {
 			onSubmit={form.handleSubmit((data) => onNext(data, previewUrl))}
 		>
 			<FieldGroup>
-				<p className="text-sm text-muted-foreground">
-					Record a short video of yourself holding your document clearly
-					visible. This helps us confirm your identity.
-				</p>
+				<div className="space-y-3 text-sm text-muted-foreground">
+					<p>
+						Record a short video of yourself holding your document clearly
+						visible. Ensure your face is fully lit, and read the script below
+						out loud to confirm your identity.
+					</p>
+					<div className="rounded-md border border-border bg-muted/50 p-3">
+						<p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-foreground">
+							Please say clearly into the camera:
+						</p>
+						<p className="italic text-foreground">
+							&ldquo;My name is [Full Name]. I am submitting my KYC on this
+							platform to authorize all my transactions, and I confirm that this
+							information belongs entirely to me.&rdquo;
+						</p>
+					</div>
+				</div>
 
 				<Controller
 					name="selfieVideoKey"
