@@ -1,14 +1,48 @@
-import { buildUrlSearchParams } from "@repo/lib/url";
+import { getValidClientKycInvitationByTokenHash } from "@repo/db/queries";
+import KycPageClient from "@/components/kyc/KycPageClient";
 import ROUTES from "@/lib/constants/routes";
+import { db } from "@/lib/db";
 import { verifySession } from "@/lib/session";
 
-const KycPage = async ({ searchParams }: PageProps<typeof ROUTES.KYC>) => {
+const KycContent = async ({
+	searchParams,
+}: {
+	searchParams: PageProps<typeof ROUTES.KYC>["searchParams"];
+}) => {
 	const resolvedParams = await searchParams;
-	const urlParams = buildUrlSearchParams(resolvedParams);
+	const token =
+		typeof resolvedParams.token === "string" ? resolvedParams.token : null;
 
-	await verifySession(`${ROUTES.KYC}?${urlParams}`);
+	await verifySession(token ? `${ROUTES.KYC}?token=${token}` : ROUTES.KYC);
 
-	return <div>Kyc page</div>;
+	if (!token) {
+		return <InvalidLink message="No invitation token found in this link." />;
+	}
+
+	const invitation = await getValidClientKycInvitationByTokenHash(token, db);
+
+	if (!invitation) {
+		return (
+			<InvalidLink message="This link has expired or is no longer valid. Please request a new one." />
+		);
+	}
+
+	return <KycPageClient token={token} customerType={invitation.customerType} />;
+};
+
+const InvalidLink = ({ message }: { message: string }) => {
+	return (
+		<div className="min-h-screen flex items-center justify-center p-6">
+			<div className="max-w-sm text-center space-y-3">
+				<h1 className="text-xl font-semibold">Link invalid</h1>
+				<p className="text-sm text-muted-foreground">{message}</p>
+			</div>
+		</div>
+	);
+};
+
+const KycPage = async ({ searchParams }: PageProps<typeof ROUTES.KYC>) => {
+	return <KycContent searchParams={searchParams} />;
 };
 
 export default KycPage;

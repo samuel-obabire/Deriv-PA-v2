@@ -26,8 +26,7 @@ export const clientKycRecord = pgTable(
 		email: text("email").notNull(),
 		fullName: text("full_name").notNull(),
 		derivNickname: text("deriv_nickname").notNull().unique(),
-		phoneNumber: text("phone_number").notNull().unique(),
-		whatsappNumber: text("whatsapp_number").notNull().unique(),
+		whatsappNumber: text("whatsapp_number").notNull(),
 		status: kycStatusEnum("status").notNull().default(KYC_STATUS.UNVERIFIED),
 		documentType: kycDocumentTypeEnum("document_type"),
 		idFrontUrl: text("id_front_url"),
@@ -49,12 +48,17 @@ export const clientKycRecord = pgTable(
 			table.organizationId,
 			table.email,
 		),
+		uniqueIndex("kyc_record_org_whatsapp_unique").on(
+			table.organizationId,
+			table.whatsappNumber,
+		),
 		index("kyc_record_org_idx").on(table.organizationId),
 		index("kyc_record_status_idx").on(table.status),
 	],
 );
 
 export type ClientKycRecord = typeof clientKycRecord.$inferSelect;
+export type InsertClientKycRecord = typeof clientKycRecord.$inferInsert;
 export type ClientKycRecordUpdateData = Partial<
 	Omit<typeof clientKycRecord.$inferInsert, "id" | "createdAt" | "updatedAt">
 >;

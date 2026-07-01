@@ -9,18 +9,18 @@ import ROUTES from "@/lib/constants/routes";
 const trustPoints = [
 	{
 		icon: ShieldCheck,
-		label: "Your data is safe",
-		desc: "Everything you submit is encrypted end-to-end",
+		label: "Encrypted",
+		desc: "Everything you submit is encrypted — end-to-end, no exceptions",
 	},
 	{
 		icon: Zap,
-		label: "Quick and simple",
-		desc: "The process is straightforward and only takes a few minutes",
+		label: "Takes minutes",
+		desc: "Most people are through it in under five minutes",
 	},
 	{
 		icon: Lock,
-		label: "Privacy first",
-		desc: "Your information is privately stored",
+		label: "Stays private",
+		desc: "Your information is only used to verify your identity",
 	},
 ];
 
@@ -65,8 +65,8 @@ const KycSignIn = ({ callbackUrl }: KycSignInProps) => {
 					</h1>
 
 					<p className="mt-3 text-14-regular text-muted-foreground leading-relaxed">
-						Complete or update your identity verification. Sign in to continue —
-						it's secure and only takes a few minutes.
+						We need to confirm your identity before you can continue. Sign in
+						and we'll guide you through the steps.
 					</p>
 
 					<div className="mt-10 w-full space-y-5">
@@ -87,7 +87,7 @@ const KycSignIn = ({ callbackUrl }: KycSignInProps) => {
 				</div>
 
 				<p className="absolute bottom-8 text-12-regular text-muted-foreground tracking-widest uppercase">
-					256-bit encrypted · Secure process
+					256-bit encrypted · Your data stays private
 				</p>
 			</div>
 
@@ -104,7 +104,7 @@ const KycSignIn = ({ callbackUrl }: KycSignInProps) => {
 							Identity verification
 						</h2>
 						<p className="text-sm text-muted-foreground">
-							Sign in with Google to complete or update your KYC verification.
+							Sign in with your Google account to complete your profile update.
 						</p>
 					</div>
 

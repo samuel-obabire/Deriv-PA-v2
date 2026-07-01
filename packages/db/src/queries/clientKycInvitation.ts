@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, gt, sql } from "drizzle-orm";
 import { clientKycInvitation } from "../db/schema";
 import type { InsertClientKycInvitation } from "../db/schema/clientKycInvitation";
 import type { DB } from "../types";
@@ -11,6 +11,23 @@ export const getClientKycInvitationByTokenHash = async (
 		.select()
 		.from(clientKycInvitation)
 		.where(eq(clientKycInvitation.tokenHash, tokenHash));
+
+	return invitation ?? null;
+};
+
+export const getValidClientKycInvitationByTokenHash = async (
+	tokenHash: string,
+	db: DB,
+) => {
+	const [invitation] = await db
+		.select()
+		.from(clientKycInvitation)
+		.where(
+			and(
+				eq(clientKycInvitation.tokenHash, tokenHash),
+				gt(clientKycInvitation.expiresAt, sql`NOW()`),
+			),
+		);
 
 	return invitation ?? null;
 };

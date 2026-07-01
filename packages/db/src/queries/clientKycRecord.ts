@@ -1,7 +1,14 @@
 import { and, eq } from "drizzle-orm";
-import { clientKycRecord } from "../db/schema";
-import type { ClientKycRecordUpdateData } from "../db/schema/clientKycRecord";
+import { clientKycInvitation, clientKycRecord } from "../db/schema";
+import type {
+	ClientKycRecordUpdateData,
+	InsertClientKycRecord,
+} from "../db/schema/clientKycRecord";
 import type { DB } from "../types";
+import {
+	getUniqueConstraintName,
+	isUniqueConstraintError,
+} from "../utils/pgErrors";
 
 export const getClientKycRecordById = async (id: string, db: DB) => {
 	const [record] = await db
@@ -54,6 +61,49 @@ export const updateClientKycRecord = async (
 	return updated;
 };
 
+export const createClientKycRecord = async (
+	data: InsertClientKycRecord,
+	db: DB,
+) => {
+	const [created] = await db.insert(clientKycRecord).values(data).returning();
+
+	if (!created) throw new Error("Failed to create KYC record");
+
+	return created;
+};
+
+export const createKycRecordAndBurnInvitation = async (
+	data: InsertClientKycRecord,
+	invitationId: string,
+	db: DB,
+) => {
+	try {
+		return await db.transaction(async (tx) => {
+			const [created] = await tx
+				.insert(clientKycRecord)
+				.values(data)
+				.returning();
+
+			if (!created) throw new Error("Failed to create KYC record");
+
+			await tx
+				.delete(clientKycInvitation)
+				.where(eq(clientKycInvitation.id, invitationId));
+
+			return created;
+		});
+	} catch (err) {
+		if (isUniqueConstraintError(err)) {
+			const constraint = getUniqueConstraintName(err);
+			throw new Error(
+				(constraint && KYC_UNIQUE_CONSTRAINT_MESSAGES[constraint]) ??
+					"A record with these details already exists",
+			);
+		}
+		throw err;
+	}
+};
+
 export const deleteClientKycRecord = async (id: string, db: DB) => {
 	const [deleted] = await db
 		.delete(clientKycRecord)
@@ -61,4 +111,12 @@ export const deleteClientKycRecord = async (id: string, db: DB) => {
 		.returning();
 
 	return deleted ?? null;
+};
+
+const KYC_UNIQUE_CONSTRAINT_MESSAGES: Record<string, string> = {
+	kyc_record_org_email_unique: "A KYC record with this email already exists",
+	client_kyc_record_deriv_nickname_unique:
+		"This Deriv nickname is already registered",
+	kyc_record_org_whatsapp_unique:
+		"This WhatsApp number is already registered for this organisation",
 };

@@ -9,15 +9,26 @@
 		"lint": "biome lint ."
 	},
 	"dependencies": {
+		"@hookform/resolvers": "^5.4.0",
+		"@repo/db": "workspace:*",
 		"@repo/lib": "workspace:*",
 		"@repo/typescript-config": "workspace:*",
 		"@repo/ui": "workspace:*",
+		"@repo/utils": "workspace:*",
+		"@uploadthing/react": "^7.0.0",
 		"better-auth": "^1.6.22",
+		"libphonenumber-js": "^1.13.7",
 		"lucide-react": "^1.21.0",
-		"next-themes": "^0.4.6",
 		"next": "16.2.9",
+		"next-themes": "^0.4.6",
 		"react": "19.2.4",
 		"react-dom": "19.2.4",
+		"react-hook-form": "^7.80.0",
+		"react-phone-number-input": "^3.4.17",
+		"react-webcam": "^7.2.0",
+		"server-only": "^0.0.1",
+		"sonner": "^2.0.7",
+		"uploadthing": "^7.0.0",
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
