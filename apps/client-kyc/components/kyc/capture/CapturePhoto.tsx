@@ -50,8 +50,8 @@ const CapturePhoto = ({
 
 		const blob = await fetch(screenshot).then((r) => r.blob());
 		const slug = label.toLowerCase().replace(/\s+/g, "-");
-		const file = new File([blob], `kyc-${slug}-${Date.now()}.jpg`, {
-			type: "image/jpeg",
+		const file = new File([blob], `kyc-${slug}-${Date.now()}.webp`, {
+			type: "image/webp",
 		});
 
 		await startUpload([file]);
@@ -97,7 +97,7 @@ const CapturePhoto = ({
 				<div className="overflow-hidden rounded-lg border">
 					<Webcam
 						ref={webcamRef}
-						screenshotFormat="image/jpeg"
+						screenshotFormat="image/webp"
 						videoConstraints={{ facingMode: "environment" }}
 						className="w-full"
 					/>
