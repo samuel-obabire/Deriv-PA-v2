@@ -12,7 +12,7 @@ const LayoutHeader = async () => {
 	return <Navbar role={session.user.role} user={session.user} />;
 };
 
-export default function WithBalanceLayout({ children }: PropsWithChildren) {
+export default function WithSocketLayout({ children }: PropsWithChildren) {
 	return (
 		<WithSocketProviders>
 			<header className={headerClassName}>

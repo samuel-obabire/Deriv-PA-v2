@@ -1,12 +1,12 @@
 type DataRendererProps<T> = {
-	data: T[] | null | undefined;
+	data: T | null | undefined;
 	empty?: {
 		title?: string;
 		message?: string;
 		action?: React.ReactNode;
 		component?: React.ReactNode;
 	};
-	render: (data: T[]) => React.ReactNode;
+	render: (data: NonNullable<T>) => React.ReactNode;
 };
 
 export const DataRenderer = <T,>({
@@ -14,7 +14,7 @@ export const DataRenderer = <T,>({
 	empty,
 	render,
 }: DataRendererProps<T>) => {
-	if (!data || data.length === 0) {
+	if (!data || (Array.isArray(data) && data.length === 0)) {
 		return (
 			<div className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed bg-muted/30 px-6 py-14 text-center">
 				{empty?.component ? (
@@ -32,5 +32,5 @@ export const DataRenderer = <T,>({
 		);
 	}
 
-	return <>{render(data)}</>;
+	return <>{render(data )}</>;
 };

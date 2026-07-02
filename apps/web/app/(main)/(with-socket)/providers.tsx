@@ -1,5 +1,5 @@
 import { getAllOrganizationCurrencies } from "@repo/db/queries";
-import { EmptyState } from "@repo/ui";
+import { DataRenderer, EmptyState } from "@repo/ui";
 import { SettingsIcon, WalletIcon } from "lucide-react";
 import { PropsWithChildren } from "react";
 import CurrencyProvider from "@/context/CurrencyProvider";
@@ -19,31 +19,28 @@ export default async function WithSocketProviders({
 		db,
 	);
 
-	if (currencyList.length === 0) {
-		return (
-			<div className="container flex min-h-[60vh] items-center justify-center">
-				<EmptyState
-					icon={<WalletIcon className="size-6 text-muted-foreground" />}
-					title="No currencies configured"
-					description="Add a Deriv token to enable currency management for your organization."
-					href={ROUTES.DERIV_TOKENS}
-					linkIcon={<SettingsIcon className="size-4" />}
-					linkLabel="Token settings"
-				/>
-			</div>
-		);
-	}
-
 	return (
-		<CurrencyProvider currencyList={currencyList}>
-			<TokenProvider>
-				<SocketProvider>
-					{/* <ConnectionRefresher> */}
-					{children}
-
-					{/* </ConnectionRefresher> */}
-				</SocketProvider>
-			</TokenProvider>
-		</CurrencyProvider>
+		<DataRenderer
+			data={currencyList}
+			empty={{
+				component: (
+					<EmptyState
+						icon={<WalletIcon className="size-6 text-muted-foreground" />}
+						title="No currencies configured"
+						description="Add a Deriv token to enable currency management for your organization."
+						href={ROUTES.DERIV_TOKENS}
+						linkIcon={<SettingsIcon className="size-4" />}
+						linkLabel="Token settings"
+					/>
+				),
+			}}
+			render={(currencyList) => (
+				<CurrencyProvider currencyList={currencyList}>
+					<TokenProvider>
+						<SocketProvider>{children}</SocketProvider>
+					</TokenProvider>
+				</CurrencyProvider>
+			)}
+		/>
 	);
 }
