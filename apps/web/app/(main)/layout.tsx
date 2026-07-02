@@ -2,7 +2,7 @@ import { PropsWithChildren, Suspense } from "react";
 import { DesktopSideBar } from "@/components/nav/sidebar";
 import { verifySession } from "@/lib/session";
 
-export default async function AuditLayout({ children }: PropsWithChildren) {
+export default async function MainLayout({ children }: PropsWithChildren) {
 	const sessionPromise = verifySession();
 
 	return (

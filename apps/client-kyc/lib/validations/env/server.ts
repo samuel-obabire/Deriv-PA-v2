@@ -6,6 +6,7 @@ const ServerSchema = z.object({
 	BETTER_AUTH_SECRET: z.string().min(5),
 	GOOGLE_CLIENT_ID: z.string().min(5),
 	GOOGLE_CLIENT_SECRET: z.string().min(5),
+	UPLOADTHING_TOKEN: z.string().min(1),
 	NODE_ENV: z
 		.enum(["production", "development", "test"])
 		.default("development"),

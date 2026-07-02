@@ -1,0 +1,16 @@
+import { KYC_DOCUMENT_TYPE, KYC_REJECTION_REASON } from "@repo/db/enums";
+
+export const DOCUMENT_TYPE_LABELS: Record<KYC_DOCUMENT_TYPE, string> = {
+	[KYC_DOCUMENT_TYPE.NATIONAL_ID]: "National ID",
+	[KYC_DOCUMENT_TYPE.INTERNATIONAL_PASSPORT]: "International Passport",
+	[KYC_DOCUMENT_TYPE.DRIVERS_LICENSE]: "Driver's License",
+	[KYC_DOCUMENT_TYPE.VOTERS_CARD]: "Voter's Card",
+};
+
+export const REJECTION_REASON_LABELS: Record<KYC_REJECTION_REASON, string> = {
+	[KYC_REJECTION_REASON.BLURRY_DOCUMENT]: "Blurry or unreadable document",
+	[KYC_REJECTION_REASON.DOCUMENT_EXPIRED]: "Document expired",
+	[KYC_REJECTION_REASON.NAME_MISMATCH]: "Name mismatch",
+	[KYC_REJECTION_REASON.INCOMPLETE_SUBMISSION]: "Incomplete submission",
+	[KYC_REJECTION_REASON.FRAUDULENT_DOCUMENT]: "Fraudulent document",
+};

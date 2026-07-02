@@ -1,4 +1,5 @@
 import { getOrganizationRate, getRecentTransfersByOrg } from "@repo/db/queries";
+import { DataRenderer } from "@repo/ui";
 import { Suspense } from "react";
 import TransferSection from "@/components/funds-transfer/TransferSection";
 import RateNotConfigured from "@/components/ui/rate-not-configured";
@@ -14,13 +15,17 @@ const ProtectedTransferToClient = async () => {
 		getRecentTransfersByOrg(orgId, db),
 	]);
 
-	if (!rate) return <RateNotConfigured />;
-
 	return (
-		<TransferSection
-			rate={rate}
-			orgId={orgId}
-			initialTransfers={initialTransfers}
+		<DataRenderer
+			data={rate}
+			empty={{ component: <RateNotConfigured /> }}
+			render={(rate) => (
+				<TransferSection
+					rate={rate}
+					orgId={orgId}
+					initialTransfers={initialTransfers}
+				/>
+			)}
 		/>
 	);
 };

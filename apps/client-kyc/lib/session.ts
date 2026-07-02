@@ -10,7 +10,6 @@ import ROUTES from "./constants/routes";
 export const getSession = async () => {
 	return await auth.api.getSession({
 		headers: await headers(),
-		query: { disableCookieCache: true, disableRefresh: true },
 	});
 };
 

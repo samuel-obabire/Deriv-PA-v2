@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const inter = Inter({
 	subsets: ["vietnamese"],
@@ -40,6 +41,7 @@ export default function RootLayout({
 				>
 					{children}
 				</ThemeProvider>
+				<Toaster richColors />
 			</body>
 		</html>
 	);

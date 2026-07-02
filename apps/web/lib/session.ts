@@ -9,6 +9,7 @@ import ROUTES from "./constants/routes";
 import { type PermissionType, type ResourcePermission } from "./permissions";
 
 // Always bypasses cookie cache. Use when you need fresh session state
+// hits the db
 export const getSession = async () => {
 	return await auth.api.getSession({
 		headers: await headers(),
@@ -16,6 +17,7 @@ export const getSession = async () => {
 	});
 };
 
+// For non-critical checks. Session may stale
 export const verifySession = cache(async () => {
 	const session = await auth.api.getSession({
 		headers: await headers(),
@@ -26,6 +28,7 @@ export const verifySession = cache(async () => {
 	return session;
 });
 
+// For non-critical checks. Session may stale
 export const requirePermission = <R extends keyof PermissionType>(
 	session: Session,
 	resource: R,

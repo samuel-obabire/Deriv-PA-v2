@@ -35,7 +35,7 @@
 		"@repo/typescript-config": "workspace:^",
 		"@repo/utils": "workspace:^",
 		"@types/pg": "^8.20.0",
-		"bullmq": "^5.79.1",
+		"bullmq": "^5.79.2",
 		"decimal.js": "^10.6.0",
 		"dotenv": "^17.4.2",
 		"ioredis": "^5.11.1",
@@ -65,7 +65,7 @@
 		"ts-node": "^10.9.2",
 		"tsconfig-paths": "^4.2.0",
 		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.62.0"
+		"typescript-eslint": "^8.62.1"
 	},
 	"jest": {
 		"moduleFileExtensions": [

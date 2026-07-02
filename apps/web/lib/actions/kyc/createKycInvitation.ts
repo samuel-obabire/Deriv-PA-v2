@@ -7,6 +7,7 @@ import { UnauthorizedError } from "@repo/lib/errors";
 import handleError from "@repo/lib/http-errors";
 import { tryCatch } from "@repo/utils";
 import * as z from "zod";
+import ROUTES from "@/lib/constants/routes";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
 import { hasPermission } from "@/lib/has-permission";
@@ -55,7 +56,8 @@ export const createKycInvitation = async (
 
 	if (createError) return handleError(createError);
 
-	const inviteUrl = `${clientEnv.NEXT_PUBLIC_CLIENT_KYC_URL}/kyc?token=${token}`;
+	const path = validated.params.mode === "update" ? ROUTES.HOME : ROUTES.KYC;
+	const inviteUrl = `${clientEnv.NEXT_PUBLIC_CLIENT_KYC_URL}${path}?token=${token}`;
 
 	return { success: true, data: { inviteUrl } };
 };

@@ -7,13 +7,21 @@ import {
 	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
-import { KYC_DOCUMENT_TYPE, KYC_STATUS } from "../../enums";
+import {
+	KYC_DOCUMENT_TYPE,
+	KYC_REJECTION_REASON,
+	KYC_STATUS,
+} from "../../enums";
 import { organization } from "./organization";
 
 export const kycStatusEnum = pgEnum("kyc_status_enum", KYC_STATUS);
 export const kycDocumentTypeEnum = pgEnum(
 	"kyc_document_type_enum",
 	KYC_DOCUMENT_TYPE,
+);
+export const kycRejectionReasonEnum = pgEnum(
+	"kyc_rejection_reason_enum",
+	KYC_REJECTION_REASON,
 );
 
 export const clientKycRecord = pgTable(
@@ -26,13 +34,13 @@ export const clientKycRecord = pgTable(
 		email: text("email").notNull(),
 		fullName: text("full_name").notNull(),
 		derivNickname: text("deriv_nickname").notNull().unique(),
-		phoneNumber: text("phone_number").notNull().unique(),
-		whatsappNumber: text("whatsapp_number").notNull().unique(),
+		whatsappNumber: text("whatsapp_number").notNull(),
 		status: kycStatusEnum("status").notNull().default(KYC_STATUS.UNVERIFIED),
 		documentType: kycDocumentTypeEnum("document_type"),
-		idFrontUrl: text("id_front_url"),
-		idBackUrl: text("id_back_url"),
-		selfieVideoUrl: text("selfie_video_url"),
+		idFrontKey: text("id_front_key"),
+		idBackKey: text("id_back_key"),
+		selfieVideoKey: text("selfie_video_key"),
+		rejectionReason: kycRejectionReasonEnum("rejection_reason"),
 		createdAt: timestamp("created_at", {
 			precision: 6,
 			withTimezone: true,
@@ -49,12 +57,17 @@ export const clientKycRecord = pgTable(
 			table.organizationId,
 			table.email,
 		),
+		uniqueIndex("kyc_record_org_whatsapp_unique").on(
+			table.organizationId,
+			table.whatsappNumber,
+		),
 		index("kyc_record_org_idx").on(table.organizationId),
 		index("kyc_record_status_idx").on(table.status),
 	],
 );
 
 export type ClientKycRecord = typeof clientKycRecord.$inferSelect;
+export type InsertClientKycRecord = typeof clientKycRecord.$inferInsert;
 export type ClientKycRecordUpdateData = Partial<
 	Omit<typeof clientKycRecord.$inferInsert, "id" | "createdAt" | "updatedAt">
 >;

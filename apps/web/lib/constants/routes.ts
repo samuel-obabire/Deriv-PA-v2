@@ -11,10 +11,12 @@ const ROUTES = {
 	STATEMENT: "/reports/statement",
 	SUMMARY: "/summary",
 	SETTINGS_RATES: "/settings/rate",
-	ORGANIZATION: "/settings/organization",
-	ORGANIZATION_MEMBERS: "/settings/members",
+	ORGANIZATION: "/organization",
+	ORGANIZATION_MEMBERS: "/organization/members",
 	DERIV_TOKENS: "/settings/deriv-tokens",
-	KYC_INVITATIONS: "/settings/kyc-invitations",
+	KYC_INVITATIONS: "/kyc/invitations",
+	KYC: "/kyc",
+	KYC_REVIEW: (recordId: string) => `/kyc/review/${recordId}`,
 
 	GET_ACCESS_TOKEN: `${clientEnv.NEXT_PUBLIC_URL}/api/token`,
 };

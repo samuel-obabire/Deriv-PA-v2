@@ -5,6 +5,7 @@ import Link from "next/link";
 import { use } from "react";
 import { addMember } from "@/lib/actions/organization/addMember";
 import type { ListMembersResult } from "@/lib/api/members";
+import ROUTES from "@/lib/constants/routes";
 import AddMemberForm from "../forms/AddMember";
 
 type MembersSectionProps = {
@@ -18,7 +19,10 @@ const MembersSection = ({ membersPromise }: MembersSectionProps) => {
 		<div className="space-y-8">
 			<div className="flex flex-col gap-2">
 				{members.map(({ role, user }) => (
-					<Link key={user.id} href={`/settings/members/${user.id}`}>
+					<Link
+						key={user.id}
+						href={`${ROUTES.ORGANIZATION_MEMBERS}/${user.id}`}
+					>
 						<Card className="bg-muted transition-colors hover:bg-muted/80 cursor-pointer">
 							<CardHeader>
 								<div className="flex items-center justify-between">
