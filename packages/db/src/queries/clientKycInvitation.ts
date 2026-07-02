@@ -1,4 +1,4 @@
-import { and, eq, gt, sql } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 import { clientKycInvitation } from "../db/schema";
 import type { InsertClientKycInvitation } from "../db/schema/clientKycInvitation";
 import type { DB } from "../types";
@@ -25,7 +25,7 @@ export const getValidClientKycInvitationByTokenHash = async (
 		.where(
 			and(
 				eq(clientKycInvitation.tokenHash, tokenHash),
-				gt(clientKycInvitation.expiresAt, sql`NOW()`),
+				gt(clientKycInvitation.expiresAt, new Date()),
 			),
 		);
 
