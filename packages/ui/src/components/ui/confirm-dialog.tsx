@@ -49,7 +49,7 @@ export const ConfirmDialog = ({
 	const hasBody = Boolean(description || children);
 
 	return (
-		<Dialog.Root open={open} onOpenChange={setOpen}>
+		<Dialog.Root open={open} onOpenChange={(next) => { if (!next) handleCancel(); else setOpen(true); }}>
 			<Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
 
 			<DialogPortal>
@@ -75,7 +75,7 @@ export const ConfirmDialog = ({
 							variant="ghost"
 							size="icon-sm"
 							className="absolute top-3 right-3"
-							onClick={() => setOpen(false)}
+							onClick={handleCancel}
 						>
 							<X className="size-4" />
 						</Button>

@@ -16,6 +16,7 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
+	Switch,
 } from "@repo/ui";
 import { tryCatch } from "@repo/utils";
 import { Controller, useForm } from "react-hook-form";
@@ -44,6 +45,7 @@ const CreateKycInvitationForm = ({
 		resolver: zodResolver(CreateKycInviteSchema),
 		defaultValues: {
 			customerType: CLIENT_CUSTOMER_TYPE.NEW,
+			mode: "create" as const,
 		},
 	});
 
@@ -92,6 +94,22 @@ const CreateKycInvitationForm = ({
 									{fieldState.invalid && (
 										<FieldError errors={[fieldState.error]} />
 									)}
+								</Field>
+							)}
+						/>
+						<Controller
+							name="mode"
+							control={form.control}
+							render={({ field }) => (
+								<Field orientation="horizontal">
+									<Switch
+										id="mode"
+										checked={field.value === "update"}
+										onCheckedChange={(checked) =>
+											field.onChange(checked ? "update" : "create")
+										}
+									/>
+									<FieldLabel htmlFor="mode">Update existing record</FieldLabel>
 								</Field>
 							)}
 						/>

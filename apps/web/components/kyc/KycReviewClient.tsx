@@ -8,9 +8,9 @@ import { DOCUMENT_TYPE_LABELS } from "@/lib/constants/kyc";
 import KycReviewActions from "./KycReviewActions";
 
 type SignedUrls = {
-	idFrontUrl: string | null;
-	idBackUrl: string | null;
-	selfieVideoUrl: string | null;
+	idFrontKey: string | null;
+	idBackKey: string | null;
+	selfieVideoKey: string | null;
 };
 
 type Props = {
@@ -19,40 +19,40 @@ type Props = {
 
 const KycReviewClient = ({ record }: Props) => {
 	const [signedUrls, setSignedUrls] = useState<SignedUrls>({
-		idFrontUrl: null,
-		idBackUrl: null,
-		selfieVideoUrl: null,
+		idFrontKey: null,
+		idBackKey: null,
+		selfieVideoKey: null,
 	});
 
 	useEffect(() => {
 		const fetchUrls = async () => {
 			const [front, back, video] = await Promise.all([
-				record.idFrontUrl
-					? getKycSignedUrl(record.idFrontUrl).then((r) =>
+				record.idFrontKey
+					? getKycSignedUrl(record.idFrontKey).then((r) =>
 							r.success ? (r.data?.url ?? null) : null,
 						)
 					: null,
-				record.idBackUrl
-					? getKycSignedUrl(record.idBackUrl).then((r) =>
+				record.idBackKey
+					? getKycSignedUrl(record.idBackKey).then((r) =>
 							r.success ? (r.data?.url ?? null) : null,
 						)
 					: null,
-				record.selfieVideoUrl
-					? getKycSignedUrl(record.selfieVideoUrl).then((r) =>
+				record.selfieVideoKey
+					? getKycSignedUrl(record.selfieVideoKey).then((r) =>
 							r.success ? (r.data?.url ?? null) : null,
 						)
 					: null,
 			]);
 
 			setSignedUrls({
-				idFrontUrl: front,
-				idBackUrl: back,
-				selfieVideoUrl: video,
+				idFrontKey: front,
+				idBackKey: back,
+				selfieVideoKey: video,
 			});
 		};
 
 		fetchUrls();
-	}, [record.idFrontUrl, record.idBackUrl, record.selfieVideoUrl]);
+	}, [record.idFrontKey, record.idBackKey, record.selfieVideoKey]);
 
 	return (
 		<div className="space-y-8">
@@ -63,9 +63,9 @@ const KycReviewClient = ({ record }: Props) => {
 				documentTypeLabel={
 					record.documentType ? DOCUMENT_TYPE_LABELS[record.documentType] : null
 				}
-				idFrontUrl={signedUrls.idFrontUrl}
-				idBackUrl={signedUrls.idBackUrl}
-				selfieVideoUrl={signedUrls.selfieVideoUrl}
+				idFrontUrl={signedUrls.idFrontKey}
+				idBackUrl={signedUrls.idBackKey}
+				selfieVideoUrl={signedUrls.selfieVideoKey}
 			/>
 
 			<KycReviewActions recordId={record.id} />

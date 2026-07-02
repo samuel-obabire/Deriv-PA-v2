@@ -3,7 +3,7 @@
 import { Button } from "@repo/ui";
 import { generateReactHelpers } from "@uploadthing/react";
 import { RefreshCw, Video } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import KycVideo from "@/components/kyc/KycVideo";
 import type { UploadRouter } from "@/lib/uploadthing";
@@ -20,6 +20,13 @@ const RecordVideo = ({ capturedPreview, onRecorded }: RecordVideoProps) => {
 	const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 	const chunksRef = useRef<Blob[]>([]);
 	const pendingPreviewRef = useRef<string>("");
+	const blobUrlRef = useRef<string | null>(null);
+
+	useEffect(() => {
+		return () => {
+			if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+		};
+	}, []);
 
 	const [isOpen, setIsOpen] = useState(false);
 	const [isRecording, setIsRecording] = useState(false);
@@ -30,7 +37,10 @@ const RecordVideo = ({ capturedPreview, onRecorded }: RecordVideoProps) => {
 	const { startUpload, isUploading } = useUploadThing("kycSelfie", {
 		onClientUploadComplete: (res) => {
 			const customId = res[0]?.customId;
-			if (customId) onRecorded(customId, pendingPreviewRef.current);
+			if (customId) {
+				onRecorded(customId, pendingPreviewRef.current);
+				blobUrlRef.current = null; // parent now owns the URL, don't revoke on unmount
+			}
 			setIsOpen(false);
 		},
 	});
@@ -48,7 +58,9 @@ const RecordVideo = ({ capturedPreview, onRecorded }: RecordVideoProps) => {
 
 		recorder.onstop = () => {
 			const blob = new Blob(chunksRef.current, { type: "video/webm" });
+			if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
 			const url = URL.createObjectURL(blob);
+			blobUrlRef.current = url;
 			setPreviewUrl(url);
 			pendingPreviewRef.current = url;
 			setIsRecording(false);
@@ -72,6 +84,8 @@ const RecordVideo = ({ capturedPreview, onRecorded }: RecordVideoProps) => {
 	}, [startUpload]);
 
 	const handleReRecord = useCallback(() => {
+		if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+		blobUrlRef.current = null;
 		setPreviewUrl(null);
 		chunksRef.current = [];
 	}, []);
@@ -88,6 +102,8 @@ const RecordVideo = ({ capturedPreview, onRecorded }: RecordVideoProps) => {
 					variant="outline"
 					size="sm"
 					onClick={() => {
+						if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+						blobUrlRef.current = null;
 						setPreviewUrl(null);
 						setIsOpen(true);
 					}}

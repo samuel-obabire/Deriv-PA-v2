@@ -1,11 +1,13 @@
 "use client";
 
+import { ClientKycRecord } from "@repo/db";
 import { CLIENT_CUSTOMER_TYPE } from "@repo/db/enums";
 import { tryCatch } from "@repo/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { submitKycAction } from "@/lib/actions/kyc/submitKyc";
+import { updateKycAction } from "@/lib/actions/kyc/updateKyc";
 import ROUTES from "@/lib/constants/routes";
 import type { KycFormData } from "@/lib/validations/kyc";
 import KycWizard from "./KycWizard";
@@ -18,12 +20,33 @@ import VideoSelfie from "./steps/VideoSelfie";
 type Props = {
 	token: string;
 	customerType: CLIENT_CUSTOMER_TYPE;
+	submissionType?: "create" | "update";
+	kycData?: Omit<
+		ClientKycRecord,
+		"idBackKey" | "idFrontKey" | "selfieVideoKey" | "documentType"
+	>;
 };
 
-const KycPageClient = ({ token, customerType }: Props) => {
+const KycPageClient = ({
+	token,
+	customerType,
+	kycData,
+	submissionType = "create",
+}: Props) => {
 	const router = useRouter();
 	const [currentStep, setCurrentStep] = useState(1);
-	const [formData, setFormData] = useState<KycFormData>({});
+	const [formData, setFormData] = useState<KycFormData>({
+		fullName: kycData?.fullName,
+		derivNickname: kycData?.derivNickname,
+		whatsappNumber: kycData?.whatsappNumber,
+		documentType: undefined,
+		idFrontKey: undefined,
+		idFrontPreview: undefined,
+		idBackKey: undefined,
+		idBackPreview: undefined,
+		selfieVideoKey: undefined,
+		selfieVideoPreview: undefined,
+	});
 	const [isPending, setIsPending] = useState(false);
 
 	const handleNext = (stepData: KycFormData) => {
@@ -36,9 +59,13 @@ const KycPageClient = ({ token, customerType }: Props) => {
 	const handleSubmit = async () => {
 		setIsPending(true);
 
-		const [result, error] = await tryCatch(() =>
-			submitKycAction(token, formData),
-		);
+		const [result, error] = await tryCatch(() => {
+			const fn =
+				submissionType === "create" ? submitKycAction : updateKycAction;
+
+			const res = fn(token, formData);
+			return res;
+		});
 
 		setIsPending(false);
 
@@ -53,32 +80,49 @@ const KycPageClient = ({ token, customerType }: Props) => {
 
 	const isNew = customerType === CLIENT_CUSTOMER_TYPE.NEW;
 
+	const baseSteps = [
+		{
+			title: "Identity Verification",
+			component: (
+				<IdentityForm
+					defaultValues={{
+						fullName: formData.fullName ?? "",
+						derivNickname: formData.derivNickname ?? "",
+					}}
+					onNext={handleNext}
+				/>
+			),
+		},
+		{
+			title: "Contact Details",
+			component: (
+				<ContactForm
+					defaultValues={{
+						whatsappNumber: formData.whatsappNumber ?? "",
+					}}
+					onBack={handleBack}
+					onNext={handleNext}
+				/>
+			),
+		},
+	];
+
+	const reviewStep = {
+		title: "Review & Submit",
+		component: (
+			<ReviewStep
+				formData={formData}
+				customerType={customerType}
+				onBack={handleBack}
+				onSubmit={handleSubmit}
+				isPending={isPending}
+			/>
+		),
+	};
+
 	const steps = isNew
 		? [
-				{
-					title: "Identity Verification",
-					component: (
-						<IdentityForm
-							defaultValues={{
-								fullName: formData.fullName ?? "",
-								derivNickname: formData.derivNickname ?? "",
-							}}
-							onNext={handleNext}
-						/>
-					),
-				},
-				{
-					title: "Contact Details",
-					component: (
-						<ContactForm
-							defaultValues={{
-								whatsappNumber: formData.whatsappNumber ?? "",
-							}}
-							onBack={handleBack}
-							onNext={handleNext}
-						/>
-					),
-				},
+				...baseSteps,
 				{
 					title: "Document Verification",
 					component: (
@@ -110,57 +154,9 @@ const KycPageClient = ({ token, customerType }: Props) => {
 						/>
 					),
 				},
-				{
-					title: "Review & Submit",
-					component: (
-						<ReviewStep
-							formData={formData}
-							customerType={customerType}
-							onBack={handleBack}
-							onSubmit={handleSubmit}
-							isPending={isPending}
-						/>
-					),
-				},
+				reviewStep,
 			]
-		: [
-				{
-					title: "Identity Verification",
-					component: (
-						<IdentityForm
-							defaultValues={{
-								fullName: formData.fullName ?? "",
-								derivNickname: formData.derivNickname ?? "",
-							}}
-							onNext={handleNext}
-						/>
-					),
-				},
-				{
-					title: "Contact Details",
-					component: (
-						<ContactForm
-							defaultValues={{
-								whatsappNumber: formData.whatsappNumber ?? "",
-							}}
-							onBack={handleBack}
-							onNext={handleNext}
-						/>
-					),
-				},
-				{
-					title: "Review & Submit",
-					component: (
-						<ReviewStep
-							formData={formData}
-							customerType={customerType}
-							onBack={handleBack}
-							onSubmit={handleSubmit}
-							isPending={isPending}
-						/>
-					),
-				},
-			];
+		: [...baseSteps, reviewStep];
 
 	return (
 		<div

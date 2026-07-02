@@ -37,9 +37,9 @@ export const clientKycRecord = pgTable(
 		whatsappNumber: text("whatsapp_number").notNull(),
 		status: kycStatusEnum("status").notNull().default(KYC_STATUS.UNVERIFIED),
 		documentType: kycDocumentTypeEnum("document_type"),
-		idFrontUrl: text("id_front_url"),
-		idBackUrl: text("id_back_url"),
-		selfieVideoUrl: text("selfie_video_url"),
+		idFrontKey: text("id_front_key"),
+		idBackKey: text("id_back_key"),
+		selfieVideoKey: text("selfie_video_key"),
 		rejectionReason: kycRejectionReasonEnum("rejection_reason"),
 		createdAt: timestamp("created_at", {
 			precision: 6,

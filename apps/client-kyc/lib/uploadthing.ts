@@ -4,43 +4,27 @@ import { getSession } from "./session";
 
 const f = createUploadthing();
 
+const kycMiddleware =
+	(prefix: string) =>
+	async ({
+		files,
+	}: {
+		files: readonly { name: string; size: number; type: string }[];
+	}) => {
+		const session = await getSession();
+		if (!session) throw new UploadThingError("Unauthorized");
+
+		const customId = `kyc-${prefix}-${session.user.id}-${crypto.randomUUID()}`;
+		return { [UTFiles]: files.map((file) => ({ ...file, customId })) };
+	};
+
 export const uploadRouter: FileRouter = {
 	kycDocument: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
-		.middleware(async ({ files }) => {
-			const session = await getSession();
-			if (!session) throw new UploadThingError("Unauthorized");
-			const customId = `kyc-doc-${session.user.id}-${crypto.randomUUID()}`;
-
-			const fileOverrides = files.map((file) => {
-				return {
-					...file,
-					customId: customId,
-				};
-			});
-
-			return {
-				[UTFiles]: fileOverrides,
-			};
-		})
+		.middleware(kycMiddleware("doc"))
 		.onUploadComplete(({ file }) => ({ customId: file.customId })),
 
 	kycSelfie: f({ video: { maxFileSize: "32MB", maxFileCount: 1 } })
-		.middleware(async ({ files }) => {
-			const session = await getSession();
-			if (!session) throw new UploadThingError("Unauthorized");
-			const customId = `kyc-selfie-${session.user.id}-${crypto.randomUUID()}`;
-
-			const fileOverrides = files.map((file) => {
-				return {
-					...file,
-					customId: customId,
-				};
-			});
-
-			return {
-				[UTFiles]: fileOverrides,
-			};
-		})
+		.middleware(kycMiddleware("selfie"))
 		.onUploadComplete(({ file }) => ({ customId: file.customId })),
 } satisfies FileRouter;
 

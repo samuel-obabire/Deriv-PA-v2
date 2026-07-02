@@ -120,6 +120,39 @@ export const createKycRecordAndBurnInvitation = async (
 	}
 };
 
+export const updateKycRecordAndBurnInvitation = async (
+	{ id, data }: { id: string; data: ClientKycRecordUpdateData },
+	invitationId: string,
+	db: DB,
+) => {
+	try {
+		return await db.transaction(async (tx) => {
+			const [updated] = await tx
+				.update(clientKycRecord)
+				.set(data)
+				.where(eq(clientKycRecord.id, id))
+				.returning();
+
+			if (!updated) throw new Error("KYC record not found");
+
+			await tx
+				.delete(clientKycInvitation)
+				.where(eq(clientKycInvitation.id, invitationId));
+
+			return updated;
+		});
+	} catch (err) {
+		if (isUniqueConstraintError(err)) {
+			const constraint = getUniqueConstraintName(err);
+			throw new Error(
+				(constraint && KYC_UNIQUE_CONSTRAINT_MESSAGES[constraint]) ??
+					"A record with these details already exists",
+			);
+		}
+		throw err;
+	}
+};
+
 export const deleteClientKycRecord = async (id: string, db: DB) => {
 	const [deleted] = await db
 		.delete(clientKycRecord)

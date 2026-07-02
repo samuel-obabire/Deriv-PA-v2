@@ -50,6 +50,13 @@
 			"when": 1782920087640,
 			"tag": "0006_modern_wildside",
 			"breakpoints": true
+		},
+		{
+			"idx": 7,
+			"version": "7",
+			"when": 1782991344080,
+			"tag": "0007_furry_masked_marvel",
+			"breakpoints": true
 		}
 	]
 }

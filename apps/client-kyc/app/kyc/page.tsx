@@ -1,4 +1,6 @@
 import { getValidClientKycInvitationByTokenHash } from "@repo/db/queries";
+import { DataRenderer } from "@repo/ui";
+import { Suspense } from "react";
 import KycPageClient from "@/components/kyc/KycPageClient";
 import ROUTES from "@/lib/constants/routes";
 import { db } from "@/lib/db";
@@ -21,13 +23,19 @@ const KycContent = async ({
 
 	const invitation = await getValidClientKycInvitationByTokenHash(token, db);
 
-	if (!invitation) {
-		return (
-			<InvalidLink message="This link has expired or is no longer valid. Please request a new one." />
-		);
-	}
-
-	return <KycPageClient token={token} customerType={invitation.customerType} />;
+	return (
+		<DataRenderer
+			data={invitation}
+			empty={{
+				component: (
+					<InvalidLink message="This link has expired or is no longer valid. Please request a new one." />
+				),
+			}}
+			render={(invitation) => (
+				<KycPageClient token={token} customerType={invitation.customerType} />
+			)}
+		/>
+	);
 };
 
 const InvalidLink = ({ message }: { message: string }) => {
@@ -41,8 +49,12 @@ const InvalidLink = ({ message }: { message: string }) => {
 	);
 };
 
-const KycPage = async ({ searchParams }: PageProps<typeof ROUTES.KYC>) => {
-	return <KycContent searchParams={searchParams} />;
+const KycPage = ({ searchParams }: PageProps<typeof ROUTES.KYC>) => {
+	return (
+		<Suspense fallback={null}>
+			<KycContent searchParams={searchParams} />
+		</Suspense>
+	);
 };
 
 export default KycPage;

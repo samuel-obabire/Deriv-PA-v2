@@ -4,8 +4,9 @@ import "server-only";
 
 import { CLIENT_CUSTOMER_TYPE, KYC_STATUS } from "@repo/db/enums";
 import {
-	createKycRecordAndBurnInvitation,
+	getClientKycRecordByEmail,
 	getValidClientKycInvitationByTokenHash,
+	updateKycRecordAndBurnInvitation,
 } from "@repo/db/queries";
 import { NotFoundError } from "@repo/lib/errors";
 import handleError from "@repo/lib/http-errors";
@@ -20,7 +21,7 @@ import {
 	NewClientKycSubmitSchema,
 } from "@/lib/validations/kyc";
 
-export const submitKycAction = async (
+export const updateKycAction = async (
 	token: string,
 	data: KycFormData,
 ): Promise<ActionResponse> => {
@@ -43,6 +44,16 @@ export const submitKycAction = async (
 	if (inviteError) return handleError(inviteError);
 	if (!invitation) return handleError(new NotFoundError("Invitation link"));
 
+	const [kycRecord, recordError] = await tryCatch(() =>
+		getClientKycRecordByEmail(
+			{ email: session.user.email, organizationId: invitation.organizationId },
+			db,
+		),
+	);
+
+	if (recordError) return handleError(recordError);
+	if (!kycRecord) return handleError(new NotFoundError("KYC record"));
+
 	if (invitation.customerType === CLIENT_CUSTOMER_TYPE.NEW) {
 		const [parsedData, parseError] = await tryCatch(() =>
 			NewClientKycSubmitSchema.parseAsync(validated.params),
@@ -51,18 +62,19 @@ export const submitKycAction = async (
 		if (parseError) return handleError(parseError);
 
 		const [, txError] = await tryCatch(() =>
-			createKycRecordAndBurnInvitation(
+			updateKycRecordAndBurnInvitation(
 				{
-					organizationId: invitation.organizationId,
-					email: session.user.email,
-					fullName: parsedData.fullName,
-					derivNickname: parsedData.derivNickname,
-					whatsappNumber: parsedData.whatsappNumber,
-					status: KYC_STATUS.PENDING_REVIEW,
-					documentType: parsedData.documentType,
-					idFrontKey: parsedData.idFrontKey,
-					idBackKey: parsedData.idBackKey,
-					selfieVideoKey: parsedData.selfieVideoKey,
+					id: kycRecord.id,
+					data: {
+						fullName: parsedData.fullName,
+						derivNickname: parsedData.derivNickname,
+						whatsappNumber: parsedData.whatsappNumber,
+						status: KYC_STATUS.PENDING_REVIEW,
+						documentType: parsedData.documentType,
+						idFrontKey: parsedData.idFrontKey,
+						idBackKey: parsedData.idBackKey,
+						selfieVideoKey: parsedData.selfieVideoKey,
+					},
 				},
 				invitation.id,
 				db,
@@ -78,14 +90,15 @@ export const submitKycAction = async (
 		if (parseError) return handleError(parseError);
 
 		const [, txError] = await tryCatch(() =>
-			createKycRecordAndBurnInvitation(
+			updateKycRecordAndBurnInvitation(
 				{
-					organizationId: invitation.organizationId,
-					email: session.user.email,
-					fullName: parsedData.fullName,
-					derivNickname: parsedData.derivNickname,
-					whatsappNumber: parsedData.whatsappNumber,
-					status: KYC_STATUS.PENDING_REVIEW,
+					id: kycRecord.id,
+					data: {
+						fullName: parsedData.fullName,
+						derivNickname: parsedData.derivNickname,
+						whatsappNumber: parsedData.whatsappNumber,
+						status: KYC_STATUS.PENDING_REVIEW,
+					},
 				},
 				invitation.id,
 				db,

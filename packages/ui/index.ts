@@ -1,4 +1,6 @@
 export * from "./src/components/ui/alert-dialog";
+export * from "./src/components/ui/invalid-link";
+export * from "./src/components/ui/banner";
 export * from "./src/components/ui/badge";
 export * from "./src/components/ui/confirm-dialog";
 export * from "./src/components/ui/data-renderer";
