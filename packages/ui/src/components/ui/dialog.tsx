@@ -83,6 +83,12 @@ function DialogContent({
 	);
 }
 
+function DialogContentPrimitive({
+	...props
+}: React.ComponentProps<typeof DialogPrimitive.Content>) {
+	return <DialogPrimitive.Content data-slot="dialog-content" {...props} />;
+}
+
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
@@ -156,6 +162,7 @@ export {
 	Dialog,
 	DialogClose,
 	DialogContent,
+	DialogContentPrimitive,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,

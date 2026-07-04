@@ -57,3 +57,10 @@ export enum TRANSACTION_STATUS {
 	FAILED = "failed",
 	CANCELLED = "cancelled",
 }
+
+export enum ACCESS_REQUEST_ACTION {
+	REQUESTED = "requested",
+	APPROVED = "approved",
+	REJECTED = "rejected",
+	REVOKED = "revoked",
+}

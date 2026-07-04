@@ -1,11 +1,17 @@
 "use client";
 
-import { Dialog } from "radix-ui";
-import * as React from "react";
 import { X } from "lucide-react";
+import * as React from "react";
 import { cn } from "../../lib/utils";
 import { Button } from "./button";
-import { DialogOverlay, DialogPortal, DialogTitle } from "./dialog";
+import {
+	Dialog,
+	DialogContentPrimitive,
+	DialogOverlay,
+	DialogPortal,
+	DialogTitle,
+	DialogTrigger,
+} from "./dialog";
 
 type ConfirmDialogProps = {
 	trigger: React.ReactNode;
@@ -46,15 +52,24 @@ export const ConfirmDialog = ({
 		setOpen(false);
 	};
 
+	const handleClose = () => {
+		setOpen(false);
+	};
+
 	const hasBody = Boolean(description || children);
 
 	return (
-		<Dialog.Root open={open} onOpenChange={(next) => { if (!next) handleCancel(); else setOpen(true); }}>
-			<Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
+		<Dialog
+			open={open}
+			onOpenChange={(next) => {
+				if (next) setOpen(true);
+			}}
+		>
+			<DialogTrigger asChild>{trigger}</DialogTrigger>
 
 			<DialogPortal>
 				<DialogOverlay />
-				<Dialog.Content
+				<DialogContentPrimitive
 					aria-describedby={undefined}
 					className={cn(
 						"fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[90dvh] w-full max-w-lg flex-col overflow-hidden bg-popover text-sm text-popover-foreground shadow-xl outline-none",
@@ -64,18 +79,16 @@ export const ConfirmDialog = ({
 						"sm:slide-in-from-bottom-0 sm:data-open:zoom-in-95 sm:data-closed:zoom-out-95",
 					)}
 				>
-
 					<div className="flex shrink-0 justify-center pt-3 sm:hidden">
 						<div className="h-1 w-8 rounded-full bg-muted-foreground/25" />
 					</div>
-
 
 					<div className="relative shrink-0 border-b px-5 py-4">
 						<Button
 							variant="ghost"
 							size="icon-sm"
 							className="absolute top-3 right-3"
-							onClick={handleCancel}
+							onClick={handleClose}
 						>
 							<X className="size-4" />
 						</Button>
@@ -84,7 +97,6 @@ export const ConfirmDialog = ({
 							<DialogTitle className="text-sm font-semibold">{title}</DialogTitle>
 						</div>
 					</div>
-
 
 					{hasBody && (
 						<div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
@@ -123,8 +135,8 @@ export const ConfirmDialog = ({
 							</Button>
 						</div>
 					</div>
-				</Dialog.Content>
+				</DialogContentPrimitive>
 			</DialogPortal>
-		</Dialog.Root>
+		</Dialog>
 	);
 };

@@ -1,0 +1,2 @@
+ALTER TABLE "elevated_access_grant" DROP CONSTRAINT "elevated_access_grant_session_id_unique";--> statement-breakpoint
+ALTER TABLE "elevated_access_grant" ADD CONSTRAINT "elevated_access_grant_session_org_unique" UNIQUE("session_id","organization_id");
