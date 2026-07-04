@@ -7,6 +7,7 @@ import {
 	KeyRound,
 	ShieldCheck,
 	SlidersHorizontal,
+	UserCheck,
 	Users,
 } from "lucide-react";
 import ROUTES from "@/lib/constants/routes";
@@ -56,6 +57,12 @@ export const sidebarConfig: SidebarGroup[] = [
 				href: ROUTES.ORGANIZATION_MEMBERS,
 				icon: Users,
 				permission: { resource: "member", action: "create" },
+			},
+			{
+				title: "Access Requests",
+				href: ROUTES.ACCESS_REQUESTS,
+				icon: UserCheck,
+				permission: { resource: "access_request", action: "view" },
 			},
 		],
 	},

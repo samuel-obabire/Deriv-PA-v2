@@ -57,6 +57,20 @@
 			"when": 1782991344080,
 			"tag": "0007_furry_masked_marvel",
 			"breakpoints": true
+		},
+		{
+			"idx": 8,
+			"version": "7",
+			"when": 1783184497157,
+			"tag": "0008_awesome_bromley",
+			"breakpoints": true
+		},
+		{
+			"idx": 9,
+			"version": "7",
+			"when": 1783189184135,
+			"tag": "0009_fresh_northstar",
+			"breakpoints": true
 		}
 	]
 }

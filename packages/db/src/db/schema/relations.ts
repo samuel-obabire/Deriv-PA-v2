@@ -1,8 +1,10 @@
 import { relations } from "drizzle-orm";
+import { accessRequestAuditLog } from "./accessRequestAuditLog";
 import { account } from "./account";
 import { clientKycInvitation } from "./clientKycInvitation";
 import { clientKycRecord } from "./clientKycRecord";
 import { currency } from "./currency";
+import { elevatedAccessGrant } from "./elevatedAccessGrant";
 import { invitation } from "./invitation";
 import { member } from "./member";
 import { organization } from "./organization";
@@ -94,3 +96,39 @@ export const rateRelation = relations(rate, ({ one }) => ({
 		references: [organization.id],
 	}),
 }));
+
+export const elevatedAccessGrantRelations = relations(
+	elevatedAccessGrant,
+	({ one }) => ({
+		session: one(session, {
+			fields: [elevatedAccessGrant.sessionId],
+			references: [session.id],
+		}),
+		targetUser: one(user, {
+			fields: [elevatedAccessGrant.targetUserId],
+			references: [user.id],
+		}),
+		organization: one(organization, {
+			fields: [elevatedAccessGrant.organizationId],
+			references: [organization.id],
+		}),
+	}),
+);
+
+export const accessRequestAuditLogRelations = relations(
+	accessRequestAuditLog,
+	({ one }) => ({
+		organization: one(organization, {
+			fields: [accessRequestAuditLog.organizationId],
+			references: [organization.id],
+		}),
+		member: one(user, {
+			fields: [accessRequestAuditLog.memberId],
+			references: [user.id],
+		}),
+		actor: one(user, {
+			fields: [accessRequestAuditLog.actorUserId],
+			references: [user.id],
+		}),
+	}),
+);

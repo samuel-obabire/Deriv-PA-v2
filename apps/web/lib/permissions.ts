@@ -11,6 +11,7 @@ const statement = {
 	payment: ["create", "update"],
 	settings: ["manage"],
 	auth_provider: ["manage"],
+	access_request: ["view", "approve", "reject", "revoke"],
 } as const;
 
 const ac = createAccessControl(statement);
@@ -23,6 +24,7 @@ const admin = ac.newRole({
 	payment: ["create", "update"],
 	settings: ["manage"],
 	auth_provider: ["manage"],
+	access_request: ["view", "approve", "reject", "revoke"],
 	...adminAc.statements,
 });
 
@@ -30,6 +32,7 @@ const owner = ac.newRole({
 	payment: ["create", "update"],
 	settings: ["manage"],
 	auth_provider: ["manage"],
+	access_request: ["view", "approve", "reject", "revoke"],
 	...ownerAc.statements,
 });
 

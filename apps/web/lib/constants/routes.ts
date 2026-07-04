@@ -13,6 +13,8 @@ const ROUTES = {
 	SETTINGS_RATES: "/settings/rate",
 	ORGANIZATION: "/organization",
 	ORGANIZATION_MEMBERS: "/organization/members",
+	ACCESS_REQUESTS: "/organization/access-requests",
+	ACCESS_REQUEST_STATUS: (grantId: string) => `/api/access-requests/${grantId}`,
 	DERIV_TOKENS: "/settings/deriv-tokens",
 	KYC_INVITATIONS: "/kyc/invitations",
 	KYC: "/kyc",
