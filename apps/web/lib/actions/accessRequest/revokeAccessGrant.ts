@@ -13,6 +13,7 @@ import { NotFoundError, UnauthorizedError } from "@repo/lib/errors";
 import handleError from "@repo/lib/http-errors";
 import { tryCatch } from "@repo/utils";
 import * as z from "zod";
+import { serverApi } from "@/lib/api/server-api";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
 import { hasPermission } from "@/lib/has-permission";
@@ -49,6 +50,11 @@ export const revokeAccessGrant = async (
 		getUser(grant.targetUserId, db),
 	);
 	if (userError) return handleError(userError);
+
+	const [, revokeError] = await tryCatch(() =>
+		serverApi.revokeToken(grant.targetUserId),
+	);
+	if (revokeError) return handleError(revokeError);
 
 	const [, deleteError] = await tryCatch(() =>
 		deleteElevatedAccessGrantsForUser(
