@@ -9,10 +9,11 @@ import {
 	DataRenderer,
 } from "@repo/ui";
 import { tryCatch } from "@repo/utils";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use, useTransition } from "react";
 import { toast } from "sonner";
+import ApproveAccessDialog from "@/components/access-requests/ApproveAccessDialog";
 import RefreshButton from "@/components/ui/refresh-button";
 import { reviewAccessRequest } from "@/lib/actions/accessRequest/reviewAccessRequest";
 
@@ -33,10 +34,18 @@ const PendingRequestsList = ({ pendingPromise }: Props) => {
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
 
-	const handleReview = (grantId: string, action: "approve" | "reject") => {
+	const handleReview = (
+		grantId: string,
+		action: "approve" | "reject",
+		hours?: number,
+	) => {
 		startTransition(async () => {
 			const [result, error] = await tryCatch(() =>
-				reviewAccessRequest({ grantId, action }),
+				reviewAccessRequest(
+					action === "approve"
+						? { grantId, action, hours }
+						: { grantId, action },
+				),
 			);
 
 			if (error) {
@@ -87,15 +96,12 @@ const PendingRequestsList = ({ pendingPromise }: Props) => {
 											<XCircle className="size-4" />
 											Reject
 										</Button>
-										<Button
-											size="sm"
-											className="gap-1.5"
-											disabled={isPending}
-											onClick={() => handleReview(req.id, "approve")}
-										>
-											<CheckCircle2 className="size-4" />
-											Approve
-										</Button>
+										<ApproveAccessDialog
+											isPending={isPending}
+											onApprove={(hours) =>
+												handleReview(req.id, "approve", hours)
+											}
+										/>
 									</div>
 								</div>
 							</CardHeader>

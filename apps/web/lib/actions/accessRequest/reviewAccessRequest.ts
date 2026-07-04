@@ -20,7 +20,7 @@ import { hasPermission } from "@/lib/has-permission";
 import { ActionResponse } from "@/lib/types/global";
 import { ReviewAccessRequestSchema } from "@/lib/validations/accessRequest";
 
-const ELEVATED_ACCESS_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours
+const DEFAULT_ELEVATED_ACCESS_HOURS = 8;
 
 export const reviewAccessRequest = async (
 	data: z.infer<typeof ReviewAccessRequestSchema>,
@@ -35,7 +35,7 @@ export const reviewAccessRequest = async (
 
 	if (validationError) return handleError(validationError);
 
-	const { grantId, action: reviewAction } = validated.params;
+	const { grantId, action: reviewAction, hours } = validated.params;
 
 	const permitted = await hasPermission({
 		access_request: [reviewAction === "approve" ? "approve" : "reject"],
@@ -64,11 +64,12 @@ export const reviewAccessRequest = async (
 	const memberEmail = targetUser?.email ?? "unknown";
 
 	if (reviewAction === "approve") {
+		const ttlMs = (hours ?? DEFAULT_ELEVATED_ACCESS_HOURS) * 60 * 60 * 1000;
 		const [, approveError] = await tryCatch(() =>
 			approveElevatedAccessGrant(
 				{
 					id: grant.id,
-					expiresAt: new Date(Date.now() + ELEVATED_ACCESS_TTL_MS),
+					expiresAt: new Date(Date.now() + ttlMs),
 				},
 				db,
 			),
