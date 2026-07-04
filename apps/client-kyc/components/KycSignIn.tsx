@@ -37,7 +37,7 @@ const KycSignIn = ({ callbackUrl }: KycSignInProps) => {
 		setError(null);
 		await authClient.signIn.social({
 			provider: "google",
-			callbackURL: callbackUrl ?? ROUTES.HOME,
+			callbackURL: callbackUrl ?? ROUTES.KYC,
 			fetchOptions: {
 				onError: (ctx) => {
 					setError(ctx.error.message);

@@ -56,8 +56,7 @@ export const createKycInvitation = async (
 
 	if (createError) return handleError(createError);
 
-	const path = validated.params.mode === "update" ? ROUTES.HOME : ROUTES.KYC;
-	const inviteUrl = `${clientEnv.NEXT_PUBLIC_CLIENT_KYC_URL}${path}?token=${token}`;
+	const inviteUrl = `${clientEnv.NEXT_PUBLIC_CLIENT_KYC_URL}${ROUTES.KYC}?token=${token}`;
 
 	return { success: true, data: { inviteUrl } };
 };

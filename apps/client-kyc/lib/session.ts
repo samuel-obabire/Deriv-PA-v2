@@ -21,8 +21,8 @@ export const verifySession = cache(async (currentPath?: string) => {
 	if (!session) {
 		redirect(
 			currentPath
-				? `${ROUTES.SIGN_IN}${encodeCallbackUrl(currentPath)}`
-				: ROUTES.SIGN_IN,
+				? `${ROUTES.HOME}${encodeCallbackUrl(currentPath)}`
+				: ROUTES.HOME,
 		);
 	}
 

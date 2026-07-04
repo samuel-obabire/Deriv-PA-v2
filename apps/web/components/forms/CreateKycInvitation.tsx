@@ -16,7 +16,6 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-	Switch,
 } from "@repo/ui";
 import { tryCatch } from "@repo/utils";
 import { Controller, useForm } from "react-hook-form";
@@ -33,8 +32,8 @@ type CreateKycInvitationFormProps = {
 };
 
 const CUSTOMER_TYPE_LABELS: Record<(typeof CUSTOMER_TYPES)[number], string> = {
-	existing: "Existing Client",
-	new: "New Client",
+	new: "New client (requires KYC document)",
+	existing: "Existing client (no document required)",
 };
 
 const CreateKycInvitationForm = ({
@@ -45,7 +44,6 @@ const CreateKycInvitationForm = ({
 		resolver: zodResolver(CreateKycInviteSchema),
 		defaultValues: {
 			customerType: CLIENT_CUSTOMER_TYPE.NEW,
-			mode: "create" as const,
 		},
 	});
 
@@ -71,17 +69,14 @@ const CreateKycInvitationForm = ({
 							control={form.control}
 							render={({ field, fieldState }) => (
 								<Field data-invalid={fieldState.invalid}>
-									<FieldLabel htmlFor="customerType">Client Type</FieldLabel>
-									<Select
-										onValueChange={field.onChange}
-										defaultValue={field.value}
-									>
+									<FieldLabel htmlFor="customerType">KYC Document</FieldLabel>
+									<Select onValueChange={field.onChange} value={field.value}>
 										<SelectTrigger
 											id="customerType"
 											aria-invalid={fieldState.invalid}
 											className="w-full no-ring"
 										>
-											<SelectValue placeholder="Select client type" />
+											<SelectValue placeholder="Select an option" />
 										</SelectTrigger>
 										<SelectContent>
 											{CUSTOMER_TYPES.map((type) => (
@@ -94,22 +89,6 @@ const CreateKycInvitationForm = ({
 									{fieldState.invalid && (
 										<FieldError errors={[fieldState.error]} />
 									)}
-								</Field>
-							)}
-						/>
-						<Controller
-							name="mode"
-							control={form.control}
-							render={({ field }) => (
-								<Field orientation="horizontal">
-									<Switch
-										id="mode"
-										checked={field.value === "update"}
-										onCheckedChange={(checked) =>
-											field.onChange(checked ? "update" : "create")
-										}
-									/>
-									<FieldLabel htmlFor="mode">Update existing record</FieldLabel>
 								</Field>
 							)}
 						/>
