@@ -6,11 +6,8 @@ export const CUSTOMER_TYPES = [
 	CLIENT_CUSTOMER_TYPE.NEW,
 ] as const;
 
-export const KYC_INVITE_MODES = ["create", "update"] as const;
-
 export const CreateKycInviteSchema = z.object({
 	customerType: z.enum(CUSTOMER_TYPES),
-	mode: z.enum(KYC_INVITE_MODES),
 });
 
 export const GetKycSignedUrlSchema = z.object({

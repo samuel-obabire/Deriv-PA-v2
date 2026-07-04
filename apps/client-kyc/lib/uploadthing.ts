@@ -23,7 +23,7 @@ export const uploadRouter: FileRouter = {
 		.middleware(kycMiddleware("doc"))
 		.onUploadComplete(({ file }) => ({ customId: file.customId })),
 
-	kycSelfie: f({ video: { maxFileSize: "32MB", maxFileCount: 1 } })
+	kycSelfie: f({ video: { maxFileSize: "64MB", maxFileCount: 1 } })
 		.middleware(kycMiddleware("selfie"))
 		.onUploadComplete(({ file }) => ({ customId: file.customId })),
 } satisfies FileRouter;

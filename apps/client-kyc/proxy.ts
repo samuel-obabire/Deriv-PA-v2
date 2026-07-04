@@ -3,7 +3,7 @@ import { getSessionCookie } from "better-auth/cookies";
 import { type NextRequest, NextResponse } from "next/server";
 import ROUTES from "./lib/constants/routes";
 
-const publicRoutes: string[] = [ROUTES.SIGN_IN, ROUTES.UPLOADTHING];
+const publicRoutes: string[] = [ROUTES.HOME, ROUTES.UPLOADTHING];
 
 export async function proxy(request: NextRequest) {
 	const { pathname, search } = request.nextUrl;
@@ -13,7 +13,7 @@ export async function proxy(request: NextRequest) {
 	if (!sessionCookie && !publicRoutes.includes(pathname)) {
 		return NextResponse.redirect(
 			new URL(
-				`${ROUTES.SIGN_IN}${encodeCallbackUrl(pathname + search)}`,
+				`${ROUTES.HOME}${encodeCallbackUrl(pathname + search)}`,
 				request.url,
 			),
 		);
