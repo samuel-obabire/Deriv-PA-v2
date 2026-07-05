@@ -10,8 +10,8 @@ export class RequestError extends Error {
 }
 
 export class ValidationError extends RequestError {
-	constructor(pretifiedError: string, message?: string) {
-		const msg = message ?? pretifiedError;
+	constructor(prettifiedError: string, message?: string) {
+		const msg = message ?? prettifiedError;
 
 		super(400, msg);
 

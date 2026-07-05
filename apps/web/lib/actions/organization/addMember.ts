@@ -23,7 +23,7 @@ export const addMember = async (
 		action({
 			params: data,
 			schema: AddMemberSchema,
-			authorise: true,
+			authorize: true,
 			requireActiveOrganization: true,
 		}),
 	);

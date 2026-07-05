@@ -6,19 +6,19 @@ import { getSession } from "../session";
 type ActionProps<T> = {
 	params: unknown;
 	schema: ZodType<T>;
-	authorise?: boolean;
+	authorize?: boolean;
 };
 
 const action = async <T>({
 	params,
 	schema,
-	authorise = true,
+	authorize = true,
 }: ActionProps<T>) => {
 	const parsedResult = schema.parse(params);
 
 	let session: typeof auth.$Infer.Session | null = null;
 
-	if (authorise) {
+	if (authorize) {
 		session = await getSession();
 		if (!session) throw new UnauthorizedError();
 	}

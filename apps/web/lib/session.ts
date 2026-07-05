@@ -20,7 +20,7 @@ export const getSession = async () => {
 	});
 };
 
-// For non-critical checks. Session may stale
+// For non-critical checks. Session may be stale
 export const verifySession = cache(async () => {
 	const session = await auth.api.getSession({
 		headers: await headers(),
@@ -31,7 +31,7 @@ export const verifySession = cache(async () => {
 	return session;
 });
 
-// For non-critical checks. Session may stale
+// For non-critical checks. Session may be stale
 export const requirePermission = <R extends keyof PermissionType>(
 	session: Session,
 	resource: R,

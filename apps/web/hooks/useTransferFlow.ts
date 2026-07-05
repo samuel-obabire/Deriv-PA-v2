@@ -157,7 +157,7 @@ const useTransferFlow = () => {
 				type: "setError",
 				payload:
 					error.message ||
-					"Something went wrong. Please  review statement before retrying",
+					"Something went wrong. Please review statement before retrying",
 			});
 
 			return;

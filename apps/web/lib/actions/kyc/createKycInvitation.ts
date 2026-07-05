@@ -25,7 +25,7 @@ export const createKycInvitation = async (
 		action({
 			params: data,
 			schema: CreateKycInviteSchema,
-			authorise: true,
+			authorize: true,
 			requireActiveOrganization: true,
 		}),
 	);

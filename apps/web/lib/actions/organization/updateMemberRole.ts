@@ -22,7 +22,7 @@ export const updateMemberRole = async (
 		action({
 			params: data,
 			schema: UpdateMemberRoleSchema,
-			authorise: true,
+			authorize: true,
 			requireActiveOrganization: true,
 		}),
 	);

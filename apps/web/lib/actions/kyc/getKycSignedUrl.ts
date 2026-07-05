@@ -15,7 +15,7 @@ export const getKycSignedUrl = async (
 	key: string,
 ): Promise<ActionResponse<{ url: string }>> => {
 	const [validated, validationError] = await tryCatch(() =>
-		action({ params: { key }, schema: GetKycSignedUrlSchema, authorise: true }),
+		action({ params: { key }, schema: GetKycSignedUrlSchema, authorize: true }),
 	);
 
 	if (validationError) return handleError(validationError);

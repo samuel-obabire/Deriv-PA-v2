@@ -24,7 +24,7 @@ export const revokeAccessGrant = async (
 	data: z.infer<typeof RevokeAccessGrantSchema>,
 ): Promise<ActionResponse> => {
 	const [validated, validationError] = await tryCatch(() =>
-		action({ params: data, schema: RevokeAccessGrantSchema, authorise: true }),
+		action({ params: data, schema: RevokeAccessGrantSchema, authorize: true }),
 	);
 
 	if (validationError) return handleError(validationError);

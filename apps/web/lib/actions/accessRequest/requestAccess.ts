@@ -27,7 +27,7 @@ export const requestAccess = async (
 	data: z.infer<typeof RequestAccessSchema>,
 ): Promise<ActionResponse<RequestAccessResult>> => {
 	const [validated, validationError] = await tryCatch(() =>
-		action({ params: data, schema: RequestAccessSchema, authorise: true }),
+		action({ params: data, schema: RequestAccessSchema, authorize: true }),
 	);
 
 	if (validationError) return handleError(validationError);

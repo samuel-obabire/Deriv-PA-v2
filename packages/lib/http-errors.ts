@@ -57,7 +57,7 @@ function handleError(
 		return formatResponse(responseType, 500, error.message);
 	}
 
-	return formatResponse(responseType, 500, "An unknown error occured");
+	return formatResponse(responseType, 500, "An unknown error occurred");
 }
 
 export default handleError;

@@ -16,7 +16,7 @@ export const updateRate = async (
 		action({
 			params: data,
 			schema: RateUpdateSchema,
-			authorise: true,
+			authorize: true,
 			requireActiveOrganization: true,
 		}),
 	);

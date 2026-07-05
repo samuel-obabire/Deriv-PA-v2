@@ -64,7 +64,7 @@ export class DerivGateway
 	) {}
 
 	afterInit() {
-		// Ensure all client is authenticate using the middleware before then can send request
+		// Ensure all clients are authenticated using the middleware before they can send requests
 		this.server.use(async (socket, next) => {
 			try {
 				await this.authenticate(socket);

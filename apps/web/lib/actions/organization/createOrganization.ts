@@ -17,7 +17,7 @@ const createOrganization = async (newOrgData: {
 		action({
 			params: newOrgData,
 			schema: CreateOrgSchema,
-			authorise: true,
+			authorize: true,
 			requireActiveOrganization: false,
 		}),
 	);

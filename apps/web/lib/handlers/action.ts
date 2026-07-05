@@ -6,25 +6,25 @@ import { getSession } from "../session";
 type ActionProps<T> = {
 	params: unknown;
 	schema: ZodType<T>;
-	authorise?: boolean;
+	authorize?: boolean;
 	requireActiveOrganization?: boolean;
 };
 const action = async <T>({
 	params,
 	schema,
-	authorise = true,
+	authorize = true,
 	requireActiveOrganization = true,
 }: ActionProps<T>) => {
 	const parsedResult = schema.parse(params);
 
 	let session: typeof auth.$Infer.Session | null = null;
 
-	if (authorise) {
+	if (authorize) {
 		session = await getSession();
 	}
 
-	if (!session && authorise) {
-		throw new UnauthorizedError("You are not authorised");
+	if (!session && authorize) {
+		throw new UnauthorizedError("You are not authorized");
 	}
 
 	if (requireActiveOrganization) {

@@ -16,7 +16,7 @@ export const setUserActiveOrganization = async (orgData: {
 		action({
 			params: orgData,
 			schema: SetActiveOrgSchema,
-			authorise: true,
+			authorize: true,
 			requireActiveOrganization: false,
 		}),
 	);

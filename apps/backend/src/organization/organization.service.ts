@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class OrganisationService {
+export class OrganizationService {
 	async findById(id: string) {
 		return {
 			orgId: id,

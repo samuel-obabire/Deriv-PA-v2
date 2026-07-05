@@ -21,7 +21,7 @@ export const reviewKycRecord = async (
 	data: z.infer<typeof ReviewKycRecordSchema>,
 ): Promise<ActionResponse> => {
 	const [validated, validationError] = await tryCatch(() =>
-		action({ params: data, schema: ReviewKycRecordSchema, authorise: true }),
+		action({ params: data, schema: ReviewKycRecordSchema, authorize: true }),
 	);
 
 	if (validationError) return handleError(validationError);

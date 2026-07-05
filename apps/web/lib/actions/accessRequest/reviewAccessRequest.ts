@@ -29,7 +29,7 @@ export const reviewAccessRequest = async (
 		action({
 			params: data,
 			schema: ReviewAccessRequestSchema,
-			authorise: true,
+			authorize: true,
 		}),
 	);
 

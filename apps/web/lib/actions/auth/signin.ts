@@ -12,7 +12,7 @@ export const signIn = async (
 	data: z.infer<typeof SignInSchema>,
 ): Promise<ActionResponse> => {
 	const [actionResult, validationError] = await tryCatch(() =>
-		action({ params: data, schema: SignInSchema, authorise: false }),
+		action({ params: data, schema: SignInSchema, authorize: false }),
 	);
 
 	if (validationError) return handleError(validationError) as ErrorResponse;

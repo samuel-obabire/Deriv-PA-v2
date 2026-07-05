@@ -16,7 +16,7 @@ export const updateOrganizationCurrency = async (
 		action({
 			params: data,
 			schema: UpdateOrganizationCurrencySchema,
-			authorise: true,
+			authorize: true,
 			requireActiveOrganization: true,
 		}),
 	);

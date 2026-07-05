@@ -16,7 +16,7 @@ export const deleteOrganizationCurrency = async (
 		action({
 			params: data,
 			schema: DeleteOrganizationCurrencySchema,
-			authorise: true,
+			authorize: true,
 			requireActiveOrganization: true,
 		}),
 	);
