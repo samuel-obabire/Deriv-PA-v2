@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Field, FieldError, FieldGroup, FieldLabel } from "@repo/ui";
 import { Controller, useForm } from "react-hook-form";
 import type * as z from "zod";
-import PhoneInput from "@/components/kyc/PhoneInput";
+import PhoneInput from "@/components/features/kyc/PhoneInput";
 import { ContactSchema } from "@/lib/validations/kyc";
 
 type Props = {

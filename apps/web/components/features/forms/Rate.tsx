@@ -16,8 +16,8 @@ import { tryCatch } from "@repo/utils";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { ActionResponse } from "@/lib/types/global";
 import { RateUpdateSchema } from "@/lib/validations/rate";
+import { ActionResponse } from "@/types/global";
 
 type RateFormProps = {
 	onSubmit: (data: z.infer<typeof RateUpdateSchema>) => Promise<ActionResponse>;

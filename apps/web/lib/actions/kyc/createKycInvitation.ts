@@ -11,10 +11,10 @@ import ROUTES from "@/lib/constants/routes";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
 import { hasPermission } from "@/lib/has-permission";
-import { ActionResponse } from "@/lib/types/global";
 import { generateInviteToken } from "@/lib/utils/kyc";
 import { clientEnv } from "@/lib/validations/env/client";
 import { CreateKycInviteSchema } from "@/lib/validations/kyc";
+import { ActionResponse } from "@/types/global";
 
 const KYC_INVITE_TTL_MS = 60 * 60 * 1000; // 1 hour
 

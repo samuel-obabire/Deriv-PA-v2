@@ -21,11 +21,11 @@ import { tryCatch } from "@repo/utils";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { ActionResponse } from "@/lib/types/global";
 import {
 	AddMemberSchema,
 	ASSIGNABLE_ROLES,
 } from "@/lib/validations/organization";
+import { ActionResponse } from "@/types/global";
 
 type AddMemberFormProps = {
 	onSubmit: (data: z.infer<typeof AddMemberSchema>) => Promise<ActionResponse>;

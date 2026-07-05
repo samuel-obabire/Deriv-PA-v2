@@ -17,7 +17,7 @@ import {
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type * as z from "zod";
-import CapturePhoto from "@/components/kyc/capture/CapturePhoto";
+import CapturePhoto from "@/components/features/kyc/capture/CapturePhoto";
 import { DOCUMENT_TYPE_CONFIG } from "@/lib/constants/kyc";
 import { DocumentSchema } from "@/lib/validations/kyc";
 

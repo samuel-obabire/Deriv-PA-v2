@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import MembersSection from "@/components/settings/MembersSection";
+import MembersSection from "@/components/features/settings/MembersSection";
 import { listMembers } from "@/lib/api/members";
 import { requirePermission, verifySession } from "@/lib/session";
 

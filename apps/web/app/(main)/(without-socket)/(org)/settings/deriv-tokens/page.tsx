@@ -1,7 +1,7 @@
 import { getAllOrganizationCurrencies } from "@repo/db/queries";
 import { Suspense } from "react";
-import TokenCard from "@/components/settings/TokenCard";
-import TokenCardSkeleton from "@/components/skeletons/TokenCardSkeleton";
+import TokenCard from "@/components/features/settings/TokenCard";
+import TokenCardSkeleton from "@/components/features/skeletons/TokenCardSkeleton";
 import { db } from "@/lib/db";
 import { requirePermission, verifySession } from "@/lib/session";
 import { buildConfiguredCurrencies } from "@/lib/utils/deriv";

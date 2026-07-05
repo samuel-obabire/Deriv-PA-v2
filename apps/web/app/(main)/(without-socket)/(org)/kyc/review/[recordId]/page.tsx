@@ -1,7 +1,7 @@
 import { getClientKycRecordById } from "@repo/db/queries";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import KycReviewClient from "@/components/kyc/KycReviewClient";
+import KycReviewClient from "@/components/features/kyc/KycReviewClient";
 import { db } from "@/lib/db";
 import { verifySession } from "@/lib/session";
 

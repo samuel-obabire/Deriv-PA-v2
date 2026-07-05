@@ -1,6 +1,6 @@
 import fetchHandler from "@repo/lib/handlers/fetch";
 import { TokenPayload } from "@repo/utils";
-import { ActionResponse } from "../types/global";
+import { ActionResponse } from "../../types/global";
 import { clientEnv } from "../validations/env/client";
 
 export const serverApi = {

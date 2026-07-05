@@ -6,8 +6,8 @@ import { tryCatch } from "@repo/utils";
 import * as z from "zod";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
-import { ActionResponse } from "@/lib/types/global";
 import { DeleteOrganizationCurrencySchema } from "@/lib/validations/currency";
+import { ActionResponse } from "@/types/global";
 
 export const deleteOrganizationCurrency = async (
 	data: z.infer<typeof DeleteOrganizationCurrencySchema>,

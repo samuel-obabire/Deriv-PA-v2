@@ -4,7 +4,7 @@ import { Button, Separator } from "@repo/ui";
 import { CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/lib/constants/routes";
-import { formatUSD } from "@/utils/formatCurrency";
+import { formatUSD } from "@/lib/utils/formatCurrency";
 import { TransferData } from "./types";
 
 type TransferResultProps = {

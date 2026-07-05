@@ -5,7 +5,7 @@ import { generateReactHelpers } from "@uploadthing/react";
 import { RefreshCw, Video } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
-import KycVideo from "@/components/kyc/KycVideo";
+import KycVideo from "@/components/features/kyc/KycVideo";
 import type { UploadRouter } from "@/lib/uploadthing";
 
 const { useUploadThing } = generateReactHelpers<UploadRouter>();

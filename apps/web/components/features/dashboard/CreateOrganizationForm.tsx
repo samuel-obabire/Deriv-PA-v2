@@ -7,8 +7,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import * as z from "zod";
 import { OrganizationWithMembers } from "@/lib/auth-client";
-import { ActionResponse } from "@/lib/types/global";
 import { CreateOrgSchema } from "@/lib/validations/organization";
+import { ActionResponse } from "@/types/global";
 
 type CreateOrgData = z.infer<typeof CreateOrgSchema>;
 

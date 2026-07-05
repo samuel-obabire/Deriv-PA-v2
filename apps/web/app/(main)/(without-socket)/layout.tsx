@@ -1,5 +1,5 @@
 import { PropsWithChildren, Suspense } from "react";
-import NavbarSlim from "@/components/nav/NavbarSlim";
+import NavbarSlim from "@/components/features/nav/NavbarSlim";
 import { verifySession } from "@/lib/session";
 
 export default async function WithoutSocketLayout({

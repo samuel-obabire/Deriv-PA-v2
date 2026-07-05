@@ -1,5 +1,5 @@
 import { PropsWithChildren, Suspense } from "react";
-import Navbar from "@/components/nav/Navbar";
+import Navbar from "@/components/features/nav/Navbar";
 import { verifySession } from "@/lib/session";
 import WithSocketProviders from "./providers";
 

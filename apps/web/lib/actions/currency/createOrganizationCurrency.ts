@@ -6,8 +6,8 @@ import { encryptToken, tryCatch } from "@repo/utils";
 import * as z from "zod";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
-import { ActionResponse } from "@/lib/types/global";
 import { CurrencyCreateSchema } from "@/lib/validations/currency";
+import { ActionResponse } from "@/types/global";
 
 export const createOrganizationCurrency = async (
 	data: z.infer<typeof CurrencyCreateSchema>,

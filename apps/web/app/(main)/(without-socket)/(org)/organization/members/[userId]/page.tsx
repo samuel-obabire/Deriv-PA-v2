@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import UpdateMemberRoleForm from "@/components/forms/UpdateMemberRole";
+import UpdateMemberRoleForm from "@/components/features/forms/UpdateMemberRole";
 import { updateMemberRole } from "@/lib/actions/organization/updateMemberRole";
 import { listMembers } from "@/lib/api/members";
 import { requirePermission, verifySession } from "@/lib/session";

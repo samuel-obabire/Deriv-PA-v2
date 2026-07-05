@@ -22,8 +22,8 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import ROUTES from "@/lib/constants/routes";
-import { ActionResponse } from "@/lib/types/global";
 import { SignUpSchema } from "@/lib/validations/auth/sign-up";
+import { ActionResponse } from "@/types/global";
 
 type SignupProps = {
 	onSubmit: (data: z.infer<typeof SignUpSchema>) => Promise<ActionResponse>;

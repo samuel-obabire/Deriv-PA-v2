@@ -7,9 +7,9 @@ import handleError from "@repo/lib/http-errors";
 import { tryCatch } from "@repo/utils";
 import action from "@/lib/handlers/action";
 import { hasKycPermission } from "@/lib/kyc-permission";
-import { ActionResponse } from "@/lib/types/global";
 import { getSignedUrl } from "@/lib/utils/uploadthing";
 import { GetKycSignedUrlSchema } from "@/lib/validations/kyc";
+import { ActionResponse } from "@/types/global";
 
 export const getKycSignedUrl = async (
 	key: string,

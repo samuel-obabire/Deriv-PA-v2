@@ -6,9 +6,9 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { OrganizationWithMembers } from "@/lib/auth-client";
 import action from "@/lib/handlers/action";
-import { ActionResponse } from "@/lib/types/global";
+import { slugifyString } from "@/lib/utils/slugify";
 import { CreateOrgSchema } from "@/lib/validations/organization";
-import { slugifyString } from "@/utils/slugify";
+import { ActionResponse } from "@/types/global";
 
 const createOrganization = async (newOrgData: {
 	orgName: string;

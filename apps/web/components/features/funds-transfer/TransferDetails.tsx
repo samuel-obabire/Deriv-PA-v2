@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@repo/ui";
-import { formatUSD } from "@/utils/formatCurrency";
+import { formatUSD } from "@/lib/utils/formatCurrency";
 import { TransferData } from "./types";
 
 type TransferDetailsProps = {

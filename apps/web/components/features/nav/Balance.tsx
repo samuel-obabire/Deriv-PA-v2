@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import useSocket from "@/hooks/useSocket";
 import { CURRENCY_ICON } from "@/lib/utils/deriv";
-import { formatUSD } from "@/utils/formatCurrency";
+import { formatUSD } from "@/lib/utils/formatCurrency";
 
 const Balance = ({ currency }: { currency: string | null }) => {
 	const [balance, setBalance] = useState<number | null>(null);

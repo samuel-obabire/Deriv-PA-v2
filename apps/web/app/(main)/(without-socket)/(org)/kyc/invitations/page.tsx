@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import KycInvitationSection from "@/components/settings/KycInvitationSection";
+import KycInvitationSection from "@/components/features/settings/KycInvitationSection";
 import { requirePermission, verifySession } from "@/lib/session";
 
 const KycInvitationContent = async () => {

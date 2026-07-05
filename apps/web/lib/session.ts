@@ -4,7 +4,7 @@ import { getActiveElevatedAccessGrant } from "@repo/db/queries";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
-import { hasRoleStatement } from "@/components/nav/sidebar/utils";
+import { hasRoleStatement } from "@/components/features/nav/sidebar/utils";
 import { auth, type Session } from "./auth";
 import ROUTES from "./constants/routes";
 import { db } from "./db";

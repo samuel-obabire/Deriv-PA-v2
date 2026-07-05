@@ -5,7 +5,7 @@ import { Button, Field, FieldError, FieldGroup, FieldLabel } from "@repo/ui";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type * as z from "zod";
-import RecordVideo from "@/components/kyc/capture/RecordVideo";
+import RecordVideo from "@/components/features/kyc/capture/RecordVideo";
 import { VideoSelfieSchema } from "@/lib/validations/kyc";
 
 type Props = {

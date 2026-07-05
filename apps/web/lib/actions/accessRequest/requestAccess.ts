@@ -15,8 +15,8 @@ import { tryCatch } from "@repo/utils";
 import * as z from "zod";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
-import { ActionResponse } from "@/lib/types/global";
 import { RequestAccessSchema } from "@/lib/validations/accessRequest";
+import { ActionResponse } from "@/types/global";
 
 type RequestAccessResult = {
 	status: "created" | "granted";

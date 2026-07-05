@@ -13,7 +13,7 @@ import { XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use, useTransition } from "react";
 import { toast } from "sonner";
-import ApproveAccessDialog from "@/components/access-requests/ApproveAccessDialog";
+import ApproveAccessDialog from "@/components/features/access-requests/ApproveAccessDialog";
 import RefreshButton from "@/components/ui/refresh-button";
 import { reviewAccessRequest } from "@/lib/actions/accessRequest/reviewAccessRequest";
 

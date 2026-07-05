@@ -3,7 +3,7 @@ import {
 	getPendingAccessRequestsByOrg,
 } from "@repo/db/queries";
 import { Suspense } from "react";
-import AccessRequestsTabs from "@/components/access-requests/AccessRequestsTabs";
+import AccessRequestsTabs from "@/components/features/access-requests/AccessRequestsTabs";
 import { db } from "@/lib/db";
 import { requirePermission, verifySession } from "@/lib/session";
 

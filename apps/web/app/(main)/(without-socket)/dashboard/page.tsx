@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import OrganizationManager from "@/components/dashboard/OrganizationManager";
+import OrganizationManager from "@/components/features/dashboard/OrganizationManager";
 import { verifySession } from "@/lib/session";
 
 const Dashboard = async () => {

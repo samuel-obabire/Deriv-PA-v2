@@ -1,6 +1,6 @@
 import { transferFundsBaseSchema } from "@repo/deriv";
 import * as z from "zod";
-import { formatUSD } from "@/utils/formatCurrency";
+import { formatUSD } from "@/lib/utils/formatCurrency";
 
 const clientAccountField = z
 	.string()

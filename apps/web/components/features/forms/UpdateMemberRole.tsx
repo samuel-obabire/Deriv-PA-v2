@@ -20,11 +20,11 @@ import { tryCatch } from "@repo/utils";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { ActionResponse } from "@/lib/types/global";
 import {
 	ASSIGNABLE_ROLES,
 	UpdateMemberRoleSchema,
 } from "@/lib/validations/organization";
+import { ActionResponse } from "@/types/global";
 
 type UpdateMemberRoleFormProps = {
 	memberId: string;

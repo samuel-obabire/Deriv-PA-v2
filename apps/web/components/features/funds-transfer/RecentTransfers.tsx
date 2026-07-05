@@ -7,8 +7,8 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { transfersApi } from "@/lib/api/transfers";
-import { formatDate } from "@/utils/date";
-import { formatUSD } from "@/utils/formatCurrency";
+import { formatDate } from "@/lib/utils/date";
+import { formatUSD } from "@/lib/utils/formatCurrency";
 
 type BadgeVariant =
 	| "outline"

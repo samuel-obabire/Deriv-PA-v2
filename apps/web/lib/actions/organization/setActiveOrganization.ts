@@ -6,8 +6,8 @@ import handleError from "@repo/lib/http-errors";
 import { tryCatch } from "@repo/utils";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
-import { ActionResponse } from "@/lib/types/global";
 import { SetActiveOrgSchema } from "@/lib/validations/organization";
+import { ActionResponse } from "@/types/global";
 
 export const setUserActiveOrganization = async (orgData: {
 	orgId: string;

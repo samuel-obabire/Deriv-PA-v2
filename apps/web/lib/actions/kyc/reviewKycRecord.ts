@@ -14,8 +14,8 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
 import { hasKycPermission } from "@/lib/kyc-permission";
-import { ActionResponse } from "@/lib/types/global";
 import { ReviewKycRecordSchema } from "@/lib/validations/kyc";
+import { ActionResponse } from "@/types/global";
 
 export const reviewKycRecord = async (
 	data: z.infer<typeof ReviewKycRecordSchema>,

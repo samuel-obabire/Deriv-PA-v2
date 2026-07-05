@@ -4,7 +4,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
-import TanstackClientProvider from "@/components/providers/QueryClientProvider";
+import TanstackClientProvider from "@/components/features/providers/QueryClientProvider";
 
 const space = Space_Grotesk({
 	subsets: ["latin"],
