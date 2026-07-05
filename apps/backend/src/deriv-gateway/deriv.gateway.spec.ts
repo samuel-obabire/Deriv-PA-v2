@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { DerivService } from "src/deriv/deriv.service";
 import { DerivGateway } from "./deriv.gateway";
-import { DerivService } from "./deriv.service";
 
 describe("DerivGateway", () => {
 	let gateway: DerivGateway;

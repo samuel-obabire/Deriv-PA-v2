@@ -1,10 +1,9 @@
 import { Injectable } from "@nestjs/common";
 
+import { RevocationService } from "../revocation/revocation.service";
+import { TokenService } from "../token/token.service";
 import { IssueTokensDto } from "./dto/issueTokens.dto";
 import { RevokeTokensDto } from "./dto/revokeTokens.dto";
-import { RevocationService } from "./revocation.service";
-
-import { TokenService } from "./token.service";
 
 @Injectable()
 export class AuthenticationService {

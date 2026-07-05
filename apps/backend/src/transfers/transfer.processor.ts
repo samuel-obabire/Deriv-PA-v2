@@ -4,7 +4,7 @@ import { DerivRequestPayload } from "@repo/deriv";
 import { Job } from "bullmq";
 import { DerivService } from "src/deriv/deriv.service";
 import { DerivOrgPoolService } from "src/deriv/deriv-org-pool.service";
-import { TransactionService } from "src/deriv/transaction.service";
+import { TransactionService } from "src/transactions/transaction.service";
 import { EXECUTE_TRANSFER, TRANSFERS } from "./constants";
 
 export type TransferJobData = {

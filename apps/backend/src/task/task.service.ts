@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
-import { DerivGateway } from "src/deriv/deriv.gateway";
 import { DerivOrgPoolService } from "src/deriv/deriv-org-pool.service";
+import { DerivGateway } from "src/deriv-gateway/deriv.gateway";
 
 @Injectable()
 export class TasksService {

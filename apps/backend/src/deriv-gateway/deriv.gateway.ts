@@ -1,6 +1,4 @@
 import {
-	forwardRef,
-	Inject,
 	Logger,
 	UseFilters,
 	UseGuards,
@@ -26,18 +24,18 @@ import { RequirePermission } from "src/common/decorators/permissions.decorator";
 import { WsExceptionFilter } from "src/common/filters/ws-exception/ws-exception.filter";
 import { WsPermissionsGuard } from "src/common/guards/ws-permissions.guard";
 import { WsInterceptor } from "src/common/interceptors/ws/ws.interceptor";
-import { RevocationService } from "src/iam/authentication/revocation.service";
-import { TokenService } from "src/iam/authentication/token.service";
+import { DerivService } from "src/deriv/deriv.service";
+import { DerivOrgPoolService } from "src/deriv/deriv-org-pool.service";
+import { ClientNameValidationDto } from "src/deriv/dto/clientNameValidation.dto";
+import { StatementDto } from "src/deriv/dto/statement.dto";
+import { SubscribeBalanceDto } from "src/deriv/dto/subscribeBalance.dto";
+import { TransferFundsDto } from "src/deriv/dto/transferFunds.dto";
+import { TransferValidationDto } from "src/deriv/dto/transferValidation.dto";
+import type { AuthenticatedSocket, AuthPayload } from "src/deriv/types";
+import { RevocationService } from "src/iam/revocation/revocation.service";
+import { TokenService } from "src/iam/token/token.service";
 import { DecodedJwtAccessToken } from "src/iam/types";
 import { TransferQueueService } from "src/transfers/transfer-queue.service";
-import { DerivService } from "./deriv.service";
-import { DerivOrgPoolService } from "./deriv-org-pool.service";
-import { ClientNameValidationDto } from "./dto/clientNameValidation.dto";
-import { StatementDto } from "./dto/statement.dto";
-import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
-import { TransferFundsDto } from "./dto/transferFunds.dto";
-import { TransferValidationDto } from "./dto/transferValidation.dto";
-import type { AuthenticatedSocket, AuthPayload } from "./types";
 
 @UsePipes(ZodValidationPipe)
 @UseInterceptors(WsInterceptor)
@@ -62,7 +60,6 @@ export class DerivGateway
 		private readonly derivService: DerivService,
 		private readonly tokenService: TokenService,
 		private readonly revocationService: RevocationService,
-		@Inject(forwardRef(() => TransferQueueService))
 		private readonly transferQueueService: TransferQueueService,
 	) {}
 
