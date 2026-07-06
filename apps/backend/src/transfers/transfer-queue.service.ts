@@ -7,8 +7,8 @@ import {
 import { CURRENCY } from "@repo/db/enums";
 import { Queue } from "bullmq";
 import { TransferFundsDto } from "src/deriv/dto/transferFunds.dto";
-import { TransactionService } from "src/deriv/transaction.service";
 import { RedisService } from "src/iam/redis/redis.service";
+import { TransactionService } from "src/transactions/transaction.service";
 import { EXECUTE_TRANSFER, TRANSFERS } from "./constants";
 import type { TransferJobData } from "./transfer.processor";
 

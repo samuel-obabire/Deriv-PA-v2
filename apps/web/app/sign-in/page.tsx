@@ -1,4 +1,4 @@
-import SignIn from "@/components/forms/SignIn";
+import SignIn from "@/components/features/forms/SignIn";
 
 const SignInPage = () => <SignIn />;
 

@@ -14,4 +14,6 @@ export const envSchema = z.object({
 	JWT_ACCESS_TOKEN_TTL: z.string().min(2),
 
 	TOKEN_ENCRYPTION_KEY: z.string().min(10),
+
+	WEB_API_TOKEN: z.string().min(10),
 });

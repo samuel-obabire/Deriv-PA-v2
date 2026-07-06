@@ -1,6 +1,6 @@
 import { getClientKycRecordsPendingReview } from "@repo/db/queries";
 import { Suspense } from "react";
-import KycPendingList from "@/components/kyc/KycPendingList";
+import KycPendingList from "@/components/features/kyc/KycPendingList";
 import { db } from "@/lib/db";
 import { verifySession } from "@/lib/session";
 

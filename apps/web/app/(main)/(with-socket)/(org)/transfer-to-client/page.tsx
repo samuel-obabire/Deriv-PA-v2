@@ -1,8 +1,8 @@
 import { getOrganizationRate, getRecentTransfersByOrg } from "@repo/db/queries";
 import { DataRenderer } from "@repo/ui";
 import { Suspense } from "react";
-import RequestAccessGate from "@/components/access/RequestAccessGate";
-import TransferSection from "@/components/funds-transfer/TransferSection";
+import RequestAccessGate from "@/components/features/access-requests/RequestAccessGate";
+import TransferSection from "@/components/features/funds-transfer/TransferSection";
 import RateNotConfigured from "@/components/ui/rate-not-configured";
 import { db } from "@/lib/db";
 import { requireElevatedAccess, verifySession } from "@/lib/session";

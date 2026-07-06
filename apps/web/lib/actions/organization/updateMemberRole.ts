@@ -12,8 +12,8 @@ import { serverApi } from "@/lib/api/server-api";
 import ROUTES from "@/lib/constants/routes";
 import action from "@/lib/handlers/action";
 import { hasPermission } from "@/lib/has-permission";
-import { ActionResponse } from "@/lib/types/global";
 import { UpdateMemberRoleSchema } from "@/lib/validations/organization";
+import { ActionResponse } from "@/types/global";
 
 export const updateMemberRole = async (
 	data: z.infer<typeof UpdateMemberRoleSchema>,
@@ -22,7 +22,7 @@ export const updateMemberRole = async (
 		action({
 			params: data,
 			schema: UpdateMemberRoleSchema,
-			authorise: true,
+			authorize: true,
 			requireActiveOrganization: true,
 		}),
 	);

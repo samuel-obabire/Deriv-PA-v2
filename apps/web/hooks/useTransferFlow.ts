@@ -1,7 +1,11 @@
 import { CURRENCY } from "@repo/db/enums";
 import { tryCatch } from "@repo/utils";
 import { useReducer } from "react";
-import { Action, State, TransferData } from "@/components/funds-transfer/types";
+import {
+	Action,
+	State,
+	TransferData,
+} from "@/components/features/funds-transfer/types";
 import { buildTransferDescription } from "@/lib/utils/transfer";
 import useCurrency from "./useCurrency";
 import useSocket from "./useSocket";
@@ -153,7 +157,7 @@ const useTransferFlow = () => {
 				type: "setError",
 				payload:
 					error.message ||
-					"Something went wrong. Please  review statement before retrying",
+					"Something went wrong. Please review statement before retrying",
 			});
 
 			return;

@@ -17,8 +17,8 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
 import { hasPermission } from "@/lib/has-permission";
-import { ActionResponse } from "@/lib/types/global";
 import { ReviewAccessRequestSchema } from "@/lib/validations/accessRequest";
+import { ActionResponse } from "@/types/global";
 
 const DEFAULT_ELEVATED_ACCESS_HOURS = 8;
 
@@ -29,7 +29,7 @@ export const reviewAccessRequest = async (
 		action({
 			params: data,
 			schema: ReviewAccessRequestSchema,
-			authorise: true,
+			authorize: true,
 		}),
 	);
 

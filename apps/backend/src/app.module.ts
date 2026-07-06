@@ -9,10 +9,11 @@ import { LoggingMiddleware } from "./common/middleware/logging/logging.middlewar
 import { envSchema } from "./common/validation";
 import { DatabaseModule } from "./database/database.module";
 import { DerivModule } from "./deriv/deriv.module";
+import { DerivGatewayModule } from "./deriv-gateway/deriv-gateway.module";
 import { AuthenticationController } from "./iam/authentication/authentication.controller";
 import { IamModule } from "./iam/iam.module";
-import { OrganisationModule } from "./organisation/organisation.module";
-import { OrganisationService } from "./organisation/organisation.service";
+import { OrganizationModule } from "./organization/organization.module";
+import { OrganizationService } from "./organization/organization.service";
 import { TaskModule } from "./task/task.module";
 import { TransfersModule } from "./transfers/transfers.module";
 
@@ -25,7 +26,8 @@ import { TransfersModule } from "./transfers/transfers.module";
 		}),
 
 		DerivModule,
-		OrganisationModule,
+		DerivGatewayModule,
+		OrganizationModule,
 		IamModule,
 		CommonModule,
 		ScheduleModule.forRoot(),
@@ -39,7 +41,7 @@ import { TransfersModule } from "./transfers/transfers.module";
 			useClass: ZodValidationPipe,
 		},
 
-		OrganisationService,
+		OrganizationService,
 	],
 	controllers: [AuthenticationController],
 })

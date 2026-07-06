@@ -29,7 +29,7 @@ export const updateKycAction = async (
 		action({
 			params: { token, ...data },
 			schema: KycSubmitInputSchema,
-			authorise: true,
+			authorize: true,
 		}),
 	);
 

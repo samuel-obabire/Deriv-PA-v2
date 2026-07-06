@@ -3,8 +3,8 @@
 import handleError from "@repo/lib/http-errors";
 import { tryCatch } from "@repo/utils";
 import * as z from "zod";
-import { ActionResponse, ErrorResponse } from "@/lib/types/global";
 import { SignInSchema } from "@/lib/validations/auth/sign-in";
+import { ActionResponse, ErrorResponse } from "@/types/global";
 import { auth } from "../../auth";
 import action from "../../handlers/action";
 
@@ -12,7 +12,7 @@ export const signIn = async (
 	data: z.infer<typeof SignInSchema>,
 ): Promise<ActionResponse> => {
 	const [actionResult, validationError] = await tryCatch(() =>
-		action({ params: data, schema: SignInSchema, authorise: false }),
+		action({ params: data, schema: SignInSchema, authorize: false }),
 	);
 
 	if (validationError) return handleError(validationError) as ErrorResponse;

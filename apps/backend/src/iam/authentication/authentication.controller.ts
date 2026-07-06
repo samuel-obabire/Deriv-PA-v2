@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { DerivGateway } from "src/deriv/deriv.gateway";
+import { DerivGateway } from "src/deriv-gateway/deriv.gateway";
 import { AuthenticationService } from "./authentication.service";
 import { IssueTokensDto } from "./dto/issueTokens.dto";
 import { RevokeTokensDto } from "./dto/revokeTokens.dto";

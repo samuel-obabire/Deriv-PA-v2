@@ -16,6 +16,8 @@ const ServerSchema = z.object({
 	NODE_ENV: z
 		.enum(["production", "development", "test"])
 		.default("development"),
+
+	BACKEND_API_TOKEN: z.string().min(10),
 });
 
 export const serverEnv = ServerSchema.parse(process.env);

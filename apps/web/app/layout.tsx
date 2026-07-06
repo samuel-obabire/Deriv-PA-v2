@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
-import TanstackClientProvider from "@/components/providers/QueryClientProvider";
+import TanstackClientProvider from "@/components/features/providers/QueryClientProvider";
 
 const space = Space_Grotesk({
 	subsets: ["latin"],
@@ -21,6 +21,17 @@ const inter = Inter({
 export const metadata: Metadata = {
 	title: "DerivPA",
 	description: "Payment agent management platform for Deriv partners",
+	appleWebApp: {
+		title: "DerivPA",
+		statusBarStyle: "black-translucent",
+	},
+};
+
+export const viewport: Viewport = {
+	themeColor: [
+		{ media: "(prefers-color-scheme: light)", color: "#faf8f5" },
+		{ media: "(prefers-color-scheme: dark)", color: "#1D1D1D" },
+	],
 };
 
 export default function RootLayout({

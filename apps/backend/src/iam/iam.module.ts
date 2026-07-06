@@ -1,24 +1,11 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { JwtModule } from "@nestjs/jwt";
-import { AuthenticationService } from "./authentication/authentication.service";
-import { RevocationService } from "./authentication/revocation.service";
-import { TokenService } from "./authentication/token.service";
-import jwtConfig from "./jwt/jwt.config";
+import { AuthenticationModule } from "./authentication/authentication.module";
 import { RedisModule } from "./redis/redis.module";
+import { RevocationModule } from "./revocation/revocation.module";
+import { TokenModule } from "./token/token.module";
 
 @Module({
-	exports: [
-		AuthenticationService,
-		RedisModule,
-		TokenService,
-		RevocationService,
-	],
-	imports: [
-		RedisModule,
-		JwtModule.registerAsync(jwtConfig.asProvider()),
-		ConfigModule.forFeature(jwtConfig),
-	],
-	providers: [AuthenticationService, TokenService, RevocationService],
+	imports: [AuthenticationModule, TokenModule, RevocationModule, RedisModule],
+	exports: [AuthenticationModule, TokenModule, RevocationModule, RedisModule],
 })
 export class IamModule {}

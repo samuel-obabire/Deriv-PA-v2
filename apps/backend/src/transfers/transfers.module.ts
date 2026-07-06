@@ -1,9 +1,10 @@
 import { BullModule } from "@nestjs/bullmq";
-import { forwardRef, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigType } from "@nestjs/config";
 import { DerivModule } from "src/deriv/deriv.module";
 import { IamModule } from "src/iam/iam.module";
 import redisConfig from "src/iam/redis/redis.config";
+import { TransactionsModule } from "src/transactions/transactions.module";
 import { TRANSFERS } from "./constants";
 import { TransferProcessor } from "./transfer.processor";
 import { TransferQueueService } from "./transfer-queue.service";
@@ -26,7 +27,8 @@ import { TransfersController } from "./transfers.controller";
 				removeOnFail: 3000,
 			},
 		}),
-		forwardRef(() => DerivModule),
+		DerivModule,
+		TransactionsModule,
 		IamModule,
 	],
 	controllers: [TransfersController],

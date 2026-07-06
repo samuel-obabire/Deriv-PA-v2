@@ -13,8 +13,8 @@ import ROUTES from "@/lib/constants/routes";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
 import { hasPermission } from "@/lib/has-permission";
-import { ActionResponse } from "@/lib/types/global";
 import { AddMemberSchema } from "@/lib/validations/organization";
+import { ActionResponse } from "@/types/global";
 
 export const addMember = async (
 	data: z.infer<typeof AddMemberSchema>,
@@ -23,7 +23,7 @@ export const addMember = async (
 		action({
 			params: data,
 			schema: AddMemberSchema,
-			authorise: true,
+			authorize: true,
 			requireActiveOrganization: true,
 		}),
 	);

@@ -5,7 +5,7 @@ import {
 } from "@repo/db/queries";
 import { Banner, DataRenderer, InvalidLink } from "@repo/ui";
 import { Suspense } from "react";
-import KycPageClient from "@/components/kyc/KycPageClient";
+import KycPageClient from "@/components/features/kyc/KycPageClient";
 import ROUTES from "@/lib/constants/routes";
 import { db } from "@/lib/db";
 import { verifySession } from "@/lib/session";

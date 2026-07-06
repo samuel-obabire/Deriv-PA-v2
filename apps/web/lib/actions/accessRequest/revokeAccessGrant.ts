@@ -17,14 +17,14 @@ import { serverApi } from "@/lib/api/server-api";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
 import { hasPermission } from "@/lib/has-permission";
-import { ActionResponse } from "@/lib/types/global";
 import { RevokeAccessGrantSchema } from "@/lib/validations/accessRequest";
+import { ActionResponse } from "@/types/global";
 
 export const revokeAccessGrant = async (
 	data: z.infer<typeof RevokeAccessGrantSchema>,
 ): Promise<ActionResponse> => {
 	const [validated, validationError] = await tryCatch(() =>
-		action({ params: data, schema: RevokeAccessGrantSchema, authorise: true }),
+		action({ params: data, schema: RevokeAccessGrantSchema, authorize: true }),
 	);
 
 	if (validationError) return handleError(validationError);

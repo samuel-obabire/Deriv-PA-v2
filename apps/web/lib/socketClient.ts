@@ -7,7 +7,7 @@ import {
 	DerivSubcriptionEndpoint,
 } from "@repo/deriv";
 import { Socket } from "socket.io-client";
-import { SocketResponse } from "./types/global";
+import { SocketResponse } from "../types/global";
 
 type Listener<T> = (data: T) => void;
 

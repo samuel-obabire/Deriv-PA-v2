@@ -6,8 +6,8 @@ import { tryCatch } from "@repo/utils";
 import * as z from "zod";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
-import { ActionResponse } from "@/lib/types/global";
 import { RateUpdateSchema } from "@/lib/validations/rate";
+import { ActionResponse } from "@/types/global";
 
 export const updateRate = async (
 	data: z.infer<typeof RateUpdateSchema>,
@@ -16,7 +16,7 @@ export const updateRate = async (
 		action({
 			params: data,
 			schema: RateUpdateSchema,
-			authorise: true,
+			authorize: true,
 			requireActiveOrganization: true,
 		}),
 	);

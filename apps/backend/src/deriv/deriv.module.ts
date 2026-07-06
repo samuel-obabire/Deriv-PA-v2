@@ -1,33 +1,14 @@
-import { forwardRef, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
+import { CurrencyModule } from "src/currency/currency.module";
 import { DatabaseModule } from "src/database/database.module";
 import { IamModule } from "src/iam/iam.module";
-import { OrganisationModule } from "src/organisation/organisation.module";
-import { TransfersModule } from "src/transfers/transfers.module";
-import { CurrencyTokenService } from "./currency-token.service";
-import { DerivGateway } from "./deriv.gateway";
+import { OrganizationModule } from "src/organization/organization.module";
 import { DerivService } from "./deriv.service";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
-import { TransactionService } from "./transaction.service";
 
 @Module({
-	imports: [
-		OrganisationModule,
-		IamModule,
-		DatabaseModule,
-		forwardRef(() => TransfersModule),
-	],
-	exports: [
-		DerivGateway,
-		DerivOrgPoolService,
-		DerivService,
-		TransactionService,
-	],
-	providers: [
-		CurrencyTokenService,
-		DerivGateway,
-		DerivOrgPoolService,
-		DerivService,
-		TransactionService,
-	],
+	imports: [OrganizationModule, IamModule, DatabaseModule, CurrencyModule],
+	exports: [DerivOrgPoolService, DerivService],
+	providers: [DerivOrgPoolService, DerivService],
 })
 export class DerivModule {}

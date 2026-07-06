@@ -1,7 +1,7 @@
 import { getOrganizationRate } from "@repo/db/queries";
 import { Suspense } from "react";
-import RateSection from "@/components/settings/RateSection";
-import RateSkeleton from "@/components/skeletons/RateSkeleton";
+import RateSection from "@/components/features/settings/RateSection";
+import RateSkeleton from "@/components/features/skeletons/RateSkeleton";
 import { db } from "@/lib/db";
 import { requirePermission, verifySession } from "@/lib/session";
 

@@ -19,7 +19,7 @@ export const POST = async (req: NextRequest) => {
 		action({
 			params: body,
 			schema: GetTokenAccessRequestSchema,
-			authorise: true,
+			authorize: true,
 		}),
 	);
 

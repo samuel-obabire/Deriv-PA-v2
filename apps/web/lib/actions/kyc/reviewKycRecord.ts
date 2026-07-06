@@ -14,14 +14,14 @@ import * as z from "zod";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
 import { hasKycPermission } from "@/lib/kyc-permission";
-import { ActionResponse } from "@/lib/types/global";
 import { ReviewKycRecordSchema } from "@/lib/validations/kyc";
+import { ActionResponse } from "@/types/global";
 
 export const reviewKycRecord = async (
 	data: z.infer<typeof ReviewKycRecordSchema>,
 ): Promise<ActionResponse> => {
 	const [validated, validationError] = await tryCatch(() =>
-		action({ params: data, schema: ReviewKycRecordSchema, authorise: true }),
+		action({ params: data, schema: ReviewKycRecordSchema, authorize: true }),
 	);
 
 	if (validationError) return handleError(validationError);

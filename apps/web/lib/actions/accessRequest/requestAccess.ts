@@ -15,8 +15,8 @@ import { tryCatch } from "@repo/utils";
 import * as z from "zod";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
-import { ActionResponse } from "@/lib/types/global";
 import { RequestAccessSchema } from "@/lib/validations/accessRequest";
+import { ActionResponse } from "@/types/global";
 
 type RequestAccessResult = {
 	status: "created" | "granted";
@@ -27,7 +27,7 @@ export const requestAccess = async (
 	data: z.infer<typeof RequestAccessSchema>,
 ): Promise<ActionResponse<RequestAccessResult>> => {
 	const [validated, validationError] = await tryCatch(() =>
-		action({ params: data, schema: RequestAccessSchema, authorise: true }),
+		action({ params: data, schema: RequestAccessSchema, authorize: true }),
 	);
 
 	if (validationError) return handleError(validationError);
