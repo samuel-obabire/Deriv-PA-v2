@@ -8,6 +8,8 @@ async function bootstrap() {
 
 	app.enableCors();
 
+	app.enableShutdownHooks();
+
 	await app.listen(PORT, "0.0.0.0");
 }
 bootstrap();
