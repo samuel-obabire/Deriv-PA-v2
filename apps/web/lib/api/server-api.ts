@@ -21,6 +21,9 @@ export const serverApi = {
 			`${clientEnv.NEXT_PUBLIC_SERVER_URL}/authentication/revoke-token`,
 			{
 				method: "POST",
+				headers: {
+					Authorization: `Bearer ${serverEnv.BACKEND_API_TOKEN}`,
+				},
 				body: JSON.stringify({ userId }),
 			},
 		),
