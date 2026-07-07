@@ -107,14 +107,14 @@ const useTransferFlow = () => {
 			return;
 		}
 
-		if (validationResult.client_real_name === null) {
-			dispatch({
-				type: "setError",
-				payload: "Client name could not be validated",
-			});
+		// if (validationResult.client_real_name === null) {
+		// 	dispatch({
+		// 		type: "setError",
+		// 		payload: "Client name could not be validated",
+		// 	});
 
-			return;
-		}
+		// 	return;
+		// }
 
 		dispatch({ type: "setIdempotencyKey", payload: idempotencyKey });
 		dispatch({ type: "setStep", payload: 2 });
@@ -122,7 +122,7 @@ const useTransferFlow = () => {
 			type: "setData",
 			payload: {
 				...transferData,
-				clientName: validationResult.client_real_name,
+				clientName: validationResult.client_real_name || "",
 			},
 		});
 	};
