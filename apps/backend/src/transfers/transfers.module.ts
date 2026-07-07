@@ -1,6 +1,7 @@
 import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigType } from "@nestjs/config";
+import { CurrencyModule } from "src/currency/currency.module";
 import { DerivModule } from "src/deriv/deriv.module";
 import { IamModule } from "src/iam/iam.module";
 import redisConfig from "src/iam/redis/redis.config";
@@ -28,6 +29,7 @@ import { TransfersController } from "./transfers.controller";
 			},
 		}),
 		DerivModule,
+		CurrencyModule,
 		TransactionsModule,
 		IamModule,
 	],

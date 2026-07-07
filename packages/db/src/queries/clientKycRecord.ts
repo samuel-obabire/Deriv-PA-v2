@@ -37,6 +37,26 @@ export const getClientKycRecordByEmail = async (
 	return record ?? null;
 };
 
+export const getClientKycRecordByDerivNickname = async (
+	{
+		organizationId,
+		derivNickname,
+	}: { organizationId: string; derivNickname: string },
+	db: DB,
+) => {
+	const [record] = await db
+		.select()
+		.from(clientKycRecord)
+		.where(
+			and(
+				eq(clientKycRecord.organizationId, organizationId),
+				eq(clientKycRecord.derivNickname, derivNickname),
+			),
+		);
+
+	return record ?? null;
+};
+
 export const getClientKycRecordsByOrg = async (
 	organizationId: string,
 	db: DB,

@@ -1,9 +1,14 @@
 import { CURRENCY_CONFIG } from "../constants";
 
+export * from "./gateway";
+export * from "./rest";
+
+// Deriv WebSocket API endpoint names only. Deriv's payment-agent transfer now
+// lives entirely on their REST API — see ./rest.ts — and never goes over this
+// socket, so it deliberately does not appear in this union.
 export type DerivEndpointName =
 	| "authorize"
 	| "balance"
-	| "paymentagent_transfer"
 	| "transfer_between_accounts"
 	| "forget"
 	| "ping"
@@ -145,28 +150,19 @@ export type RequestPayload<T extends DerivEndpointName = DerivEndpointName> =
 					}
 				: T extends "forget"
 					? { forget: string }
-					: T extends "paymentagent_transfer"
+					: T extends "statement"
 						? {
-								paymentagent_transfer: 1;
-								amount: number;
-								currency: DerivCurrency;
-								transfer_to: string;
-								dry_run: 0 | 1;
-								description?: string;
+								statement: 1;
+								action_type?: StatementActionType;
+								date_from?: number;
+								date_to?: number;
+								description?: 0 | 1;
+								limit?: number;
+								offset?: number;
 							}
-						: T extends "statement"
-							? {
-									statement: 1;
-									action_type?: StatementActionType;
-									date_from?: number;
-									date_to?: number;
-									description?: 0 | 1;
-									limit?: number;
-									offset?: number;
-								}
-							: T extends "ping"
-								? { ping: 1 }
-								: never;
+						: T extends "ping"
+							? { ping: 1 }
+							: never;
 
 export type DerivRequestPayload<
 	T extends DerivEndpointName = DerivEndpointName,
@@ -217,45 +213,34 @@ export type ResponseData<T extends DerivEndpointName = DerivEndpointName> =
 							[k: string]: unknown;
 						};
 					}
-				: T extends "paymentagent_transfer"
+				: T extends "forget"
 					? {
-							paymentagent_transfer: 1 | 2;
-							client_to_full_name: string;
-							client_to_loginid: string;
-							msg_type: "paymentagent_transfer";
+							forget: 1;
+							msg_type: "forget";
 							req_id: number;
 							echo_req: {
 								[k: string]: unknown;
 							};
 						}
-					: T extends "forget"
+					: T extends "statement"
 						? {
-								forget: 1;
-								msg_type: "forget";
-								req_id: number;
+								statement?: Statement;
+								msg_type: "statement";
+								req_id?: number;
 								echo_req: {
 									[k: string]: unknown;
 								};
 							}
-						: T extends "statement"
+						: T extends "ping"
 							? {
-									statement?: Statement;
-									msg_type: "statement";
-									req_id?: number;
+									ping: "pong";
+									msg_type: "ping";
+									req_id: number;
 									echo_req: {
 										[k: string]: unknown;
 									};
 								}
-							: T extends "ping"
-								? {
-										ping: "pong";
-										msg_type: "ping";
-										req_id: number;
-										echo_req: {
-											[k: string]: unknown;
-										};
-									}
-								: never;
+							: never;
 
 export type DerivResponseData<T extends DerivEndpointName = DerivEndpointName> =
 	ResponseData<T> & {

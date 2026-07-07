@@ -1,8 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
+import { getClientKycRecordByDerivNickname } from "@repo/db/queries";
 import { orgTokenKey } from "@repo/deriv";
 import { Server } from "socket.io";
 import { CurrencyTokenService } from "src/currency/currency-token.service";
+import { DatabaseService } from "src/database/database.service";
 import { RedisService } from "src/iam/redis/redis.service";
 import { DerivOrgConnection } from "./deriv-org-connection";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
@@ -17,6 +19,7 @@ export class DerivService {
 		private readonly derivOrgPoolService: DerivOrgPoolService,
 		private readonly currencyTokenService: CurrencyTokenService,
 		private readonly redisService: RedisService,
+		private readonly databaseService: DatabaseService,
 	) {}
 
 	async authorize({ orgId, tokenId }: { tokenId: string; orgId: string }) {
@@ -35,19 +38,10 @@ export class DerivService {
 		await this.authorizeSocket(plainToken, orgConnection);
 	}
 
-	async validateTransfer(
-		orgId: string,
-		dto: TransferValidationDto,
-		tokenId: string,
-	) {
-		const orgDerivSocket = this.derivOrgPoolService.getOrganizationSocket(
-			orgId,
-			tokenId,
-		);
-
+	async validateTransfer(orgId: string, dto: TransferValidationDto) {
 		const { data, options } = dto;
 
-		const lockKey = this.transferLockKey(orgId, data.transfer_to);
+		const lockKey = this.transferLockKey(orgId, data.to_nickname);
 		const lockExists = await this.redisService.checkLockExists(lockKey);
 
 		if (lockExists && !options.ignoreDuplicatePayment) {
@@ -56,28 +50,24 @@ export class DerivService {
 			);
 		}
 
-		return orgDerivSocket.send({
-			name: "paymentagent_transfer",
-			payload: data,
-		});
+		return this.resolveClientName(orgId, data.to_nickname);
 	}
 
-	async validateClientName(
-		orgId: string,
-		dto: ClientNameValidationDto,
-		tokenId: string,
-	) {
-		const orgDerivSocket = this.derivOrgPoolService.getOrganizationSocket(
-			orgId,
-			tokenId,
-		);
-
+	async validateClientName(orgId: string, dto: ClientNameValidationDto) {
 		const { data } = dto;
 
-		return orgDerivSocket.send({
-			name: "paymentagent_transfer",
-			payload: data,
-		});
+		return this.resolveClientName(orgId, data.to_nickname);
+	}
+
+	// Client's real name is sourced from our own KYC records now, keyed by the
+	// Deriv nickname — Deriv no longer resolves this for us over the socket.
+	async resolveClientName(orgId: string, derivNickname: string) {
+		const record = await getClientKycRecordByDerivNickname(
+			{ organizationId: orgId, derivNickname },
+			this.databaseService.client,
+		);
+
+		return { client_real_name: record?.fullName ?? null };
 	}
 
 	async getStatment(

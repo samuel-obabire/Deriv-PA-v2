@@ -5,7 +5,6 @@ import { formatUSD } from "@/lib/utils/formatCurrency";
 const clientAccountField = z
 	.string()
 	.min(3, { error: "Please enter a valid client account" })
-	.toUpperCase()
 	.trim();
 
 export const createTransferToClientSchema = ({

@@ -1,10 +1,12 @@
 import {
+	ClientNameValidationResult,
 	createPromise,
 	DerivEndpointName,
 	DerivRequestPayload,
 	DerivResponseData,
 	DerivSocketEvent,
 	DerivSubcriptionEndpoint,
+	PaymentAgentTransferInput,
 } from "@repo/deriv";
 import { Socket } from "socket.io-client";
 import { SocketResponse } from "../types/global";
@@ -12,17 +14,13 @@ import { SocketResponse } from "../types/global";
 type Listener<T> = (data: T) => void;
 
 type TransferFundsPayload = {
-	data: DerivRequestPayload<"paymentagent_transfer">;
+	data: PaymentAgentTransferInput;
 	options: { idempotencyKey: string; ignoreDuplicatePayment?: boolean };
 };
 
 type ValidateTransferPayload = {
-	data: DerivRequestPayload<"paymentagent_transfer">;
+	data: PaymentAgentTransferInput;
 	options: { ignoreDuplicatePayment?: boolean };
-};
-
-type ValidateClientNamePayload = {
-	data: DerivRequestPayload<"paymentagent_transfer"> & { dry_run: 1 };
 };
 
 class SocketClient {
@@ -129,30 +127,30 @@ class SocketClient {
 	}
 
 	validateTransfer(
-		data: DerivRequestPayload<"paymentagent_transfer">,
+		data: PaymentAgentTransferInput,
 		options: { ignoreDuplicatePayment?: boolean } = {},
 	) {
-		return this.rawRequest<DerivResponseData<"paymentagent_transfer">>(
+		return this.rawRequest<ClientNameValidationResult>(
 			DerivSocketEvent.ValidateTransfer,
 			{ data, options } satisfies ValidateTransferPayload,
 		);
 	}
 
-	validateClientName(data: ValidateClientNamePayload["data"]) {
-		return this.rawRequest<DerivResponseData<"paymentagent_transfer">>(
+	validateClientName(data: PaymentAgentTransferInput) {
+		return this.rawRequest<ClientNameValidationResult>(
 			DerivSocketEvent.ValidateClientName,
 			{ data },
 		);
 	}
 
 	transferFunds(
-		data: DerivRequestPayload<"paymentagent_transfer">,
+		data: PaymentAgentTransferInput,
 		options: { idempotencyKey: string; ignoreDuplicatePayment?: boolean },
 	) {
-		return this.request<"paymentagent_transfer", TransferFundsPayload>(
-			DerivSocketEvent.TransferFunds,
-			{ data, options },
-		);
+		return this.rawRequest<{ id: string }>(DerivSocketEvent.TransferFunds, {
+			data,
+			options,
+		} satisfies TransferFundsPayload);
 	}
 
 	getStatement(data: DerivRequestPayload<"statement">) {

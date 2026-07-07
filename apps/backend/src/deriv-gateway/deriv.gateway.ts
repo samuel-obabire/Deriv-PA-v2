@@ -142,11 +142,7 @@ export class DerivGateway
 		@ConnectedSocket() client: AuthenticatedSocket,
 		@MessageBody() dto: TransferValidationDto,
 	) {
-		return this.derivService.validateTransfer(
-			client.data.organizationId,
-			dto,
-			client.data.tokenId,
-		);
+		return this.derivService.validateTransfer(client.data.organizationId, dto);
 	}
 
 	@RequirePermission(Permissions.READ)
@@ -158,7 +154,6 @@ export class DerivGateway
 		return this.derivService.validateClientName(
 			client.data.organizationId,
 			dto,
-			client.data.tokenId,
 		);
 	}
 

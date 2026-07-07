@@ -78,17 +78,19 @@ const useTransferFlow = () => {
 
 		setPending(true);
 
+		// Reused as Deriv's request_id when the real transfer submits later —
+		// one unique value per transfer attempt for both our own idempotency
+		// check and Deriv's anti-replay check.
 		const idempotencyKey = crypto.randomUUID();
 
 		const [validationResult, error] = await tryCatch(() =>
 			socketClient.validateTransfer(
 				{
-					paymentagent_transfer: 1,
-					amount: Number(transferData.amount),
+					to_nickname: transferData.clientAccount,
+					amount: transferData.amount,
 					currency: selectedCurrency as CURRENCY,
-					dry_run: 1,
-					transfer_to: transferData.clientAccount,
-					description: transferData.description,
+					notes: transferData.description ?? "",
+					request_id: idempotencyKey,
 				},
 				{ ignoreDuplicatePayment: state.options.ignoreDuplicatePayment },
 			),
@@ -105,13 +107,22 @@ const useTransferFlow = () => {
 			return;
 		}
 
+		if (validationResult.client_real_name === null) {
+			dispatch({
+				type: "setError",
+				payload: "Client name could not be validated",
+			});
+
+			return;
+		}
+
 		dispatch({ type: "setIdempotencyKey", payload: idempotencyKey });
 		dispatch({ type: "setStep", payload: 2 });
 		dispatch({
 			type: "setData",
 			payload: {
 				...transferData,
-				clientName: validationResult.client_to_full_name,
+				clientName: validationResult.client_real_name,
 			},
 		});
 	};
@@ -136,12 +147,11 @@ const useTransferFlow = () => {
 		const [result, error] = await tryCatch(() =>
 			socketClient.transferFunds(
 				{
-					paymentagent_transfer: 1,
-					amount: Number(state.transferData.amount),
+					to_nickname: state.transferData.clientAccount,
+					amount: state.transferData.amount,
 					currency: selectedCurrency as CURRENCY,
-					dry_run: 0,
-					transfer_to: state.transferData.clientAccount,
-					description,
+					notes: description,
+					request_id: idempotencyKey,
 				},
 				{
 					idempotencyKey,
@@ -165,8 +175,7 @@ const useTransferFlow = () => {
 
 		dispatch({ type: "setStep", payload: 3 });
 
-		const transactionId = (result as unknown as { id: string }).id;
-		if (transactionId) onSuccess?.(transactionId);
+		if (result.id) onSuccess?.(result.id);
 	};
 
 	const onReset = () => {

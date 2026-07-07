@@ -35,12 +35,12 @@ export class TransferQueueService {
 	}) {
 		const { data, options } = transferFundsDto;
 
-		const lockKey = this.transferLockKey(orgId, data.transfer_to);
+		const lockKey = this.transferLockKey(orgId, data.to_nickname);
 		const ttlSeconds = 60 * 30;
 
 		const acquired = await this.redisService.acquireLock(
 			lockKey,
-			data.amount.toString(),
+			data.amount,
 			ttlSeconds,
 		);
 
@@ -53,8 +53,8 @@ export class TransferQueueService {
 		}
 
 		const inserted = await this.transactionService.createPending({
-			clientId: data.transfer_to,
-			amount: data.amount.toString(),
+			clientId: data.to_nickname,
+			amount: data.amount,
 			currency: data.currency as CURRENCY,
 			organizationId: orgId,
 			staffId: userId,

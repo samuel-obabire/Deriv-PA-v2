@@ -71,6 +71,13 @@
 			"when": 1783189184135,
 			"tag": "0009_fresh_northstar",
 			"breakpoints": true
+		},
+		{
+			"idx": 10,
+			"version": "7",
+			"when": 1783418778588,
+			"tag": "0010_pretty_dazzler",
+			"breakpoints": true
 		}
 	]
 }
