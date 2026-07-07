@@ -6,7 +6,7 @@ import { Server } from "socket.io";
 import { CurrencyTokenService } from "src/currency/currency-token.service";
 import { DatabaseService } from "src/database/database.service";
 import { RedisService } from "src/iam/redis/redis.service";
-import { DerivOrgConnection } from "./deriv-org-connection";
+import { DerivOptionsRestClient } from "./deriv-options-rest-client";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
 import { ClientNameValidationDto } from "./dto/clientNameValidation.dto";
 import { StatementDto } from "./dto/statement.dto";
@@ -20,6 +20,7 @@ export class DerivService {
 		private readonly currencyTokenService: CurrencyTokenService,
 		private readonly redisService: RedisService,
 		private readonly databaseService: DatabaseService,
+		private readonly derivOptionsRestClient: DerivOptionsRestClient,
 	) {}
 
 	async authorize({ orgId, tokenId }: { tokenId: string; orgId: string }) {
@@ -30,12 +31,16 @@ export class DerivService {
 			tokenId,
 		);
 
-		const orgConnection = this.derivOrgPoolService.addToPool({
+		// Single-use per connection — resolved fresh every time we need to open
+		// a new org socket, never cached/reused across connections.
+		const socketUrl =
+			await this.derivOptionsRestClient.getSocketUrl(plainToken);
+
+		this.derivOrgPoolService.addToPool({
 			orgId,
 			tokenId,
+			url: socketUrl,
 		});
-
-		await this.authorizeSocket(plainToken, orgConnection);
 	}
 
 	async validateTransfer(orgId: string, dto: TransferValidationDto) {
@@ -83,13 +88,6 @@ export class DerivService {
 		return orgDerivSocket.send({
 			name: "statement",
 			payload: statementDto,
-		});
-	}
-
-	async authorizeSocket(token: string, orgSocket: DerivOrgConnection) {
-		return await orgSocket.send({
-			name: "authorize",
-			payload: { authorize: token },
 		});
 	}
 

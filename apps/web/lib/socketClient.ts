@@ -167,7 +167,6 @@ class SocketClient {
 			{
 				subscribe: 1,
 				balance: 1,
-				account: "current",
 			} satisfies DerivRequestPayload<"balance">,
 			(balance) => {
 				onData(balance);

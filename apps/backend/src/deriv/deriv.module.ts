@@ -6,6 +6,7 @@ import { HttpModule } from "src/http/http.module";
 import { IamModule } from "src/iam/iam.module";
 import { OrganizationModule } from "src/organization/organization.module";
 import { DerivService } from "./deriv.service";
+import { DerivOptionsRestClient } from "./deriv-options-rest-client";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
 import derivRestConfig from "./deriv-rest.config";
 import { DerivRestClient } from "./deriv-rest-client";
@@ -19,7 +20,17 @@ import { DerivRestClient } from "./deriv-rest-client";
 		HttpModule,
 		ConfigModule.forFeature(derivRestConfig),
 	],
-	exports: [DerivOrgPoolService, DerivService, DerivRestClient],
-	providers: [DerivOrgPoolService, DerivService, DerivRestClient],
+	exports: [
+		DerivOrgPoolService,
+		DerivService,
+		DerivRestClient,
+		DerivOptionsRestClient,
+	],
+	providers: [
+		DerivOrgPoolService,
+		DerivService,
+		DerivRestClient,
+		DerivOptionsRestClient,
+	],
 })
 export class DerivModule {}

@@ -9,7 +9,15 @@ type Connections = Map<string, DerivOrgConnection>;
 export class DerivOrgPoolService implements OnModuleDestroy {
 	private readonly connectionPool = new Map<string, Connections>();
 
-	addToPool({ orgId, tokenId }: { tokenId: string; orgId: string }) {
+	addToPool({
+		orgId,
+		tokenId,
+		url,
+	}: {
+		tokenId: string;
+		orgId: string;
+		url: string;
+	}) {
 		const orgPool = this.pool.get(orgId);
 		if (!orgPool) this.pool.set(orgId, new Map());
 
@@ -17,6 +25,7 @@ export class DerivOrgPoolService implements OnModuleDestroy {
 			orgId: orgId,
 			onDrop: this.onDrop.bind(this),
 			tokenId,
+			url,
 		});
 
 		this.pool.get(orgId).set(orgTokenKey(orgId, tokenId), orgConnection);

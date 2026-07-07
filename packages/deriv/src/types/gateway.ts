@@ -1,4 +1,4 @@
-import type { DerivCurrency } from "./index";
+import type { DerivCurrency } from "./currency";
 
 // Our own app's socket.io contract between the frontend and the backend
 // gateway (validate-transfer / validate-client_name / paymentagent_transfer
