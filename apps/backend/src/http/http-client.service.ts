@@ -1,11 +1,11 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 
-export class HttpRequestError extends Error {
+export class HttpRequestError extends HttpException {
 	constructor(
 		readonly statusCode: number,
 		message: string,
 	) {
-		super(message);
+		super(message, HttpStatus.BAD_REQUEST);
 		this.name = "HttpRequestError";
 	}
 }

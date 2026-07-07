@@ -5,6 +5,7 @@ import { Job } from "bullmq";
 import { CurrencyTokenService } from "src/currency/currency-token.service";
 import { DerivService } from "src/deriv/deriv.service";
 import { DerivRestClient } from "src/deriv/deriv-rest-client";
+import { HttpRequestError } from "src/http/http-client.service";
 import { TransactionService } from "src/transactions/transaction.service";
 import { EXECUTE_TRANSFER, TRANSFERS } from "./constants";
 
@@ -57,11 +58,32 @@ export class TransferProcessor extends WorkerHost {
 				transferPayload,
 			);
 		} catch (error) {
-			// We never got a clean { data: { status, transaction_id } } body back
-			// (network failure, timeout, or Deriv's { errors: [...] } envelope).
-			// We do NOT know whether the transfer executed on Deriv's side —
-			// leave the tx in PROCESSING rather than guessing, and flag it for
-			// manual reconciliation.
+			if (
+				error instanceof HttpRequestError &&
+				error.statusCode >= 400 &&
+				error.statusCode <= 499
+			) {
+				// Deriv looked at the request and rejected it outright — the
+				// transfer definitely did not go through.
+				this.logger.error(
+					`Deriv REST transfer request rejected for tx ${transactionId} (status ${error.statusCode})`,
+					error,
+				);
+				try {
+					await this.transactionService.fail(transactionId);
+				} catch (failError) {
+					this.logger.error(
+						`CRITICAL: Deriv transfer failed but the failure write did not persist for tx ${transactionId} — manual reconciliation required`,
+						failError,
+					);
+				}
+				throw error;
+			}
+
+			// Unknown outcome: network failure, timeout/abort, or a 5xx from
+			// Deriv's own infrastructure. We do NOT know whether the transfer
+			// executed on Deriv's side — leave the tx in PROCESSING rather
+			// than guessing, and flag it for manual reconciliation.
 			this.logger.error(
 				`CRITICAL: Deriv REST transfer request failed for tx ${transactionId} — outcome unknown, manual reconciliation required`,
 				error,
@@ -79,6 +101,7 @@ export class TransferProcessor extends WorkerHost {
 					`CRITICAL: Deriv transfer failed but the failure write did not persist for tx ${transactionId} — manual reconciliation required`,
 					error,
 				);
+				throw error;
 			}
 			return result;
 		}
@@ -103,6 +126,7 @@ export class TransferProcessor extends WorkerHost {
 				`CRITICAL: Deriv transfer succeeded but completion write failed for tx ${transactionId} — manual reconciliation required`,
 				error,
 			);
+			throw error;
 		}
 
 		return result;
