@@ -39,7 +39,7 @@ export const sidebarConfig: SidebarGroup[] = [
 				title: "Statement",
 				href: ROUTES.STATEMENT,
 				icon: FileText,
-				permission: { resource: "ac", action: "read" },
+				permission: { resource: "statement", action: "view" },
 			},
 		],
 	},

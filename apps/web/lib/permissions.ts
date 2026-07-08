@@ -12,6 +12,7 @@ const statement = {
 	settings: ["manage"],
 	auth_provider: ["manage"],
 	access_request: ["view", "approve", "reject", "revoke"],
+	statement: ["view"],
 } as const;
 
 const ac = createAccessControl(statement);
@@ -25,6 +26,7 @@ const admin = ac.newRole({
 	settings: ["manage"],
 	auth_provider: ["manage"],
 	access_request: ["view", "approve", "reject", "revoke"],
+	statement: ["view"],
 	...adminAc.statements,
 });
 
@@ -33,21 +35,22 @@ const owner = ac.newRole({
 	settings: ["manage"],
 	auth_provider: ["manage"],
 	access_request: ["view", "approve", "reject", "revoke"],
+	statement: ["view"],
 	...ownerAc.statements,
 });
 
 const cashier = ac.newRole({
 	payment: ["create", "update"],
+	statement: ["view"],
 	...memberAc.statements,
 });
 
 const auditor = ac.newRole({
+	statement: ["view"],
 	...memberAc.statements,
 });
 
 export type Statements = typeof statement;
-
-// const roleNames = ["auditor", "cashier", "admin"] as const;
 
 type PermissionType = {
 	[key in keyof Statements]?: Array<
