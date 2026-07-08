@@ -18,7 +18,7 @@ type TransferFundsPayload = {
 	options: { idempotencyKey: string; ignoreDuplicatePayment?: boolean };
 };
 
-type ValidateTransferPayload = {
+type ValidatePaymentAgentTransferPayload = {
 	data: PaymentAgentTransferInput;
 	options: { ignoreDuplicatePayment?: boolean };
 };
@@ -126,13 +126,13 @@ class SocketClient {
 		this.subscriptions.clear();
 	}
 
-	validateTransfer(
+	validatePaymentAgentTransfer(
 		data: PaymentAgentTransferInput,
 		options: { ignoreDuplicatePayment?: boolean } = {},
 	) {
 		return this.rawRequest<ClientNameValidationResult>(
-			DerivSocketEvent.ValidateTransfer,
-			{ data, options } satisfies ValidateTransferPayload,
+			DerivSocketEvent.ValidatePaymentAgentTransfer,
+			{ data, options } satisfies ValidatePaymentAgentTransferPayload,
 		);
 	}
 

@@ -1,0 +1,2 @@
+ALTER TABLE "client_kyc_record" DROP CONSTRAINT "client_kyc_record_deriv_nickname_unique";--> statement-breakpoint
+CREATE UNIQUE INDEX "kyc_record_org_deriv_nickname" ON "client_kyc_record" USING btree ("organization_id","deriv_nickname");

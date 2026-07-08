@@ -8,6 +8,7 @@ import { DatabaseService } from "src/database/database.service";
 import { RedisService } from "src/iam/redis/redis.service";
 import { DerivOptionsRestClient } from "./deriv-options-rest-client";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
+import { DerivRestClient } from "./deriv-rest-client";
 import { ClientNameValidationDto } from "./dto/clientNameValidation.dto";
 import { StatementDto } from "./dto/statement.dto";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
@@ -21,6 +22,7 @@ export class DerivService {
 		private readonly redisService: RedisService,
 		private readonly databaseService: DatabaseService,
 		private readonly derivOptionsRestClient: DerivOptionsRestClient,
+		private readonly derivRestClient: DerivRestClient,
 	) {}
 
 	async authorize({ orgId, tokenId }: { tokenId: string; orgId: string }) {
@@ -43,7 +45,11 @@ export class DerivService {
 		});
 	}
 
-	async validateTransfer(orgId: string, dto: TransferValidationDto) {
+	async validatePaymentAgentTransfer(
+		orgId: string,
+		dto: TransferValidationDto,
+		tokenId: string,
+	) {
 		const { data, options } = dto;
 
 		const lockKey = this.transferLockKey(orgId, data.to_nickname);
@@ -55,7 +61,16 @@ export class DerivService {
 			);
 		}
 
-		return this.resolveClientName(orgId, data.to_nickname);
+		const [, clientData] = await Promise.all([
+			this.currencyTokenService
+				.getDecryptedOrgToken(orgId, tokenId)
+				.then((token) =>
+					this.derivRestClient.paymentAgentTransferValidation(token, data),
+				),
+			this.resolveClientName(orgId, data.to_nickname),
+		]);
+
+		return clientData;
 	}
 
 	async validateClientName(orgId: string, dto: ClientNameValidationDto) {

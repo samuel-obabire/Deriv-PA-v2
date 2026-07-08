@@ -184,8 +184,7 @@ export const deleteClientKycRecord = async (id: string, db: DB) => {
 
 const KYC_UNIQUE_CONSTRAINT_MESSAGES: Record<string, string> = {
 	kyc_record_org_email_unique: "A KYC record with this email already exists",
-	client_kyc_record_deriv_nickname_unique:
-		"This Deriv nickname is already registered",
+	kyc_record_org_deriv_nickname: "This Deriv nickname is already registered",
 	kyc_record_org_whatsapp_unique:
 		"This WhatsApp number is already registered for this organisation",
 };

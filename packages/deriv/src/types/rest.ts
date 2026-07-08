@@ -30,6 +30,8 @@ export type DerivPaymentAgentTransferStatus =
 	| "rejected"
 	| "failed";
 
+export type DerivPaymentAgentTransferValidationStatus = "dry_run_ok";
+
 export type DerivRestMetadata = {
 	endpoint: string;
 	method: string;
@@ -40,6 +42,14 @@ export type DerivPaymentAgentTransferResponse = {
 	data: {
 		status: DerivPaymentAgentTransferStatus;
 		transaction_id: number;
+	};
+	metadata: DerivRestMetadata;
+};
+
+export type DerivPaymentAgentTransferValidationResponse = {
+	data: {
+		status: DerivPaymentAgentTransferValidationStatus;
+		transaction_id: null;
 	};
 	metadata: DerivRestMetadata;
 };

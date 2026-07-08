@@ -33,7 +33,7 @@ export const clientKycRecord = pgTable(
 			.references(() => organization.id, { onDelete: "cascade" }),
 		email: text("email").notNull(),
 		fullName: text("full_name").notNull(),
-		derivNickname: text("deriv_nickname").notNull().unique(),
+		derivNickname: text("deriv_nickname").notNull(),
 		whatsappNumber: text("whatsapp_number").notNull(),
 		status: kycStatusEnum("status").notNull().default(KYC_STATUS.UNVERIFIED),
 		documentType: kycDocumentTypeEnum("document_type"),
@@ -60,6 +60,10 @@ export const clientKycRecord = pgTable(
 		uniqueIndex("kyc_record_org_whatsapp_unique").on(
 			table.organizationId,
 			table.whatsappNumber,
+		),
+		uniqueIndex("kyc_record_org_deriv_nickname").on(
+			table.organizationId,
+			table.derivNickname,
 		),
 		index("kyc_record_org_idx").on(table.organizationId),
 		index("kyc_record_status_idx").on(table.status),

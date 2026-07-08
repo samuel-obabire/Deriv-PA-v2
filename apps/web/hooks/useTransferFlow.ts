@@ -84,7 +84,7 @@ const useTransferFlow = () => {
 		const idempotencyKey = crypto.randomUUID();
 
 		const [validationResult, error] = await tryCatch(() =>
-			socketClient.validateTransfer(
+			socketClient.validatePaymentAgentTransfer(
 				{
 					to_nickname: transferData.clientAccount,
 					amount: transferData.amount,
