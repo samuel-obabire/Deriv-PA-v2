@@ -19,23 +19,23 @@ const OrganizationManager = () => {
 	const router = useRouter();
 
 	const onOrgCreate = async (newOrgId: string) => {
-		await Promise.all([
-			organization.setActive({ organizationId: newOrgId }),
-			setUserActiveOrganization({ orgId: newOrgId }),
-		]);
+		await organization.setActive({ organizationId: newOrgId });
 
-		await refetch();
+		await Promise.all([
+			setUserActiveOrganization({ orgId: newOrgId }),
+			refetch(),
+		]);
 
 		router.refresh();
 	};
 
 	const onOrgSwitch = async (newActiveOrgId: string) => {
-		await Promise.all([
-			organization.setActive({ organizationId: newActiveOrgId }),
-			setUserActiveOrganization({ orgId: newActiveOrgId }),
-		]);
+		await organization.setActive({ organizationId: newActiveOrgId });
 
-		await refetch();
+		await Promise.all([
+			setUserActiveOrganization({ orgId: newActiveOrgId }),
+			refetch(),
+		]);
 
 		router.refresh();
 	};
