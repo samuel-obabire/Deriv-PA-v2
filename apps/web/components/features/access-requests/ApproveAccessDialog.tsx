@@ -38,7 +38,7 @@ const ApproveAccessDialog = ({ isPending, onApprove }: Props) => {
 	return (
 		<ConfirmDialog
 			trigger={
-				<Button size="sm" className="gap-1.5" disabled={isPending}>
+				<Button size="xs" className="gap-1.5" disabled={isPending}>
 					<CheckCircle2 className="size-4" />
 					Approve
 				</Button>

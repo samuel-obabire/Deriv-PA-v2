@@ -6,6 +6,8 @@ import {
 	State,
 	TransferData,
 } from "@/components/features/funds-transfer/types";
+import { hasRoleStatement } from "@/components/features/nav/sidebar/utils";
+import { useSession } from "@/lib/auth-client";
 import { buildTransferDescription } from "@/lib/utils/transfer";
 import useCurrency from "./useCurrency";
 import useSocket from "./useSocket";
@@ -61,6 +63,12 @@ const useTransferFlow = () => {
 
 	const { socketClient } = useSocket();
 	const { selectedCurrency } = useCurrency();
+	const { data: session } = useSession();
+
+	const canIgnoreDuplicatePayment = hasRoleStatement(
+		session?.user.role ?? "member",
+		{ resource: "payment", action: "configure" },
+	);
 
 	const setPending = (pending: boolean) => {
 		dispatch({ type: "setPending", payload: pending });
@@ -199,6 +207,7 @@ const useTransferFlow = () => {
 		onTransferSubmit,
 		clearError,
 		setIgnoreDuplicatePayment,
+		canIgnoreDuplicatePayment,
 	};
 };
 

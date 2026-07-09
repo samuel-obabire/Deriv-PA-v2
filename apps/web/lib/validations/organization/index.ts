@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { ASSIGNABLE_ROLES } from "@/lib/permissions";
 
 export const CreateOrgSchema = z.object({
 	orgName: z
@@ -10,13 +11,6 @@ export const CreateOrgSchema = z.object({
 export const SetActiveOrgSchema = z.object({
 	orgId: z.string().trim().min(1, "OrgId is required"),
 });
-
-export const ASSIGNABLE_ROLES = [
-	"admin",
-	"member",
-	"cashier",
-	"auditor",
-] as const;
 
 export const AddMemberSchema = z.object({
 	email: z.email("Please enter a valid email address"),

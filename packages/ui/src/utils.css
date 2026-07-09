@@ -88,6 +88,10 @@
   }
 
   .input-class {
-    @apply no-ring  font-medium;
+    @apply no-ring  font-medium h-10!;
+  }
+
+  .text-area {
+    @apply no-ring  font-medium h-20!;
   }
 }

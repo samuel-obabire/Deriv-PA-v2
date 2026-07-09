@@ -21,10 +21,8 @@ import { tryCatch } from "@repo/utils";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import {
-	AddMemberSchema,
-	ASSIGNABLE_ROLES,
-} from "@/lib/validations/organization";
+import { ASSIGNABLE_ROLES } from "@/lib/permissions";
+import { AddMemberSchema } from "@/lib/validations/organization";
 import { ActionResponse } from "@/types/global";
 
 type AddMemberFormProps = {
