@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import KycInvitationSection from "@/components/features/settings/KycInvitationSection";
-import { requirePermission, verifySession } from "@/lib/session";
+import { verifySession } from "@/lib/session";
 
 const KycInvitationContent = async () => {
-	const session = await verifySession();
-	requirePermission(session, "organization", "update");
+	await verifySession();
+
 	return <KycInvitationSection />;
 };
 

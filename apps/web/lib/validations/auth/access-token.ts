@@ -5,18 +5,18 @@ export const GetTokenAccessRequestSchema = z.object({
 	currency: z.enum(CURRENCY),
 });
 
-export const GetTokenAccessResponseSchema = z.object({
-	success: z.boolean(),
-	data: z
-		.object({
+export const GetTokenAccessResponseSchema = z.discriminatedUnion("success", [
+	z.object({
+		success: z.literal(true),
+		data: z.object({
 			accessToken: z.string().min(3),
-		})
-		.optional(),
-
-	error: z
-		.object({
+		}),
+	}),
+	z.object({
+		success: z.literal(false),
+		error: z.object({
 			statusCode: z.number().optional(),
 			message: z.string().optional(),
-		})
-		.optional(),
-});
+		}),
+	}),
+]);
