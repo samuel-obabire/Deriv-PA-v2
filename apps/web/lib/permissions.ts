@@ -13,6 +13,7 @@ const statement = {
 	auth_provider: ["manage"],
 	access_request: ["view", "approve", "reject", "revoke"],
 	statement: ["view"],
+	kyc: ["manage"],
 } as const;
 
 const ac = createAccessControl(statement);
@@ -35,6 +36,7 @@ const cashier = ac.newRole({
 const paymentSupervisor = ac.newRole({
 	payment: ["create", "update", "configure"],
 	statement: ["view"],
+	kyc: ["manage"],
 	...memberAc.statements,
 });
 
@@ -44,6 +46,7 @@ const admin = ac.newRole({
 	auth_provider: ["manage"],
 	access_request: ["view", "approve", "reject", "revoke"],
 	statement: ["view"],
+	kyc: ["manage"],
 	...adminAc.statements,
 });
 
@@ -51,8 +54,9 @@ const owner = ac.newRole({
 	payment: ["create", "update", "configure"],
 	settings: ["manage"],
 	auth_provider: ["manage"],
-	access_request: ["view", "approve", "reject", "revoke"],
 	statement: ["view"],
+	access_request: ["view", "approve", "reject", "revoke"],
+	kyc: ["manage"],
 	...ownerAc.statements,
 });
 
