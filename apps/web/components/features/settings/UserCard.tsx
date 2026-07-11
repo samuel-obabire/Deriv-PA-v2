@@ -16,7 +16,7 @@ type UserCardProps = {
 
 const UserCard = ({ user }: UserCardProps) => {
 	return (
-		<Card className="bg-muted">
+		<Card>
 			<CardHeader>
 				<CardTitle>{user.name}</CardTitle>
 				<CardDescription>{user.email}</CardDescription>

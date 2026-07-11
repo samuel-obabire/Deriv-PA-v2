@@ -53,7 +53,7 @@ const AddMemberForm = ({ onSubmit }: AddMemberFormProps) => {
 	};
 
 	return (
-		<Card className="w-full bg-muted">
+		<Card className="w-full">
 			<CardContent>
 				<form id="add-member-form" onSubmit={form.handleSubmit(handleSubmit)}>
 					<FieldGroup>

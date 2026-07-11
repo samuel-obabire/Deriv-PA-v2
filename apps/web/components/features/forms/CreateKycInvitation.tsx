@@ -57,7 +57,7 @@ const CreateKycInvitationForm = ({
 	};
 
 	return (
-		<Card className="w-full bg-muted">
+		<Card className="w-full">
 			<CardContent>
 				<form
 					id="create-kyc-invitation-form"

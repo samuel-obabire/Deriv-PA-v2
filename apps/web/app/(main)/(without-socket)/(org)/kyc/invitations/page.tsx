@@ -1,3 +1,4 @@
+import { Card } from "@repo/ui";
 import { Suspense } from "react";
 import KycInvitationSection from "@/components/features/settings/KycInvitationSection";
 import { verifySession } from "@/lib/session";
@@ -19,9 +20,7 @@ const KycInvitationsPage = () => {
 				</p>
 			</header>
 
-			<Suspense
-				fallback={<div className="h-48 animate-pulse rounded-xl bg-muted" />}
-			>
+			<Suspense fallback={<Card className="h-48 animate-pulse" />}>
 				<KycInvitationContent />
 			</Suspense>
 		</div>

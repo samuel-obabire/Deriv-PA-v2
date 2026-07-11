@@ -2,6 +2,7 @@
 
 import {
 	Button,
+	Card,
 	ConfirmDialog,
 	Label,
 	Select,
@@ -76,7 +77,7 @@ const ApproveAccessDialog = ({ isPending, onApprove }: Props) => {
 				</div>
 
 				{preset === "custom" && (
-					<div className="flex items-end gap-3 rounded-lg border bg-muted/30 p-3">
+					<Card className="flex-row items-end gap-3 p-3">
 						<div className="flex-1 space-y-1.5">
 							<Label htmlFor="custom-hours">Hours</Label>
 							<Select
@@ -113,7 +114,7 @@ const ApproveAccessDialog = ({ isPending, onApprove }: Props) => {
 								</SelectContent>
 							</Select>
 						</div>
-					</div>
+					</Card>
 				)}
 			</div>
 		</ConfirmDialog>

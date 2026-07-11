@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Rate } from "@repo/db";
 import {
 	Button,
+	Card,
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
@@ -159,7 +160,7 @@ const TransferToClientForm = ({
 							};
 
 							return (
-								<div className="rounded-xl border border-border bg-muted/20 p-4 space-y-2">
+								<Card className="gap-2 px-4">
 									<Field data-invalid={fieldState.invalid}>
 										<div className="flex items-center justify-between">
 											<FieldLabel htmlFor="ngnAmount">NGN Amount</FieldLabel>
@@ -232,7 +233,7 @@ const TransferToClientForm = ({
 											Edit USD manually
 										</button>
 									)}
-								</div>
+								</Card>
 							);
 						}}
 					/>

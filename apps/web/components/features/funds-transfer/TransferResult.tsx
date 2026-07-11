@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Separator } from "@repo/ui";
+import { Button, Card, Separator } from "@repo/ui";
 import { CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/lib/constants/routes";
@@ -34,7 +34,7 @@ const TransferResult = ({
 				</p>
 			</div>
 
-			<div className="rounded-lg border border-accent p-4 flex flex-col gap-3">
+			<Card className="gap-3 p-4">
 				<div className="flex justify-between items-center">
 					<span className="text-sm text-muted-foreground">Amount</span>
 					<span className="text-base font-semibold">
@@ -64,7 +64,7 @@ const TransferResult = ({
 						</div>
 					</>
 				)}
-			</div>
+			</Card>
 
 			<div className="flex flex-col gap-1">
 				<Button size="lg" onClick={onReset}>

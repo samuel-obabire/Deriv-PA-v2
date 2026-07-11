@@ -68,7 +68,7 @@ const UpdateMemberRoleForm = ({
 	};
 
 	return (
-		<Card className="w-full bg-muted">
+		<Card className="w-full">
 			<CardContent>
 				<form id="update-role-form" onSubmit={form.handleSubmit(handleSubmit)}>
 					<FieldGroup>
