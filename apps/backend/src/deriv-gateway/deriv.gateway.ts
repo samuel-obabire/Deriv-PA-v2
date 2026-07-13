@@ -20,6 +20,7 @@ import { DerivSocketEvent, orgTokenKey } from "@repo/deriv";
 import { Permissions, WsAuthError } from "@repo/utils";
 import { ZodValidationPipe } from "nestjs-zod";
 import { Server, Socket } from "socket.io";
+import { GLOBAL_PREFIX } from "src/common/constants";
 import { RequirePermission } from "src/common/decorators/permissions.decorator";
 import { WsExceptionFilter } from "src/common/filters/ws-exception/ws-exception.filter";
 import { WsPermissionsGuard } from "src/common/guards/ws-permissions.guard";
@@ -46,6 +47,7 @@ import { TransferQueueService } from "src/transfers/transfer-queue.service";
 		credentials: true,
 		origin: process.env.FRONTEND_URL,
 	},
+	namespace: `/${GLOBAL_PREFIX}`,
 })
 export class DerivGateway
 	implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
