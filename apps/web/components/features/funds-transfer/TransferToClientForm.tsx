@@ -4,6 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Rate } from "@repo/db";
 import {
 	Button,
+	Card,
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
 	Field,
 	FieldError,
 	FieldGroup,
@@ -12,7 +16,7 @@ import {
 	Switch,
 } from "@repo/ui";
 import { div, mul, sub } from "@repo/utils";
-import { ArrowUpDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
@@ -32,6 +36,7 @@ type TransferToClientFormProps = {
 	};
 	onSubmit: (data: TransferData) => Promise<void>;
 	activeCurrency: string;
+	canIgnoreDuplicatePayment: boolean;
 };
 
 const computeNgn = (usdValue: string, depositRate: number): string => {
@@ -55,6 +60,7 @@ const TransferToClientForm = ({
 	onSubmit,
 	rate,
 	activeCurrency,
+	canIgnoreDuplicatePayment,
 }: TransferToClientFormProps) => {
 	const schema = createTransferToClientSchema({
 		min: rate.min,
@@ -142,92 +148,95 @@ const TransferToClientForm = ({
 						)}
 					/>
 
-					<div className="rounded-xl border border-border bg-muted/20 p-4 space-y-3">
-						<Controller
-							name="amount"
-							control={form.control}
-							render={({ field, fieldState }) => {
-								const handleAmountChange = (
-									e: React.ChangeEvent<HTMLInputElement>,
-								) => {
-									field.onChange(e);
-									setNgnAmount(computeNgn(e.target.value, rate.deposit));
-								};
+					<Controller
+						name="amount"
+						control={form.control}
+						render={({ field, fieldState }) => {
+							const handleAmountChange = (
+								e: React.ChangeEvent<HTMLInputElement>,
+							) => {
+								field.onChange(e);
+								setNgnAmount(computeNgn(e.target.value, rate.deposit));
+							};
 
-								return (
+							return (
+								<Card className="gap-2 px-4">
 									<Field data-invalid={fieldState.invalid}>
 										<div className="flex items-center justify-between">
-											<FieldLabel htmlFor="amount">
-												Amount ({activeCurrency})
-											</FieldLabel>
-											<div className="flex items-center gap-1.5">
-												<Switch
-													size="sm"
-													id="amount-override"
-													checked={amountEnabled}
-													onCheckedChange={setAmountEnabled}
-												/>
-												<label
-													htmlFor="amount-override"
-													className="text-xs text-muted-foreground cursor-pointer select-none"
-												>
-													Edit manually
-												</label>
-											</div>
+											<FieldLabel htmlFor="ngnAmount">NGN Amount</FieldLabel>
+											<span className="text-xs font-medium text-muted-foreground">
+												1 {activeCurrency} = {rate.deposit} NGN
+											</span>
 										</div>
 										<Input
-											{...field}
 											className="input-class"
-											id="amount"
-											aria-invalid={fieldState.invalid}
+											id="ngnAmount"
 											placeholder="0.00"
-											onChange={handleAmountChange}
-											disabled={!amountEnabled}
+											value={ngnAmount}
+											onChange={handleNgnAmountChange}
 										/>
-										{fieldState.invalid && (
-											<FieldError errors={[fieldState.error]} />
-										)}
 									</Field>
-								);
-							}}
-						/>
 
-						<div className="flex items-center gap-2.5">
-							<div className="h-px flex-1 bg-border" />
-							<span className="flex items-center gap-1 text-xs text-muted-foreground">
-								<ArrowUpDown className="size-3" />1 {activeCurrency}={" "}
-								{rate.deposit} NGN
-							</span>
-							<div className="h-px flex-1 bg-border" />
-						</div>
+									<div className="flex items-center justify-between gap-2">
+										<span className="text-sm text-muted-foreground">
+											≈ {field.value || "0.00"} {activeCurrency}
+										</span>
+										<div className="flex items-center gap-1.5 shrink-0">
+											<Switch
+												size="sm"
+												id="waive-charge"
+												checked={waiveCharge}
+												onCheckedChange={handleWaiveChargeChange}
+											/>
+											<label
+												htmlFor="waive-charge"
+												className="text-xs text-muted-foreground cursor-pointer select-none"
+											>
+												Waive charge
+											</label>
+										</div>
+									</div>
 
-						<Field>
-							<div className="flex items-center justify-between">
-								<FieldLabel htmlFor="ngnAmount">NGN Amount</FieldLabel>
-								<div className="flex items-center gap-1.5">
-									<Switch
-										size="sm"
-										id="waive-charge"
-										checked={waiveCharge}
-										onCheckedChange={handleWaiveChargeChange}
-									/>
-									<label
-										htmlFor="waive-charge"
-										className="text-xs text-muted-foreground cursor-pointer select-none"
-									>
-										Waive small charge
-									</label>
-								</div>
-							</div>
-							<Input
-								className="input-class"
-								id="ngnAmount"
-								placeholder="0.00"
-								value={ngnAmount}
-								onChange={handleNgnAmountChange}
-							/>
-						</Field>
-					</div>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+
+									{amountEnabled ? (
+										<Field data-invalid={fieldState.invalid}>
+											<div className="flex items-center justify-between">
+												<FieldLabel htmlFor="amount">
+													Amount ({activeCurrency})
+												</FieldLabel>
+												<button
+													type="button"
+													onClick={() => setAmountEnabled(false)}
+													className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+												>
+													Hide
+												</button>
+											</div>
+											<Input
+												{...field}
+												className="input-class"
+												id="amount"
+												aria-invalid={fieldState.invalid}
+												placeholder="0.00"
+												onChange={handleAmountChange}
+											/>
+										</Field>
+									) : (
+										<button
+											type="button"
+											onClick={() => setAmountEnabled(true)}
+											className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+										>
+											Edit USD manually
+										</button>
+									)}
+								</Card>
+							);
+						}}
+					/>
 
 					<Controller
 						name="description"
@@ -241,7 +250,7 @@ const TransferToClientForm = ({
 									aria-invalid={fieldState.invalid}
 									placeholder="Enter description"
 									rows={4}
-									className="input-class w-full min-w-0 resize-none rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/30"
+									className="text-area w-full min-w-0 resize-none rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/30"
 								/>
 								{fieldState.invalid && (
 									<FieldError errors={[fieldState.error]} />
@@ -249,22 +258,32 @@ const TransferToClientForm = ({
 							</Field>
 						)}
 					/>
-
-					<Field>
-						<div className="flex items-center justify-between">
-							<FieldLabel htmlFor="ignore-duplicate-payment">
-								Ignore duplicate payment
-							</FieldLabel>
-							<Switch
-								size="sm"
-								id="ignore-duplicate-payment"
-								checked={ignoreDuplicatePayment}
-								onCheckedChange={onIgnoreDuplicateChange}
-							/>
-						</div>
-					</Field>
 				</FieldGroup>
 			</form>
+
+			{canIgnoreDuplicatePayment && (
+				<Collapsible className="rounded-lg border border-border">
+					<CollapsibleTrigger className="group flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground">
+						Advanced Options
+						<ChevronDown className="size-4 transition-transform group-data-[state=open]:rotate-180" />
+					</CollapsibleTrigger>
+					<CollapsibleContent className="px-3 py-3">
+						<Field>
+							<div className="flex items-center justify-between">
+								<FieldLabel htmlFor="ignore-duplicate-payment">
+									Ignore duplicate payment
+								</FieldLabel>
+								<Switch
+									size="sm"
+									id="ignore-duplicate-payment"
+									checked={ignoreDuplicatePayment}
+									onCheckedChange={onIgnoreDuplicateChange}
+								/>
+							</div>
+						</Field>
+					</CollapsibleContent>
+				</Collapsible>
+			)}
 
 			<Button
 				className="w-full"

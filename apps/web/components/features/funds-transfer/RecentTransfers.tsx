@@ -2,7 +2,7 @@
 
 import type { Transaction } from "@repo/db";
 import { TRANSACTION_STATUS } from "@repo/db/enums";
-import { Badge, Button, Separator } from "@repo/ui";
+import { Badge, Button, Card, Separator } from "@repo/ui";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -65,9 +65,9 @@ const RecentTransfers = ({
 
 			<div className="flex flex-col gap-3">
 				{transfers.map((transfer) => (
-					<div
+					<Card
 						key={transfer.id}
-						className="flex items-center justify-between rounded-lg border border-accent p-3"
+						className="flex-row items-center justify-between gap-3 p-3"
 					>
 						<div className="flex flex-col gap-0.5 min-w-0">
 							<span className="text-sm font-medium truncate">
@@ -102,7 +102,7 @@ const RecentTransfers = ({
 								</Button>
 							)}
 						</div>
-					</div>
+					</Card>
 				))}
 			</div>
 		</div>

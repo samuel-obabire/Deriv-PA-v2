@@ -1,4 +1,5 @@
 import {
+	bigint,
 	index,
 	numeric,
 	pgEnum,
@@ -28,6 +29,7 @@ export const transaction = pgTable(
 		idempotencyKey: text("idempotency_key").unique(),
 		clientId: text("client_id").notNull(),
 		clientName: text("client_name"),
+		refId: bigint("ref_id", { mode: "number" }),
 		organizationId: text("organization_id")
 			.notNull()
 			.references(() => organization.id),

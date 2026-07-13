@@ -62,10 +62,18 @@ export const requireActiveOrg = async () => {
 // grant only they (or another admin) could approve. Uses hasPermission
 // (fresh db check) rather than the cookie-cached session role, since this
 // is a critical/security-sensitive check.
-export const requireElevatedAccess = async (session: Session) => {
+export const requireElevatedAccess = async (session: Session | null) => {
+	if (!session) return false;
+
 	const permitted = await hasPermission({ access_request: ["approve"] });
 	if (permitted.success) return true;
 
 	const organizationId = session.session.activeOrganizationId as string;
-	return getActiveElevatedAccessGrant(session.session.id, organizationId, db);
+	const grant = await getActiveElevatedAccessGrant(
+		session.session.id,
+		organizationId,
+		db,
+	);
+
+	return !!grant;
 };

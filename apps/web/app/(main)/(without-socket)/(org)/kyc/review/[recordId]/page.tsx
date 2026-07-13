@@ -1,4 +1,5 @@
 import { getClientKycRecordById } from "@repo/db/queries";
+import { Card } from "@repo/ui";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import KycReviewClient from "@/components/features/kyc/KycReviewClient";
@@ -29,9 +30,7 @@ const KycReviewPage = async ({
 				</p>
 			</header>
 
-			<Suspense
-				fallback={<div className="h-96 animate-pulse rounded-xl bg-muted" />}
-			>
+			<Suspense fallback={<Card className="h-96 animate-pulse" />}>
 				<KycReviewContent recordId={recordId} />
 			</Suspense>
 		</div>

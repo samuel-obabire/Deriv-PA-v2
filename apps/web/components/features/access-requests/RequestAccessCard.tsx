@@ -10,7 +10,6 @@ import {
 } from "@repo/ui";
 import { tryCatch } from "@repo/utils";
 import { ShieldAlert } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import useAccessRequestPolling from "@/hooks/useAccessRequestPolling";
@@ -25,13 +24,12 @@ const RequestAccessCard = ({
 	grantId: initialGrantId,
 	isPending: initialIsPending,
 }: Props) => {
-	const router = useRouter();
 	const [isTransitioning, startTransition] = useTransition();
 	const [grantId, setGrantId] = useState(initialGrantId);
 	const [isPendingRequest, setIsPendingRequest] = useState(initialIsPending);
 
 	useAccessRequestPolling(isPendingRequest ? grantId : null, () =>
-		router.refresh(),
+		window.location.reload(),
 	);
 
 	const handleRequestAccess = () => {
@@ -54,7 +52,7 @@ const RequestAccessCard = ({
 			}
 
 			if (result.data.status === "granted") {
-				router.refresh();
+				window.location.reload();
 				return;
 			}
 

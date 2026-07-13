@@ -13,6 +13,7 @@ import {
 	cashier,
 	member,
 	owner,
+	paymentSupervisor,
 	RoleNames,
 } from "./permissions";
 import { clientEnv } from "./validations/env/client";
@@ -92,7 +93,14 @@ const options = {
 	plugins: [
 		organization({
 			ac,
-			roles: { owner, admin, member, auditor, cashier },
+			roles: {
+				owner,
+				admin,
+				member,
+				auditor,
+				cashier,
+				"payment-supervisor": paymentSupervisor,
+			},
 		}),
 	],
 } satisfies BetterAuthOptions;

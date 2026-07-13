@@ -1,10 +1,12 @@
 import {
+	ClientNameValidationResult,
 	createPromise,
 	DerivEndpointName,
 	DerivRequestPayload,
 	DerivResponseData,
 	DerivSocketEvent,
 	DerivSubcriptionEndpoint,
+	PaymentAgentTransferInput,
 } from "@repo/deriv";
 import { Socket } from "socket.io-client";
 import { SocketResponse } from "../types/global";
@@ -12,17 +14,13 @@ import { SocketResponse } from "../types/global";
 type Listener<T> = (data: T) => void;
 
 type TransferFundsPayload = {
-	data: DerivRequestPayload<"paymentagent_transfer">;
+	data: PaymentAgentTransferInput;
 	options: { idempotencyKey: string; ignoreDuplicatePayment?: boolean };
 };
 
-type ValidateTransferPayload = {
-	data: DerivRequestPayload<"paymentagent_transfer">;
+type ValidatePaymentAgentTransferPayload = {
+	data: PaymentAgentTransferInput;
 	options: { ignoreDuplicatePayment?: boolean };
-};
-
-type ValidateClientNamePayload = {
-	data: DerivRequestPayload<"paymentagent_transfer"> & { dry_run: 1 };
 };
 
 class SocketClient {
@@ -128,31 +126,31 @@ class SocketClient {
 		this.subscriptions.clear();
 	}
 
-	validateTransfer(
-		data: DerivRequestPayload<"paymentagent_transfer">,
+	validatePaymentAgentTransfer(
+		data: PaymentAgentTransferInput,
 		options: { ignoreDuplicatePayment?: boolean } = {},
 	) {
-		return this.rawRequest<DerivResponseData<"paymentagent_transfer">>(
-			DerivSocketEvent.ValidateTransfer,
-			{ data, options } satisfies ValidateTransferPayload,
+		return this.rawRequest<ClientNameValidationResult>(
+			DerivSocketEvent.ValidatePaymentAgentTransfer,
+			{ data, options } satisfies ValidatePaymentAgentTransferPayload,
 		);
 	}
 
-	validateClientName(data: ValidateClientNamePayload["data"]) {
-		return this.rawRequest<DerivResponseData<"paymentagent_transfer">>(
+	validateClientName(data: PaymentAgentTransferInput) {
+		return this.rawRequest<ClientNameValidationResult>(
 			DerivSocketEvent.ValidateClientName,
 			{ data },
 		);
 	}
 
 	transferFunds(
-		data: DerivRequestPayload<"paymentagent_transfer">,
+		data: PaymentAgentTransferInput,
 		options: { idempotencyKey: string; ignoreDuplicatePayment?: boolean },
 	) {
-		return this.request<"paymentagent_transfer", TransferFundsPayload>(
-			DerivSocketEvent.TransferFunds,
-			{ data, options },
-		);
+		return this.rawRequest<{ id: string }>(DerivSocketEvent.TransferFunds, {
+			data,
+			options,
+		} satisfies TransferFundsPayload);
 	}
 
 	getStatement(data: DerivRequestPayload<"statement">) {
@@ -169,7 +167,6 @@ class SocketClient {
 			{
 				subscribe: 1,
 				balance: 1,
-				account: "current",
 			} satisfies DerivRequestPayload<"balance">,
 			(balance) => {
 				onData(balance);

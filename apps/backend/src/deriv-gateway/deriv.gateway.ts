@@ -137,12 +137,12 @@ export class DerivGateway
 	}
 
 	@RequirePermission(Permissions.PAYMENTS)
-	@SubscribeMessage(DerivSocketEvent.ValidateTransfer)
-	validateTransfer(
+	@SubscribeMessage(DerivSocketEvent.ValidatePaymentAgentTransfer)
+	validatePaymentAgentTransfer(
 		@ConnectedSocket() client: AuthenticatedSocket,
 		@MessageBody() dto: TransferValidationDto,
 	) {
-		return this.derivService.validateTransfer(
+		return this.derivService.validatePaymentAgentTransfer(
 			client.data.organizationId,
 			dto,
 			client.data.tokenId,
@@ -158,7 +158,6 @@ export class DerivGateway
 		return this.derivService.validateClientName(
 			client.data.organizationId,
 			dto,
-			client.data.tokenId,
 		);
 	}
 

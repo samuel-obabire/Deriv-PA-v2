@@ -10,7 +10,7 @@ const KycInvitationSection = () => {
 
 	if (inviteUrl) {
 		return (
-			<Card className="w-full bg-muted">
+			<Card className="w-full">
 				<CardContent className="space-y-3 pt-2">
 					<p className="text-sm text-muted-foreground">
 						Share this link with the client. It expires in 1 hour.

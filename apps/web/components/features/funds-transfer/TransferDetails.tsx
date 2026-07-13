@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@repo/ui";
+import { Button, Card } from "@repo/ui";
 import { formatUSD } from "@/lib/utils/formatCurrency";
 import { TransferData } from "./types";
 
@@ -21,16 +21,16 @@ const TransferDetails = ({
 }: TransferDetailsProps) => {
 	return (
 		<div className="flex flex-col gap-6">
-			<div className="rounded-xl bg-muted/50 p-6 text-center">
+			<Card className="p-6 text-center">
 				<p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
 					Transfer Amount
 				</p>
 				<p className="text-5xl font-bold tracking-tight">
 					{formatUSD(data.amount)} <span className="text-2xl">{currency}</span>
 				</p>
-			</div>
+			</Card>
 
-			<div className="rounded-xl border border-accent">
+			<Card className="gap-0 py-0">
 				<div className="flex items-center justify-between px-4 py-3">
 					<span className="text-sm text-muted-foreground">To Account</span>
 					<span className="text-sm font-medium">{data.clientAccount}</span>
@@ -51,7 +51,7 @@ const TransferDetails = ({
 						</span>
 					</div>
 				)}
-			</div>
+			</Card>
 
 			<p className="text-xs text-muted-foreground text-center">
 				Please review the details above before confirming.

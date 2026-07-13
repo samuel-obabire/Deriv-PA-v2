@@ -26,6 +26,7 @@ const TransferToClient = ({
 		onValidation,
 		state,
 		setIgnoreDuplicatePayment,
+		canIgnoreDuplicatePayment,
 	} = useTransferFlow();
 
 	const { selectedCurrency } = useCurrency();
@@ -44,6 +45,7 @@ const TransferToClient = ({
 						initialData={transferData}
 						activeCurrency={selectedCurrency as string}
 						onSubmit={onValidation}
+						canIgnoreDuplicatePayment={canIgnoreDuplicatePayment}
 					/>
 				);
 			case 2:

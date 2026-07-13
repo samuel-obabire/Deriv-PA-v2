@@ -31,19 +31,23 @@ export class DerivOrgConnection {
 		onDrop,
 		orgId,
 		tokenId,
+		url,
 	}: {
 		orgId: string;
 		onDrop: (orgId: string, tokenId: string) => void;
 		tokenId: string;
+		url: string;
 	}) {
 		this.orgId = orgId;
 		this.tokenId = tokenId;
 		this.onDrop = onDrop;
 		this.lastUsedAt = Date.now();
 
-		this.websocket = new WebSocket(
-			"wss://ws.derivws.com/websockets/v3?app_id=71728",
-		);
+		// url is the single-use WebSocket URL resolved via the options
+		// accounts/OTP REST prestep (DerivOptionsRestClient.getSocketUrl) — it
+		// already authenticates the connection, so no separate "authorize" WS
+		// message is sent for it (see DerivService.authorize).
+		this.websocket = new WebSocket(url);
 
 		this.websocket.addEventListener("open", (_e) => {
 			// resolve open promise
@@ -52,6 +56,10 @@ export class DerivOrgConnection {
 		});
 
 		this.websocket.addEventListener("close", (_e) => {
+			this.cleanup();
+		});
+
+		this.websocket.addEventListener("error", (_e) => {
 			this.cleanup();
 		});
 

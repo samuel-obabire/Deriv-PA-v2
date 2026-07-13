@@ -1,4 +1,5 @@
 import { getClientKycRecordsPendingReview } from "@repo/db/queries";
+import { Card } from "@repo/ui";
 import { Suspense } from "react";
 import KycPendingList from "@/components/features/kyc/KycPendingList";
 import { db } from "@/lib/db";
@@ -22,9 +23,7 @@ const KycPage = () => (
 			</p>
 		</header>
 
-		<Suspense
-			fallback={<div className="h-48 animate-pulse rounded-xl bg-muted" />}
-		>
+		<Suspense fallback={<Card className="h-48 animate-pulse" />}>
 			<KycPendingContent />
 		</Suspense>
 	</div>

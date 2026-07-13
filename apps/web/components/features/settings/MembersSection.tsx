@@ -23,7 +23,7 @@ const MembersSection = ({ membersPromise }: MembersSectionProps) => {
 						key={user.id}
 						href={`${ROUTES.ORGANIZATION_MEMBERS}/${user.id}`}
 					>
-						<Card className="bg-muted transition-colors hover:bg-muted/80 cursor-pointer">
+						<Card className="cursor-pointer transition-colors hover:bg-muted/50">
 							<CardHeader>
 								<div className="flex items-center justify-between">
 									<div>

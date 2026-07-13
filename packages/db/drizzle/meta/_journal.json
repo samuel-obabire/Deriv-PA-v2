@@ -71,6 +71,20 @@
 			"when": 1783189184135,
 			"tag": "0009_fresh_northstar",
 			"breakpoints": true
+		},
+		{
+			"idx": 10,
+			"version": "7",
+			"when": 1783418778588,
+			"tag": "0010_pretty_dazzler",
+			"breakpoints": true
+		},
+		{
+			"idx": 11,
+			"version": "7",
+			"when": 1783531228313,
+			"tag": "0011_brown_tenebrous",
+			"breakpoints": true
 		}
 	]
 }
