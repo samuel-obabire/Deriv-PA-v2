@@ -52,6 +52,9 @@ const computeUsdAmount = (
 	return usd.lt(0) ? "0" : usd.toString();
 };
 
+const formInputClass =
+	"h-11! rounded-xl! border! border-border/70! bg-background/40! px-3.5! text-sm font-medium shadow-xs transition-colors duration-200 hover:border-border! focus-visible:border-primary/50! aria-invalid:border-destructive! dark:border-border/60! dark:bg-white/3! dark:hover:border-border/80!";
+
 const TransferToClientForm = ({
 	ignoreDuplicatePayment,
 	initialData,
@@ -136,7 +139,7 @@ const TransferToClientForm = ({
 								<FieldLabel htmlFor="clientAccount">Client Account</FieldLabel>
 								<Input
 									{...field}
-									className="input-class"
+									className={formInputClass}
 									id="clientAccount"
 									aria-invalid={fieldState.invalid}
 									placeholder="Enter client account"
@@ -160,16 +163,21 @@ const TransferToClientForm = ({
 							};
 
 							return (
-								<Card className="gap-2 px-4">
+								<Card className="gap-3 rounded-2xl border border-border/70 bg-linear-to-br from-muted/40 via-card to-card px-4 py-4 shadow-xs ring-1 ring-foreground/5 dark:border-border/50 dark:from-white/3 dark:via-card dark:to-card dark:ring-white/5">
 									<Field data-invalid={fieldState.invalid}>
 										<div className="flex items-center justify-between">
-											<FieldLabel htmlFor="ngnAmount">NGN Amount</FieldLabel>
-											<span className="text-xs font-medium text-muted-foreground">
+											<FieldLabel
+												htmlFor="ngnAmount"
+												className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
+											>
+												NGN Amount
+											</FieldLabel>
+											<span className="rounded-full border border-border/60 bg-background/60 px-2.5 py-1 text-[11px] font-medium text-muted-foreground shadow-xs dark:border-border/40 dark:bg-white/3">
 												1 {activeCurrency} = {rate.deposit} NGN
 											</span>
 										</div>
 										<Input
-											className="input-class"
+											className="h-auto! border-0! bg-transparent! p-0! text-3xl! font-semibold! tracking-tight! text-foreground shadow-none! focus-visible:ring-0! placeholder:text-muted-foreground/40"
 											id="ngnAmount"
 											placeholder="0.00"
 											value={ngnAmount}
@@ -177,11 +185,11 @@ const TransferToClientForm = ({
 										/>
 									</Field>
 
-									<div className="flex items-center justify-between gap-2">
+									<div className="flex items-center justify-between gap-2 border-t border-border/50 pt-3 dark:border-border/30">
 										<span className="text-sm text-muted-foreground">
 											≈ {field.value || "0.00"} {activeCurrency}
 										</span>
-										<div className="flex items-center gap-1.5 shrink-0">
+										<div className="flex shrink-0 items-center gap-1.5 rounded-full border border-border/50 bg-background/50 py-1 pr-2.5 pl-1 shadow-xs dark:border-border/30 dark:bg-white/3">
 											<Switch
 												size="sm"
 												id="waive-charge"
@@ -217,7 +225,7 @@ const TransferToClientForm = ({
 											</div>
 											<Input
 												{...field}
-												className="input-class"
+												className={formInputClass}
 												id="amount"
 												aria-invalid={fieldState.invalid}
 												placeholder="0.00"
@@ -250,7 +258,7 @@ const TransferToClientForm = ({
 									aria-invalid={fieldState.invalid}
 									placeholder="Enter description"
 									rows={4}
-									className="text-area w-full min-w-0 resize-none rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/30"
+									className="w-full min-w-0 resize-none rounded-xl border border-border/70 bg-background/40 px-3.5 py-2.5 text-sm font-medium shadow-xs transition-colors duration-200 outline-none placeholder:text-muted-foreground/60 hover:border-border focus-visible:border-primary/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive dark:border-border/60 dark:bg-white/3 dark:hover:border-border/80"
 								/>
 								{fieldState.invalid && (
 									<FieldError errors={[fieldState.error]} />
@@ -262,12 +270,12 @@ const TransferToClientForm = ({
 			</form>
 
 			{canIgnoreDuplicatePayment && (
-				<Collapsible className="rounded-lg border border-border">
-					<CollapsibleTrigger className="group flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground">
+				<Collapsible className="overflow-hidden rounded-xl border border-border/70 bg-card/40 shadow-xs dark:border-border/50 dark:bg-white/2">
+					<CollapsibleTrigger className="group flex w-full items-center justify-between px-3.5 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground">
 						Advanced Options
 						<ChevronDown className="size-4 transition-transform group-data-[state=open]:rotate-180" />
 					</CollapsibleTrigger>
-					<CollapsibleContent className="px-3 py-3">
+					<CollapsibleContent className="border-t border-border/60 px-3.5 py-3.5 dark:border-border/40">
 						<Field>
 							<div className="flex items-center justify-between">
 								<FieldLabel htmlFor="ignore-duplicate-payment">
@@ -286,7 +294,7 @@ const TransferToClientForm = ({
 			)}
 
 			<Button
-				className="w-full"
+				className="w-full rounded-xl shadow-sm shadow-primary/20 transition-shadow hover:shadow-md hover:shadow-primary/25"
 				size="lg"
 				form="transfer-to-client-form"
 				type="submit"
