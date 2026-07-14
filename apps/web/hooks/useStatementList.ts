@@ -2,10 +2,10 @@
 
 import type { DerivCurrency } from "@repo/deriv";
 import { useEffect, useRef, useState } from "react";
-import { useInView } from "react-intersection-observer";
 
 import useAccessToken from "@/hooks/useAccessToken";
 import useCurrency from "@/hooks/useCurrency";
+import useInfiniteScrollSentinel from "@/hooks/useInfiniteScrollSentinel";
 import useSocket from "@/hooks/useSocket";
 import useStatement, { StatementOptions } from "@/hooks/useStatement";
 import type { StatementTransaction } from "@/lib/utils/statement";
@@ -33,10 +33,7 @@ const useStatementList = () => {
 	const getStatementRef = useRef(getStatement);
 	getStatementRef.current = getStatement;
 
-	const { ref: sentinelRef, inView } = useInView({
-		threshold: 0.01,
-		rootMargin: "0px 0px 10px 0px",
-	});
+	const { ref: sentinelRef, inView } = useInfiniteScrollSentinel();
 
 	useEffect(() => {
 		if (!socketClient || !selectedCurrency) return;

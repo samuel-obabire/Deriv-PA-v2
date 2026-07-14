@@ -3,7 +3,7 @@ import { requirePermission, verifySession } from "@/lib/session";
 
 const Kyclayout = async ({ children }: PropsWithChildren) => {
 	const session = await verifySession();
-	requirePermission(session, "organization", "update");
+	requirePermission(session, "kyc", "manage");
 
 	return <>{children}</>;
 };

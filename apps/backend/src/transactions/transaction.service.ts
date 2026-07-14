@@ -11,6 +11,8 @@ export interface CreateTransactionInput {
 	organizationId: string;
 	staffId: string;
 	idempotencyKey: string;
+	depositRate: number;
+	notes?: string;
 }
 
 @Injectable()
@@ -39,6 +41,8 @@ export class TransactionService {
 				type: TRANSACTION_TYPE.DEPOSIT,
 				idempotencyKey: input.idempotencyKey,
 				staffId: input.staffId,
+				depositRate: input.depositRate,
+				notes: input.notes,
 			})
 			.returning();
 
@@ -80,20 +84,27 @@ export class TransactionService {
 		return cancelled ?? null;
 	}
 
-	async complete(id: string, clientName: string) {
+	async complete(id: string, clientName: string, refId: number) {
 		await this.databaseService.client
 			.update(transaction)
 			.set({
 				clientName,
+				refId,
 				status: TRANSACTION_STATUS.COMPLETED,
 			})
 			.where(eq(transaction.id, id));
 	}
 
-	async fail(id: string) {
+	// refId is optional — a failed/rejected attempt still reports a
+	// transaction_id from Deriv, but it isn't guaranteed if the request never
+	// reached Deriv at all.
+	async fail(id: string, refId?: number) {
 		await this.databaseService.client
 			.update(transaction)
-			.set({ status: TRANSACTION_STATUS.FAILED })
+			.set({
+				status: TRANSACTION_STATUS.FAILED,
+				...(refId !== undefined ? { refId } : {}),
+			})
 			.where(eq(transaction.id, id));
 	}
 }

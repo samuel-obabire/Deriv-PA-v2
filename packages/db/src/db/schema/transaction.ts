@@ -1,5 +1,7 @@
 import {
+	bigint,
 	index,
+	integer,
 	numeric,
 	pgEnum,
 	pgTable,
@@ -28,6 +30,7 @@ export const transaction = pgTable(
 		idempotencyKey: text("idempotency_key").unique(),
 		clientId: text("client_id").notNull(),
 		clientName: text("client_name"),
+		refId: bigint("ref_id", { mode: "number" }),
 		organizationId: text("organization_id")
 			.notNull()
 			.references(() => organization.id),
@@ -38,6 +41,10 @@ export const transaction = pgTable(
 		status: transactionStatusEnum("status")
 			.default(TRANSACTION_STATUS.PENDING)
 			.notNull(),
+		depositRate: integer("deposit_rate"),
+		// Free-text note the staff member entered in the transfer form. Kept
+		// separate from what we send Deriv as the payment-agent "notes" field.
+		notes: text("notes"),
 		createdAt: timestamp("created_at", {
 			precision: 6,
 			withTimezone: true,

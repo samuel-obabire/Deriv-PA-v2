@@ -48,7 +48,7 @@ const RateForm = ({ onSubmit, rate }: RateFormProps) => {
 	};
 
 	return (
-		<Card className="w-full bg-muted">
+		<Card className="w-full">
 			<CardContent>
 				<form id="signin-form" onSubmit={form.handleSubmit(handleSubmit)}>
 					<FieldGroup>

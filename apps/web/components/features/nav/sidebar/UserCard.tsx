@@ -1,4 +1,4 @@
-import { Badge } from "@repo/ui";
+import { Badge, Card } from "@repo/ui";
 import Image from "next/image";
 import { User } from "@/lib/auth";
 
@@ -13,7 +13,7 @@ const UserCard = ({ user }: { user: User }) => {
 		: (user.email[0] ?? "").toUpperCase();
 
 	return (
-		<div className="rounded-xl bg-muted/50 p-3 flex items-center gap-3 ring-1 ring-foreground/5">
+		<Card className="flex-row items-center gap-3 p-3">
 			<div className="w-9 h-9 shrink-0 rounded-full overflow-hidden bg-muted flex items-center justify-center">
 				{user.image ? (
 					<Image
@@ -40,7 +40,7 @@ const UserCard = ({ user }: { user: User }) => {
 					{user.role}
 				</Badge>
 			)}
-		</div>
+		</Card>
 	);
 };
 

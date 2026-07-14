@@ -3,12 +3,13 @@ import { Suspense } from "react";
 import RateNotConfigured from "@/components/ui/rate-not-configured";
 import StatementOptionsProvider from "@/context/StatementOptionsProvider";
 import { db } from "@/lib/db";
-import { verifySession } from "@/lib/session";
+import { requirePermission, verifySession } from "@/lib/session";
 import Statement from "./Statement";
 import { StatementFilter } from "./StatementFilter";
 
 const StatementContent = async () => {
 	const session = await verifySession();
+	requirePermission(session, "statement", "view");
 
 	const rate = await getOrganizationRate(
 		session.session.activeOrganizationId as string,

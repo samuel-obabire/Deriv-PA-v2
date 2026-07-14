@@ -1,11 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
+import { getClientKycRecordByDerivNickname } from "@repo/db/queries";
 import { orgTokenKey } from "@repo/deriv";
 import { Server } from "socket.io";
 import { CurrencyTokenService } from "src/currency/currency-token.service";
+import { DatabaseService } from "src/database/database.service";
 import { RedisService } from "src/iam/redis/redis.service";
-import { DerivOrgConnection } from "./deriv-org-connection";
+import { DerivOptionsRestClient } from "./deriv-options-rest-client";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
+import { DerivRestClient } from "./deriv-rest-client";
 import { ClientNameValidationDto } from "./dto/clientNameValidation.dto";
 import { StatementDto } from "./dto/statement.dto";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
@@ -17,6 +20,9 @@ export class DerivService {
 		private readonly derivOrgPoolService: DerivOrgPoolService,
 		private readonly currencyTokenService: CurrencyTokenService,
 		private readonly redisService: RedisService,
+		private readonly databaseService: DatabaseService,
+		private readonly derivOptionsRestClient: DerivOptionsRestClient,
+		private readonly derivRestClient: DerivRestClient,
 	) {}
 
 	async authorize({ orgId, tokenId }: { tokenId: string; orgId: string }) {
@@ -27,27 +33,26 @@ export class DerivService {
 			tokenId,
 		);
 
-		const orgConnection = this.derivOrgPoolService.addToPool({
+		// Single-use per connection — resolved fresh every time we need to open
+		// a new org socket, never cached/reused across connections.
+		const socketUrl =
+			await this.derivOptionsRestClient.getSocketUrl(plainToken);
+
+		this.derivOrgPoolService.addToPool({
 			orgId,
 			tokenId,
+			url: socketUrl,
 		});
-
-		await this.authorizeSocket(plainToken, orgConnection);
 	}
 
-	async validateTransfer(
+	async validatePaymentAgentTransfer(
 		orgId: string,
 		dto: TransferValidationDto,
 		tokenId: string,
 	) {
-		const orgDerivSocket = this.derivOrgPoolService.getOrganizationSocket(
-			orgId,
-			tokenId,
-		);
-
 		const { data, options } = dto;
 
-		const lockKey = this.transferLockKey(orgId, data.transfer_to);
+		const lockKey = this.transferLockKey(orgId, data.to_nickname);
 		const lockExists = await this.redisService.checkLockExists(lockKey);
 
 		if (lockExists && !options.ignoreDuplicatePayment) {
@@ -56,28 +61,33 @@ export class DerivService {
 			);
 		}
 
-		return orgDerivSocket.send({
-			name: "paymentagent_transfer",
-			payload: data,
-		});
+		const [, clientData] = await Promise.all([
+			this.currencyTokenService
+				.getDecryptedOrgToken(orgId, tokenId)
+				.then((token) =>
+					this.derivRestClient.paymentAgentTransferValidation(token, data),
+				),
+			this.resolveClientName(orgId, data.to_nickname),
+		]);
+
+		return clientData;
 	}
 
-	async validateClientName(
-		orgId: string,
-		dto: ClientNameValidationDto,
-		tokenId: string,
-	) {
-		const orgDerivSocket = this.derivOrgPoolService.getOrganizationSocket(
-			orgId,
-			tokenId,
-		);
-
+	async validateClientName(orgId: string, dto: ClientNameValidationDto) {
 		const { data } = dto;
 
-		return orgDerivSocket.send({
-			name: "paymentagent_transfer",
-			payload: data,
-		});
+		return this.resolveClientName(orgId, data.to_nickname);
+	}
+
+	// Client's real name is sourced from our own KYC records now, keyed by the
+	// Deriv nickname — Deriv no longer resolves this for us over the socket.
+	async resolveClientName(orgId: string, derivNickname: string) {
+		const record = await getClientKycRecordByDerivNickname(
+			{ organizationId: orgId, derivNickname },
+			this.databaseService.client,
+		);
+
+		return { client_real_name: record?.fullName ?? null };
 	}
 
 	async getStatment(
@@ -93,13 +103,6 @@ export class DerivService {
 		return orgDerivSocket.send({
 			name: "statement",
 			payload: statementDto,
-		});
-	}
-
-	async authorizeSocket(token: string, orgSocket: DerivOrgConnection) {
-		return await orgSocket.send({
-			name: "authorize",
-			payload: { authorize: token },
 		});
 	}
 

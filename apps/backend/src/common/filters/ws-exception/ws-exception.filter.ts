@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, Logger } from "@nestjs/common";
+import { ArgumentsHost, Catch, HttpException, Logger } from "@nestjs/common";
 import { BaseWsExceptionFilter, WsException } from "@nestjs/websockets";
 import { ZodValidationException } from "nestjs-zod";
 import { Socket } from "socket.io";
@@ -8,11 +8,13 @@ type WsErrorResponse = {
 	error: { message: string } | Record<string, unknown>;
 };
 
-@Catch(WsException, ZodValidationException)
+@Catch()
 export class WsExceptionFilter extends BaseWsExceptionFilter {
-	private readonly logger = new Logger(WsExceptionFilter.name);
+	private readonly logger = new Logger(WsExceptionFilter.name, {
+		timestamp: true,
+	});
 
-	catch(exception: WsException | ZodValidationException, host: ArgumentsHost) {
+	catch(exception: unknown, host: ArgumentsHost) {
 		const client = host.switchToWs().getClient() as Socket;
 		const args = host.getArgs();
 
@@ -22,12 +24,22 @@ export class WsExceptionFilter extends BaseWsExceptionFilter {
 				message: "Validation failed",
 				errors: (exception.getZodError() as { errors: unknown[] }).errors,
 			};
-		} else {
+		} else if (exception instanceof WsException) {
 			const rawError = exception.getError();
 			error =
 				typeof rawError === "string"
 					? { message: rawError }
 					: (rawError as Record<string, unknown>);
+		} else if (exception instanceof HttpException) {
+			const rawError = exception.getResponse();
+			error =
+				typeof rawError === "string"
+					? { message: rawError }
+					: (rawError as Record<string, unknown>);
+		} else if (exception instanceof Error) {
+			error = { message: "Something went wrong." };
+		} else {
+			error = { message: "Internal server error" };
 		}
 
 		this.logger.error(`WsException [${client.id}]: ${JSON.stringify(error)}`);

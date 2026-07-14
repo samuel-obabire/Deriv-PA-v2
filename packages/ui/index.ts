@@ -28,6 +28,7 @@ export * from "./src/components/ui/select";
 export * from "./src/components/ui/separator";
 export * from "./src/components/ui/sheet";
 export * from "./src/components/ui/sonner";
+export * from "./src/components/ui/spinner";
 export * from "./src/components/ui/switch";
 export * from "./src/components/ui/tabs";
 export * from "./src/components/ui/toggle";

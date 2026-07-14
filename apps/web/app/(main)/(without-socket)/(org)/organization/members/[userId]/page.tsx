@@ -1,3 +1,4 @@
+import { Card } from "@repo/ui";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import UpdateMemberRoleForm from "@/components/features/forms/UpdateMemberRole";
@@ -51,9 +52,7 @@ const MemberProfilePage = async ({ params }: MemberProfilePageProps) => {
 				<h1 className="title">Member Profile</h1>
 			</header>
 
-			<Suspense
-				fallback={<div className="h-32 animate-pulse rounded-xl bg-muted" />}
-			>
+			<Suspense fallback={<Card className="h-32 animate-pulse" />}>
 				<MemberProfile userId={userId} organizationId={organizationId} />
 			</Suspense>
 		</div>

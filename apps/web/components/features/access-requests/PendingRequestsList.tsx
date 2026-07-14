@@ -88,7 +88,7 @@ const PendingRequestsList = ({ pendingPromise }: Props) => {
 									<div className="flex gap-2">
 										<Button
 											variant="outline"
-											size="sm"
+											size="xs"
 											className="gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
 											disabled={isPending}
 											onClick={() => handleReview(req.id, "reject")}

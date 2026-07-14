@@ -26,16 +26,16 @@ const useClientName = (
 		startTransition(async () => {
 			const [result, fetchError] = await tryCatch(() =>
 				socketClient.validateClientName({
-					paymentagent_transfer: 1,
-					transfer_to: clientAccount,
+					to_nickname: clientAccount,
 					currency: currency as CURRENCY,
-					amount: minAmount,
-					dry_run: 1,
+					amount: minAmount.toFixed(2),
+					notes: "",
+					request_id: crypto.randomUUID(),
 				}),
 			);
 			isFetchingRef.current = false;
-			if (!fetchError && result?.paymentagent_transfer === 2) {
-				setName(result.client_to_full_name ?? undefined);
+			if (!fetchError && result && result.client_real_name !== null) {
+				setName(result.client_real_name);
 			} else {
 				setError(true);
 			}

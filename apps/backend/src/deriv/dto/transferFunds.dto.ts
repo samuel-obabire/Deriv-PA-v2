@@ -1,22 +1,17 @@
-import {
-	derivCurrencies,
-	transferFundsBaseSchema,
-	twoDpNumberNumeric,
-} from "@repo/deriv";
+import { notesField, paymentAgentTransferSchema } from "@repo/deriv";
 import { createZodDto } from "nestjs-zod";
 import * as z from "zod";
 
 const TransferFundsSchema = z.object({
-	data: transferFundsBaseSchema.extend({
-		amount: twoDpNumberNumeric,
-		paymentagent_transfer: z.literal(1),
-		currency: z.enum(derivCurrencies),
-		dry_run: z.literal(0),
-		transfer_to: z.string(),
-	}),
+	data: paymentAgentTransferSchema,
 	options: z.object({
 		idempotencyKey: z.uuid(),
 		ignoreDuplicatePayment: z.boolean().optional(),
+		// Free-text note the staff member entered in the transfer form.
+		// Persisted to our own transaction record. Never forwarded to Deriv.
+		notes: notesField.optional(),
+		// Rate in effect when the transfer was submitted.
+		depositRate: z.number().int().positive(),
 	}),
 });
 

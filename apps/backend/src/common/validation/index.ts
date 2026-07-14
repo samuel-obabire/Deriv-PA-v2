@@ -16,4 +16,8 @@ export const envSchema = z.object({
 	TOKEN_ENCRYPTION_KEY: z.string().min(10),
 
 	WEB_API_TOKEN: z.string().min(10),
+
+	DERIV_REST_BASE_URL: z.url(),
+	DERIV_APP_ID: z.string().min(1),
+	DERIV_REST_TIMEOUT_MS: z.coerce.number().positive().default(15_000),
 });

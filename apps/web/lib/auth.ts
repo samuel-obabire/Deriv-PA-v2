@@ -13,6 +13,7 @@ import {
 	cashier,
 	member,
 	owner,
+	paymentSupervisor,
 	RoleNames,
 } from "./permissions";
 import { clientEnv } from "./validations/env/client";
@@ -49,8 +50,8 @@ const options = {
 			maxAge: 5 * 60,
 		},
 
-		expiresIn: 60 * 60 * 24, // 24 hours
-		updateAge: 60 * 60, // Check every 60 minutes
+		expiresIn: 60 * 60 * 24 * 3, // 3 days
+		updateAge: 60 * 10, // Refresh session every 10 minutes
 	},
 
 	hooks: {
@@ -92,7 +93,14 @@ const options = {
 	plugins: [
 		organization({
 			ac,
-			roles: { owner, admin, member, auditor, cashier },
+			roles: {
+				owner,
+				admin,
+				member,
+				auditor,
+				cashier,
+				"payment-supervisor": paymentSupervisor,
+			},
 		}),
 	],
 } satisfies BetterAuthOptions;

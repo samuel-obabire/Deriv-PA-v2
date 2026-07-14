@@ -1,9 +1,11 @@
 import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Logger } from "@nestjs/common";
-import { DerivRequestPayload } from "@repo/deriv";
+import type { DerivPaymentAgentTransferRequest } from "@repo/deriv";
 import { Job } from "bullmq";
+import { CurrencyTokenService } from "src/currency/currency-token.service";
 import { DerivService } from "src/deriv/deriv.service";
-import { DerivOrgPoolService } from "src/deriv/deriv-org-pool.service";
+import { DerivRestClient } from "src/deriv/deriv-rest-client";
+import { HttpRequestError } from "src/http/http-client.service";
 import { TransactionService } from "src/transactions/transaction.service";
 import { EXECUTE_TRANSFER, TRANSFERS } from "./constants";
 
@@ -11,9 +13,7 @@ export type TransferJobData = {
 	orgId: string;
 	tokenId: string;
 	transactionId: string;
-	transferPayload: DerivRequestPayload<"paymentagent_transfer"> & {
-		dry_run: 0;
-	};
+	transferPayload: DerivPaymentAgentTransferRequest;
 };
 
 @Processor(TRANSFERS)
@@ -21,7 +21,8 @@ export class TransferProcessor extends WorkerHost {
 	private readonly logger = new Logger(TransferProcessor.name);
 
 	constructor(
-		private readonly derivOrgPoolService: DerivOrgPoolService,
+		private readonly currencyTokenService: CurrencyTokenService,
+		private readonly derivRestClient: DerivRestClient,
 		private readonly derivService: DerivService,
 		private readonly transactionService: TransactionService,
 	) {
@@ -42,43 +43,90 @@ export class TransferProcessor extends WorkerHost {
 			return;
 		}
 
-		// Ensure the org's Deriv connection is live. No-op if already connected;
-		// re-establishes and re-authorizes if the connection was evicted or dropped
-		// during the 30-second queue delay.
-		await this.derivService.authorize({ orgId, tokenId });
-
-		const orgDerivSocket = this.derivOrgPoolService.getOrganizationSocket(
+		const token = await this.currencyTokenService.getDecryptedOrgToken(
 			orgId,
 			tokenId,
 		);
 
-		let result: Awaited<ReturnType<typeof orgDerivSocket.send>>;
+		let result: Awaited<
+			ReturnType<typeof this.derivRestClient.paymentAgentTransfer>
+		>;
 
 		try {
-			result = await orgDerivSocket.send({
-				name: "paymentagent_transfer",
-				payload: transferPayload,
-			});
+			result = await this.derivRestClient.paymentAgentTransfer(
+				token,
+				transferPayload,
+			);
 		} catch (error) {
-			// Deriv rejected the call — payment was never sent, safe to mark failed
-			await this.transactionService.fail(transactionId);
+			if (
+				error instanceof HttpRequestError &&
+				error.statusCode >= 400 &&
+				error.statusCode <= 499
+			) {
+				// Deriv looked at the request and rejected it outright — the
+				// transfer definitely did not go through.
+				this.logger.error(
+					`Deriv REST transfer request rejected for tx ${transactionId} (status ${error.statusCode})`,
+					error,
+				);
+				try {
+					await this.transactionService.fail(transactionId);
+				} catch (failError) {
+					this.logger.error(
+						`CRITICAL: Deriv transfer failed but the failure write did not persist for tx ${transactionId} — manual reconciliation required`,
+						failError,
+					);
+				}
+				throw error;
+			}
+
+			// Unknown outcome: network failure, timeout/abort, or a 5xx from
+			// Deriv's own infrastructure. We do NOT know whether the transfer
+			// executed on Deriv's side — leave the tx in PROCESSING rather
+			// than guessing, and flag it for manual reconciliation.
+			this.logger.error(
+				`CRITICAL: Deriv REST transfer request failed for tx ${transactionId} — outcome unknown, manual reconciliation required`,
+				error,
+			);
 			throw error;
 		}
 
-		// Payment went through. If the completion write fails below, do NOT mark
-		// as failed — the money moved. Leaving the tx in PROCESSING signals that
-		// manual reconciliation is required. The idempotencyKey on the record is
-		// the audit anchor.
+		const { status, transaction_id: refId } = result.data;
+
+		if (status === "failed" || status === "rejected") {
+			try {
+				await this.transactionService.fail(transactionId, refId);
+			} catch (error) {
+				this.logger.error(
+					`CRITICAL: Deriv transfer failed but the failure write did not persist for tx ${transactionId} — manual reconciliation required`,
+					error,
+				);
+				throw error;
+			}
+			return result;
+		}
+
+		// Payment went through (or is pending on Deriv's side). If the
+		// completion write fails below, do NOT mark as failed — the money
+		// moved (or may still move). Leaving the tx in PROCESSING signals that
+		// manual reconciliation is required.
+		const { client_real_name } = await this.derivService.resolveClientName(
+			orgId,
+			transferPayload.to_nickname,
+		);
+
 		try {
 			await this.transactionService.complete(
 				transactionId,
-				result.client_to_full_name,
+				client_real_name ?? "",
+				refId,
 			);
 		} catch (error) {
 			this.logger.error(
 				`CRITICAL: Deriv transfer succeeded but completion write failed for tx ${transactionId} — manual reconciliation required`,
 				error,
 			);
+			throw error;
 		}
 
 		return result;
