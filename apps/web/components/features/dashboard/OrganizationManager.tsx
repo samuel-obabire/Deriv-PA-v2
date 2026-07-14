@@ -23,7 +23,7 @@ const OrganizationManager = () => {
 
 		await Promise.all([
 			setUserActiveOrganization({ orgId: newOrgId }),
-			refetch(),
+			refetch({ query: { disableCookieCache: true } }),
 		]);
 
 		router.refresh();
@@ -34,7 +34,7 @@ const OrganizationManager = () => {
 
 		await Promise.all([
 			setUserActiveOrganization({ orgId: newActiveOrgId }),
-			refetch(),
+			refetch({ query: { disableCookieCache: true } }),
 		]);
 
 		router.refresh();
