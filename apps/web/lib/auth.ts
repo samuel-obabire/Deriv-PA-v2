@@ -50,8 +50,8 @@ const options = {
 			maxAge: 5 * 60,
 		},
 
-		expiresIn: 60 * 60 * 24, // 24 hours
-		updateAge: 60 * 60, // Check every 60 minutes
+		expiresIn: 60 * 60 * 24 * 3, // 3 days
+		updateAge: 60 * 10, // Refresh session every 10 minutes
 	},
 
 	hooks: {
