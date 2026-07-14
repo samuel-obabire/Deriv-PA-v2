@@ -1,7 +1,7 @@
 "use client";
 
 import type { Rate } from "@repo/db";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@repo/ui";
 import useStatementOptions from "@/hooks/useStatementOptions";
 import StatementCard from "./StatementCard";
 
@@ -22,7 +22,7 @@ const Statement = ({ rate }: Props) => {
 	if ((isConnecting || isLoading) && transactions.length === 0) {
 		return (
 			<div className="mt-8 flex justify-center">
-				<Loader2 className="size-6 animate-spin text-muted-foreground" />
+				<Spinner className="size-6" />
 			</div>
 		);
 	}
@@ -50,7 +50,7 @@ const Statement = ({ rate }: Props) => {
 
 			{(isLoading || isConnecting) && transactions.length > 0 && (
 				<div className="mt-4 flex justify-center py-2">
-					<Loader2 className="size-4 animate-spin text-muted-foreground" />
+					<Spinner />
 				</div>
 			)}
 		</div>

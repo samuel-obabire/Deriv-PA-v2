@@ -6,9 +6,10 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
+	Spinner,
 } from "@repo/ui";
 import { tryCatch } from "@repo/utils";
-import { Building2, Loader2 } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { type Organization } from "@/lib/auth-client";
@@ -46,7 +47,7 @@ const OrganizationSwitcher = ({
 		>
 			<SelectTrigger className="text-16-medium! w-full max-w-md text-left! no-ring">
 				{isPending || isSwitching ? (
-					<Loader2 className="size-4 animate-spin text-muted-foreground" />
+					<Spinner />
 				) : (
 					<Building2 className="size-4 text-muted-foreground" />
 				)}

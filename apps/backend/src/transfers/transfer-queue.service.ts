@@ -59,6 +59,8 @@ export class TransferQueueService {
 			organizationId: orgId,
 			staffId: userId,
 			idempotencyKey: options.idempotencyKey,
+			depositRate: options.depositRate,
+			notes: options.notes,
 		});
 
 		await this.transferQueue.add(

@@ -146,10 +146,12 @@ const useTransferFlow = () => {
 
 		setPending(true);
 
-		const description = buildTransferDescription(
+		// Sent to Deriv as the payment-agent remark — client name + rate only.
+		// The staff-typed free text is sent separately below as `notes`, for
+		// our own transaction record, and never reaches Deriv.
+		const derivNote = buildTransferDescription(
 			state.transferData.clientName ?? "",
 			depositRate,
-			state.transferData.description,
 		);
 
 		const [result, error] = await tryCatch(() =>
@@ -158,12 +160,14 @@ const useTransferFlow = () => {
 					to_nickname: state.transferData.clientAccount,
 					amount: state.transferData.amount,
 					currency: selectedCurrency as CURRENCY,
-					notes: description,
+					notes: derivNote,
 					request_id: idempotencyKey,
 				},
 				{
 					idempotencyKey,
 					ignoreDuplicatePayment: state.options.ignoreDuplicatePayment,
+					notes: state.transferData.description,
+					depositRate,
 				},
 			),
 		);

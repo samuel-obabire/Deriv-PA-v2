@@ -1,16 +1,17 @@
-import { PAYOUT_STATUS } from "@repo/db/enums";
+import { TRANSACTION_STATUS } from "@repo/db/enums";
 import * as z from "zod";
 
 const optional = <T extends z.ZodType>(schema: T) =>
 	schema.nullish().transform((val) => val ?? undefined);
 
 export const TransactionQuerySchema = z.object({
-	searchQuery: optional(z.string()),
+	date_from: optional(z.coerce.date()),
+	date_to: optional(z.coerce.date()),
 
-	status: optional(z.enum(PAYOUT_STATUS)),
+	status: optional(z.enum(TRANSACTION_STATUS)),
 
-	from: optional(z.coerce.date()),
-	to: optional(z.coerce.date()),
+	amount: optional(z.coerce.number().positive()),
+	clientId: optional(z.string().trim().min(1)),
 
 	limit: optional(z.coerce.number().int().positive()),
 

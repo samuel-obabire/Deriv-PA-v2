@@ -11,6 +11,8 @@ export interface CreateTransactionInput {
 	organizationId: string;
 	staffId: string;
 	idempotencyKey: string;
+	depositRate: number;
+	notes?: string;
 }
 
 @Injectable()
@@ -39,6 +41,8 @@ export class TransactionService {
 				type: TRANSACTION_TYPE.DEPOSIT,
 				idempotencyKey: input.idempotencyKey,
 				staffId: input.staffId,
+				depositRate: input.depositRate,
+				notes: input.notes,
 			})
 			.returning();
 

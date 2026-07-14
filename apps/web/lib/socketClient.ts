@@ -15,7 +15,12 @@ type Listener<T> = (data: T) => void;
 
 type TransferFundsPayload = {
 	data: PaymentAgentTransferInput;
-	options: { idempotencyKey: string; ignoreDuplicatePayment?: boolean };
+	options: {
+		idempotencyKey: string;
+		ignoreDuplicatePayment?: boolean;
+		notes?: string;
+		depositRate: number;
+	};
 };
 
 type ValidatePaymentAgentTransferPayload = {
@@ -145,7 +150,7 @@ class SocketClient {
 
 	transferFunds(
 		data: PaymentAgentTransferInput,
-		options: { idempotencyKey: string; ignoreDuplicatePayment?: boolean },
+		options: TransferFundsPayload["options"],
 	) {
 		return this.rawRequest<{ id: string }>(DerivSocketEvent.TransferFunds, {
 			data,
