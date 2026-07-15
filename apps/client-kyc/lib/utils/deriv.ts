@@ -1,4 +1,5 @@
 import fetchHandler from "@repo/lib/handlers/fetch";
+import logger from "./logger";
 
 const DERIV_OAUTH_AUTHORIZE_URL = "https://auth.deriv.com/oauth2/auth";
 const DERIV_OAUTH_TOKEN_URL = "https://auth.deriv.com/oauth2/token";
@@ -81,6 +82,8 @@ export const exchangeDerivAuthorizationCode = async ({
 		redirect_uri: redirectUri,
 	});
 
+	logger.info(body);
+
 	const { access_token: accessToken } = await fetchHandler<{
 		access_token: string;
 	}>(DERIV_OAUTH_TOKEN_URL, {
@@ -88,6 +91,8 @@ export const exchangeDerivAuthorizationCode = async ({
 		headers: { "Content-Type": "application/x-www-form-urlencoded" },
 		body: body.toString(),
 	});
+
+	logger.info(accessToken);
 
 	return accessToken;
 };
