@@ -1,4 +1,5 @@
 import { RequestError } from "../errors";
+import logger from "../logger";
 import type { ErrorResponse } from "../types";
 
 const fetchHandler = async <T>(
@@ -23,6 +24,8 @@ const fetchHandler = async <T>(
 
 		if (!res.ok) {
 			const errorData = (await res.json().catch(() => null)) as ErrorResponse;
+
+			logger.error(errorData);
 
 			throw new RequestError(
 				res.status,
