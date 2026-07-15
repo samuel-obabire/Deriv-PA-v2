@@ -19,7 +19,7 @@ import {
 import { DerivSocketEvent, orgTokenKey } from "@repo/deriv";
 import { Permissions, WsAuthError } from "@repo/utils";
 import { ZodValidationPipe } from "nestjs-zod";
-import { Server, Socket } from "socket.io";
+import { Namespace, Socket } from "socket.io";
 import { GLOBAL_PREFIX } from "src/common/constants";
 import { RequirePermission } from "src/common/decorators/permissions.decorator";
 import { WsExceptionFilter } from "src/common/filters/ws-exception/ws-exception.filter";
@@ -53,8 +53,12 @@ import { TransferQueueService } from "src/transfers/transfer-queue.service";
 export class DerivGateway
 	implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
+	// Typed as Namespace, not Server — this gateway declares a custom
+	// `namespace`, so NestJS injects that namespace instance here at runtime,
+	// not the root Server (whose own `.adapter` is a different, incompatible
+	// accessor — see evictIdleOrgConnection).
 	@WebSocketServer()
-	server: Server;
+	server: Namespace;
 
 	private readonly logger = new Logger(DerivGateway.name);
 
@@ -106,7 +110,7 @@ export class DerivGateway
 	}
 
 	evictIdleOrgConnection(organizationId: string, tokenId: string) {
-		const room = this.server.sockets.adapter.rooms.get(
+		const room = this.server.adapter.rooms.get(
 			orgTokenKey(organizationId, tokenId),
 		);
 

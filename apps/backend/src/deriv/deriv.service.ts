@@ -5,7 +5,7 @@ import {
 	getDerivClientNicknameByExternalReferenceId,
 } from "@repo/db/queries";
 import { orgTokenKey } from "@repo/deriv";
-import { Server } from "socket.io";
+import { Namespace } from "socket.io";
 import { CurrencyTokenService } from "src/currency/currency-token.service";
 import { DatabaseService } from "src/database/database.service";
 import { RedisService } from "src/iam/redis/redis.service";
@@ -170,7 +170,7 @@ export class DerivService {
 		orgId: string,
 		subscribeBalanceDto: SubscribeBalanceDto,
 		tokenId: string,
-		server: Server,
+		server: Namespace,
 	) {
 		const orgSocket = this.derivOrgPoolService.getOrganizationSocket(
 			orgId,
