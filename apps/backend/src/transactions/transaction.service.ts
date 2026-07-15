@@ -38,7 +38,7 @@ export class TransactionService {
 				currency: input.currency,
 				organizationId: input.organizationId,
 				status: TRANSACTION_STATUS.PENDING,
-				type: TRANSACTION_TYPE.DEPOSIT,
+				type: TRANSACTION_TYPE.WITHDRAWAL,
 				idempotencyKey: input.idempotencyKey,
 				staffId: input.staffId,
 				depositRate: input.depositRate,
