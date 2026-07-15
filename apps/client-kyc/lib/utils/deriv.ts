@@ -6,7 +6,7 @@ const DERIV_OAUTH_TOKEN_URL = "https://auth.deriv.com/oauth2/token";
 const DERIV_PAYMENT_AGENT_CLIENT_URL =
 	"https://api.derivws.com/payment-agents/v1/clients/me";
 const DERIV_NICKNAME_URL = "https://api.derivws.com/account/v1/nickname";
-const DERIV_OAUTH_SCOPE = "payment";
+const DERIV_OAUTH_SCOPE = "payment account_manage";
 
 const base64UrlEncode = (bytes: Uint8Array) => {
 	let binary = "";
