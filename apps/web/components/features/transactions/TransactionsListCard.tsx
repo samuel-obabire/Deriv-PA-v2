@@ -33,7 +33,7 @@ const TransactionsListCard = ({
 				<CardHeader className="pb-2">
 					<div className="flex items-start justify-between">
 						<div className="min-w-0">
-							<p className="font-medium truncate">{clientName ?? clientId}</p>
+							<p className="font-medium truncate">{clientName || clientId}</p>
 							{clientName && (
 								<p className="text-xs text-muted-foreground truncate">
 									{clientId}
