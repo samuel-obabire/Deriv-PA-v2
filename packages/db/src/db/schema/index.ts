@@ -3,6 +3,7 @@ export * from "./account";
 export * from "./clientKycInvitation";
 export * from "./clientKycRecord";
 export * from "./currency";
+export * from "./derivClientNickname";
 export * from "./elevatedAccessGrant";
 export * from "./invitation";
 export * from "./member";

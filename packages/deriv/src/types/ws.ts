@@ -1,18 +1,15 @@
 // Deriv WebSocket API wire types only. REST-only types live in ./rest.ts, our
 // own app-internal socket.io contract lives in ./gateway.ts, and per-endpoint
 
-import type { Statement, StatementActionType } from "./statement";
-
-// Deriv's payment-agent transfer now lives entirely on their REST API — see
-// ./rest.ts — and never goes over this socket, so it deliberately does not
-// appear in this union.
+// Deriv's payment-agent transfer and statement/wallet-transactions calls now
+// live entirely on their REST API — see ./rest.ts — and never go over this
+// socket, so neither deliberately appears in this union.
 export type DerivEndpointName =
 	| "authorize"
 	| "balance"
 	| "transfer_between_accounts"
 	| "forget"
-	| "ping"
-	| "statement";
+	| "ping";
 
 export type DerivSubcriptionEndpoint = "balance";
 
@@ -30,19 +27,9 @@ export type RequestPayload<T extends DerivEndpointName = DerivEndpointName> =
 					}
 				: T extends "forget"
 					? { forget: string }
-					: T extends "statement"
-						? {
-								statement: 1;
-								action_type?: StatementActionType;
-								date_from?: number;
-								date_to?: number;
-								description?: 0 | 1;
-								limit?: number;
-								offset?: number;
-							}
-						: T extends "ping"
-							? { ping: 1 }
-							: never;
+					: T extends "ping"
+						? { ping: 1 }
+						: never;
 
 export type DerivRequestPayload<
 	T extends DerivEndpointName = DerivEndpointName,
@@ -110,25 +97,16 @@ export type ResponseData<T extends DerivEndpointName = DerivEndpointName> =
 								[k: string]: unknown;
 							};
 						}
-					: T extends "statement"
+					: T extends "ping"
 						? {
-								statement?: Statement;
-								msg_type: "statement";
-								req_id?: number;
+								ping: "pong";
+								msg_type: "ping";
+								req_id: number;
 								echo_req: {
-									[k: string]: unknown;
-								};
+									ping: 1;
+								} & Record<string, unknown>;
 							}
-						: T extends "ping"
-							? {
-									ping: "pong";
-									msg_type: "ping";
-									req_id: number;
-									echo_req: {
-										ping: 1;
-									} & Record<string, unknown>;
-								}
-							: never;
+						: never;
 
 export type DerivResponseData<T extends DerivEndpointName = DerivEndpointName> =
 	ResponseData<T> & {

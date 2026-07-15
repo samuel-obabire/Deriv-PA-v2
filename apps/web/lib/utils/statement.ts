@@ -1,14 +1,7 @@
-import type { DerivResponseData } from "@repo/deriv";
+import type { DerivWalletTransaction } from "@repo/deriv";
 import { mul, ROUND_HALF_UP, roundToNearest } from "@repo/utils";
 
-export type StatementTransaction = NonNullable<
-	NonNullable<DerivResponseData<"statement">["statement"]>["transactions"]
->[number];
-
-export function extractCounterpartyCR(longcode: string): string | null {
-	const matches = longcode.match(/[A-Z]{2,6}\d+/g);
-	return matches?.[0] ?? null;
-}
+export type StatementTransaction = DerivWalletTransaction;
 
 export function adjustUKDateInText(text: string): string {
 	return text.replace(
@@ -24,47 +17,41 @@ export function adjustUKDateInText(text: string): string {
 	);
 }
 
-export function extractRateFromAgentNote(
-	longcode: string | null | undefined,
-): number | null {
-	if (!longcode) return null;
-	const match = longcode.match(/rate[:\s=]+(\d+(?:\.\d+)?)/i);
-	return match ? Number(match[1]) : null;
-}
-
 type RateForCalc = {
 	withdrawal: number;
 	smallAmount: number;
 	charge: number;
 };
 
+// withdrawalRate is the per-transaction rate captured at transfer time
+// (transactions.depositRate in our own DB) — the statement page has no such
+// source per transaction (Deriv's wallet-transactions endpoint carries no
+// rate), so it never passes one and withdrawals there stay null.
 export function calculateNairaEquivalent(
-	transaction: StatementTransaction,
+	amount: number,
+	type: "deposit" | "withdrawal",
 	rate: RateForCalc,
-	extractedRate: number | null,
+	withdrawalRate?: number | null,
 ): number | null {
-	if (transaction.amount == null) return null;
+	const absAmount = Math.abs(amount);
 
-	const absAmount = Math.abs(transaction.amount);
+	if (type === "withdrawal") {
+		if (!withdrawalRate) return null;
 
-	if (transaction.action_type === "withdrawal") {
-		if (extractedRate === null) return null;
 		const price = roundToNearest(
-			mul(absAmount, extractedRate, ROUND_HALF_UP),
+			mul(absAmount, withdrawalRate, ROUND_HALF_UP),
 			25,
 		).toNumber();
+
 		return absAmount < rate.smallAmount ? price + rate.charge : price;
 	}
 
-	if (transaction.action_type === "deposit") {
-		const price = roundToNearest(
-			mul(absAmount, rate.withdrawal, ROUND_HALF_UP),
-			5,
-		).toNumber();
-		return absAmount < rate.smallAmount ? price - rate.charge : price;
-	}
+	const price = roundToNearest(
+		mul(absAmount, rate.withdrawal, ROUND_HALF_UP),
+		5,
+	).toNumber();
 
-	return null;
+	return absAmount < rate.smallAmount ? price - rate.charge : price;
 }
 
 export function formatAmount(amount: number, currency: string): string {

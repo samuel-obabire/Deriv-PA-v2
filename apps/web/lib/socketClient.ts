@@ -1,5 +1,6 @@
 import {
 	ClientNameValidationResult,
+	ClientNicknameLookupResult,
 	createPromise,
 	DerivEndpointName,
 	DerivRequestPayload,
@@ -7,6 +8,8 @@ import {
 	DerivSocketEvent,
 	DerivSubcriptionEndpoint,
 	PaymentAgentTransferInput,
+	StatementQuery,
+	StatementResult,
 } from "@repo/deriv";
 import { Socket } from "socket.io-client";
 import { SocketResponse } from "../types/global";
@@ -148,6 +151,13 @@ class SocketClient {
 		);
 	}
 
+	resolveClientNickname(externalReferenceId: string) {
+		return this.rawRequest<ClientNicknameLookupResult>(
+			DerivSocketEvent.ResolveClientNickname,
+			{ external_reference_id: externalReferenceId },
+		);
+	}
+
 	transferFunds(
 		data: PaymentAgentTransferInput,
 		options: TransferFundsPayload["options"],
@@ -158,8 +168,8 @@ class SocketClient {
 		} satisfies TransferFundsPayload);
 	}
 
-	getStatement(data: DerivRequestPayload<"statement">) {
-		return this.request(DerivSocketEvent.Statement, data);
+	getStatement(data: StatementQuery) {
+		return this.rawRequest<StatementResult>(DerivSocketEvent.Statement, data);
 	}
 
 	authorize(data: DerivRequestPayload<"authorize">) {

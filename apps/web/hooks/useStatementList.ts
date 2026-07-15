@@ -1,6 +1,5 @@
 "use client";
 
-import type { DerivCurrency } from "@repo/deriv";
 import { useEffect, useRef, useState } from "react";
 
 import useAccessToken from "@/hooks/useAccessToken";
@@ -19,6 +18,7 @@ export type FilteredStatementOptions = Pick<
 
 const useStatementList = () => {
 	const [transactions, setTransactions] = useState<StatementTransaction[]>([]);
+	const [cursor, setCursor] = useState<string | null>(null);
 	const [hasMore, setHasMore] = useState(true);
 	const [filters, setFilters] = useState<FilteredStatementOptions>({});
 
@@ -49,24 +49,31 @@ const useStatementList = () => {
 		prevFetchKeyRef.current = fetchKey;
 
 		setTransactions([]);
+		setCursor(null);
 		setHasMore(true);
 		const generation = ++fetchGenerationRef.current;
 
 		(async () => {
 			const result = await getStatementRef.current({
 				limit: LIMIT,
-				currency: selectedCurrency as DerivCurrency,
 				...filters,
 			});
 			if (fetchGenerationRef.current !== generation) return;
-			if (result?.transactions?.length) {
-				setTransactions(result.transactions as StatementTransaction[]);
-			}
+			setTransactions(result?.transactions ?? []);
+			setCursor(result?.nextCursor ?? null);
+			setHasMore(result?.hasMore ?? false);
 		})();
 	}, [socketClient, tokenCurrency, selectedCurrency, filters]);
 
 	useEffect(() => {
-		if (!inView || !selectedCurrency || !socketClient || isLoading || !hasMore)
+		if (
+			!inView ||
+			!selectedCurrency ||
+			!socketClient ||
+			isLoading ||
+			!hasMore ||
+			!cursor
+		)
 			return;
 
 		const generation = fetchGenerationRef.current;
@@ -74,29 +81,25 @@ const useStatementList = () => {
 		(async () => {
 			const result = await getStatementRef.current({
 				limit: LIMIT,
-				offset: transactions.length,
+				cursor,
 				...filters,
-				currency: selectedCurrency as DerivCurrency,
 			});
 
 			if (fetchGenerationRef.current !== generation) return;
 
 			if (result?.transactions?.length) {
-				setTransactions((prev) => [
-					...prev,
-					...(result.transactions as StatementTransaction[]),
-				]);
-			} else {
-				setHasMore(false);
+				setTransactions((prev) => [...prev, ...result.transactions]);
 			}
+			setCursor(result?.nextCursor ?? null);
+			setHasMore(result?.hasMore ?? false);
 		})();
 	}, [
 		inView,
 		selectedCurrency,
 		socketClient,
 		isLoading,
-		transactions.length,
 		hasMore,
+		cursor,
 		filters,
 	]);
 

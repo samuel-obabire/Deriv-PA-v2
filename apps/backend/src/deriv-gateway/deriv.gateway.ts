@@ -19,7 +19,7 @@ import {
 import { DerivSocketEvent, orgTokenKey } from "@repo/deriv";
 import { Permissions, WsAuthError } from "@repo/utils";
 import { ZodValidationPipe } from "nestjs-zod";
-import { Server, Socket } from "socket.io";
+import { Namespace, Socket } from "socket.io";
 import { GLOBAL_PREFIX } from "src/common/constants";
 import { RequirePermission } from "src/common/decorators/permissions.decorator";
 import { WsExceptionFilter } from "src/common/filters/ws-exception/ws-exception.filter";
@@ -28,6 +28,7 @@ import { WsInterceptor } from "src/common/interceptors/ws/ws.interceptor";
 import { DerivService } from "src/deriv/deriv.service";
 import { DerivOrgPoolService } from "src/deriv/deriv-org-pool.service";
 import { ClientNameValidationDto } from "src/deriv/dto/clientNameValidation.dto";
+import { ClientNicknameLookupDto } from "src/deriv/dto/clientNicknameLookup.dto";
 import { StatementDto } from "src/deriv/dto/statement.dto";
 import { SubscribeBalanceDto } from "src/deriv/dto/subscribeBalance.dto";
 import { TransferFundsDto } from "src/deriv/dto/transferFunds.dto";
@@ -52,8 +53,12 @@ import { TransferQueueService } from "src/transfers/transfer-queue.service";
 export class DerivGateway
 	implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
+	// Typed as Namespace, not Server — this gateway declares a custom
+	// `namespace`, so NestJS injects that namespace instance here at runtime,
+	// not the root Server (whose own `.adapter` is a different, incompatible
+	// accessor — see evictIdleOrgConnection).
 	@WebSocketServer()
-	server: Server;
+	server: Namespace;
 
 	private readonly logger = new Logger(DerivGateway.name);
 
@@ -105,7 +110,7 @@ export class DerivGateway
 	}
 
 	evictIdleOrgConnection(organizationId: string, tokenId: string) {
-		const room = this.server.sockets.adapter.rooms.get(
+		const room = this.server.adapter.rooms.get(
 			orgTokenKey(organizationId, tokenId),
 		);
 
@@ -160,7 +165,14 @@ export class DerivGateway
 		return this.derivService.validateClientName(
 			client.data.organizationId,
 			dto,
+			client.data.tokenId,
 		);
+	}
+
+	@RequirePermission(Permissions.READ)
+	@SubscribeMessage(DerivSocketEvent.ResolveClientNickname)
+	resolveClientNickname(@MessageBody() dto: ClientNicknameLookupDto) {
+		return this.derivService.resolveClientNickname(dto);
 	}
 
 	@RequirePermission(Permissions.PAYMENTS)
@@ -183,7 +195,7 @@ export class DerivGateway
 		@ConnectedSocket() client: AuthenticatedSocket,
 		@MessageBody() dto: StatementDto,
 	) {
-		return this.derivService.getStatment(
+		return this.derivService.getStatement(
 			client.data.organizationId,
 			dto,
 			client.data.tokenId,

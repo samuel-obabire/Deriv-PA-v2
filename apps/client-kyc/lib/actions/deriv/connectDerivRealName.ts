@@ -2,12 +2,15 @@
 
 import "server-only";
 
+import { upsertDerivClientNickname } from "@repo/db/queries";
 import handleError from "@repo/lib/http-errors";
 import { tryCatch } from "@repo/utils";
 import ROUTES from "@/lib/constants/routes";
+import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
 import {
 	exchangeDerivAuthorizationCode,
+	getDerivNickname,
 	setDerivShowRealName,
 } from "@/lib/utils/deriv";
 import { DerivConnectCallbackSchema } from "@/lib/validations/deriv";
@@ -43,6 +46,24 @@ export const connectDerivRealNameAction = async (
 	);
 
 	if (patchError) return handleError(patchError);
+
+	const [nickname, nicknameError] = await tryCatch(() =>
+		getDerivNickname(accessToken),
+	);
+
+	if (nicknameError) return handleError(nicknameError);
+
+	const [, upsertError] = await tryCatch(() =>
+		upsertDerivClientNickname(
+			{
+				externalReferenceId: nickname.external_reference_id,
+				nickname: nickname.nickname,
+			},
+			db,
+		),
+	);
+
+	if (upsertError) return handleError(upsertError);
 
 	return { success: true };
 };

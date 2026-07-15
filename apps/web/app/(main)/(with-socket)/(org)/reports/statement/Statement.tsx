@@ -10,14 +10,8 @@ type Props = {
 };
 
 const Statement = ({ rate }: Props) => {
-	const {
-		transactions,
-		isLoading,
-		sentinelRef,
-		currency,
-		isConnecting,
-		isEmpty,
-	} = useStatementOptions();
+	const { transactions, isLoading, sentinelRef, isConnecting, isEmpty } =
+		useStatementOptions();
 
 	if ((isConnecting || isLoading) && transactions.length === 0) {
 		return (
@@ -42,7 +36,6 @@ const Statement = ({ rate }: Props) => {
 					key={transaction.transaction_id}
 					rate={rate}
 					transaction={transaction}
-					currency={currency as string}
 				/>
 			))}
 

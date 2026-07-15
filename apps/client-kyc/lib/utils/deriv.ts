@@ -5,6 +5,7 @@ const DERIV_OAUTH_AUTHORIZE_URL = "https://auth.deriv.com/oauth2/auth";
 const DERIV_OAUTH_TOKEN_URL = "https://auth.deriv.com/oauth2/token";
 const DERIV_PAYMENT_AGENT_CLIENT_URL =
 	"https://api.derivws.com/payment-agents/v1/clients/me";
+const DERIV_NICKNAME_URL = "https://api.derivws.com/account/v1/nickname";
 const DERIV_OAUTH_SCOPE = "payment";
 
 const base64UrlEncode = (bytes: Uint8Array) => {
@@ -103,3 +104,22 @@ export const setDerivShowRealName = (accessToken: string) =>
 		headers: { Authorization: `Bearer ${accessToken}` },
 		body: JSON.stringify({ data: { show_real_name: true } }),
 	});
+
+type DerivNicknameResponse = {
+	data: {
+		nickname: string;
+		external_reference_id: string;
+	};
+};
+
+export const getDerivNickname = async (accessToken: string) => {
+	const { data } = await fetchHandler<DerivNicknameResponse>(
+		DERIV_NICKNAME_URL,
+		{
+			method: "GET",
+			headers: { Authorization: `Bearer ${accessToken}` },
+		},
+	);
+
+	return data;
+};

@@ -1,47 +1,32 @@
 "use client";
 
-import {
-	DerivCurrency,
-	type DerivRequestPayload,
-	type StatementActionType,
-} from "@repo/deriv";
+import { type StatementQuery, type StatementResult } from "@repo/deriv";
 import { tryCatch } from "@repo/utils";
 import { useCallback, useState } from "react";
 
 import useSocket from "@/hooks/useSocket";
 
-export type StatementOptions = {
-	limit?: number;
-	offset?: number;
-	action_type?: StatementActionType;
-	currency: DerivCurrency;
-	date_from?: number;
-	date_to?: number;
-};
+export type StatementOptions = StatementQuery;
 
 const useStatement = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const { socketClient } = useSocket();
 
 	const getStatement = useCallback(
-		async (options: StatementOptions) => {
+		async (options: StatementOptions): Promise<StatementResult | null> => {
 			if (!socketClient) return null;
 
 			setIsLoading(true);
 
 			const [result, error] = await tryCatch(() =>
-				socketClient.getStatement({
-					statement: 1,
-					description: 1,
-					...options,
-				} as DerivRequestPayload<"statement">),
+				socketClient.getStatement(options),
 			);
 
 			setIsLoading(false);
 
 			if (error) return null;
 
-			return result.statement ?? null;
+			return result;
 		},
 		[socketClient],
 	);

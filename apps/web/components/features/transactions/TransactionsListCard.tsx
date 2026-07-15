@@ -17,14 +17,23 @@ const TransactionsListCard = ({
 	transaction,
 	rate,
 }: TransactionsListCardProps) => {
-	const { amount, createdAt, currency, clientName, clientId, status, type } =
-		transaction;
+	const {
+		amount,
+		createdAt,
+		currency,
+		clientName,
+		clientId,
+		status,
+		type,
+		depositRate,
+	} = transaction;
 	const formatedDate = getTZDate(createdAt);
 
 	const nairaEquivalent = calculateNairaEquivalent(
-		{ amount: Number(amount), action_type: type },
+		Number(amount),
+		type,
 		rate,
-		null,
+		depositRate,
 	);
 
 	return (

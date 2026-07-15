@@ -10,7 +10,7 @@ export class HttpRequestError extends HttpException {
 	}
 }
 
-const REQUEST_TIMEOUT_MS = 9000;
+const REQUEST_TIMEOUT_MS = 20000;
 
 @Injectable()
 export class HttpClientService {
@@ -36,6 +36,7 @@ export class HttpClientService {
 				throw new HttpRequestError(
 					res.status,
 					(errorBody?.errors?.[0]?.detail?.message ||
+						errorBody?.errors?.[0]?.message ||
 						errorBody?.errors?.[0]?.code) ??
 						`Request failed with status ${res.status}`,
 				);

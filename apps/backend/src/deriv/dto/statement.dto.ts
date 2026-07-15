@@ -3,13 +3,11 @@ import { createZodDto } from "nestjs-zod";
 import * as z from "zod";
 
 const StatementSchema = z.object({
-	statement: z.literal(1),
 	action_type: z.enum(STATEMENT_ACTION_TYPE).optional(),
 	date_from: z.number().optional(),
 	date_to: z.number().optional(),
-	description: z.literal(0).or(z.literal(1)).optional(),
-	limit: z.number().optional(),
-	offset: z.number().optional(),
+	limit: z.number().min(100).max(1000).optional(),
+	cursor: z.string().optional(),
 });
 
 export class StatementDto extends createZodDto(StatementSchema) {}
