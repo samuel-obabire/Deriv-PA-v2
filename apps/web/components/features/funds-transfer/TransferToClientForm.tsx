@@ -53,7 +53,7 @@ const computeUsdAmount = (
 };
 
 const formInputClass =
-	"h-11! rounded-xl! border! border-border/70! bg-background/40! px-3.5! text-sm font-medium shadow-xs transition-colors duration-200 hover:border-border! focus-visible:border-primary/50! aria-invalid:border-destructive! dark:border-border/60! dark:bg-white/3! dark:hover:border-border/80!";
+	"h-11! rounded-xl! border! border-border/70! bg-background/40! px-3.5! text-base md:text-sm! font-medium shadow-xs transition-colors duration-200 hover:border-border! focus-visible:border-primary/50! aria-invalid:border-destructive! dark:border-border/60! dark:bg-white/3! dark:hover:border-border/80!";
 
 const TransferToClientForm = ({
 	ignoreDuplicatePayment,
@@ -263,7 +263,7 @@ const TransferToClientForm = ({
 									placeholder="Enter description"
 									rows={4}
 									autoComplete="off"
-									className="w-full min-w-0 resize-none rounded-xl border border-border/70 bg-background/40 px-3.5 py-2.5 text-sm font-medium shadow-xs transition-colors duration-200 outline-none placeholder:text-muted-foreground/60 hover:border-border focus-visible:border-primary/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive dark:border-border/60 dark:bg-white/3 dark:hover:border-border/80"
+									className="w-full min-w-0 resize-none rounded-xl border border-border/70 bg-background/40 px-3.5 py-2.5 text-base font-medium shadow-xs transition-colors duration-200 outline-none placeholder:text-muted-foreground/60 hover:border-border focus-visible:border-primary/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive md:text-sm dark:border-border/60 dark:bg-white/3 dark:hover:border-border/80"
 								/>
 								{fieldState.invalid && (
 									<FieldError errors={[fieldState.error]} />
