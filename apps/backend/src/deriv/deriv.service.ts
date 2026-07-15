@@ -1,6 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
-import { getClientKycRecordByDerivNickname } from "@repo/db/queries";
+import {
+	getClientKycRecordByDerivNickname,
+	getDerivClientNicknameByExternalReferenceId,
+} from "@repo/db/queries";
 import { orgTokenKey } from "@repo/deriv";
 import { Server } from "socket.io";
 import { CurrencyTokenService } from "src/currency/currency-token.service";
@@ -10,6 +13,7 @@ import { DerivOptionsRestClient } from "./deriv-options-rest-client";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
 import { DerivRestClient } from "./deriv-rest-client";
 import { ClientNameValidationDto } from "./dto/clientNameValidation.dto";
+import { ClientNicknameLookupDto } from "./dto/clientNicknameLookup.dto";
 import { StatementDto } from "./dto/statement.dto";
 import { SubscribeBalanceDto } from "./dto/subscribeBalance.dto";
 import { TransferValidationDto } from "./dto/transferValidation.dto";
@@ -75,10 +79,25 @@ export class DerivService {
 		return this.resolveClientName(orgId, data.to_nickname);
 	}
 
-	async validateClientName(orgId: string, dto: ClientNameValidationDto) {
+	// Same dry-run REST call as validatePaymentAgentTransfer, minus the redis
+	// duplicate-payment lock — this never sends money, it only confirms the
+	// nickname is still live on Deriv's side.
+	async validateClientName(
+		orgId: string,
+		dto: ClientNameValidationDto,
+		tokenId: string,
+	) {
 		const { data } = dto;
 
-		return this.resolveClientName(orgId, data.to_nickname);
+		const token = await this.currencyTokenService.getDecryptedOrgToken(
+			orgId,
+			tokenId,
+		);
+
+		const validation =
+			await this.derivRestClient.paymentAgentTransferValidation(token, data);
+
+		return { client_real_name: validation.data.client_real_name };
 	}
 
 	// Client's real name is sourced from our own KYC records now, keyed by the
@@ -92,20 +111,59 @@ export class DerivService {
 		return { client_real_name: record?.fullName ?? null };
 	}
 
-	async getStatment(
+	// Global, not org-scoped — external_reference_id is the client's own
+	// unchangeable Deriv id, populated whenever they complete the Deriv-connect
+	// OAuth flow. A miss means that client never completed it.
+	async resolveClientNickname(dto: ClientNicknameLookupDto) {
+		const record = await getDerivClientNicknameByExternalReferenceId(
+			dto.external_reference_id,
+			this.databaseService.client,
+		);
+
+		return { nickname: record?.nickname ?? null };
+	}
+
+	async getStatement(
 		orgId: string,
 		statementDto: StatementDto,
 		tokenId: string,
 	) {
-		const orgDerivSocket = this.derivOrgPoolService.getOrganizationSocket(
+		const token = await this.currencyTokenService.getDecryptedOrgToken(
 			orgId,
 			tokenId,
 		);
 
-		return orgDerivSocket.send({
-			name: "statement",
-			payload: statementDto,
-		});
+		const response = await this.derivRestClient.paymentAgentWalletTransactions(
+			token,
+			{
+				start_date_time: statementDto.date_from,
+				end_date_time: statementDto.date_to,
+				per_page: statementDto.limit,
+				page_cursor: statementDto.cursor,
+			},
+		);
+
+		const transactions = statementDto.action_type
+			? response.data.transactions.filter(
+					(transaction) => transaction.category === statementDto.action_type,
+				)
+			: response.data.transactions;
+
+		return {
+			transactions,
+			nextCursor: this.extractPageCursor(response.links.next),
+			hasMore: response.links.next !== null,
+		};
+	}
+
+	// Deriv's pagination links are full URLs carrying page_cursor as a query
+	// param, not the bare cursor value itself.
+	private extractPageCursor(link: string | null): string | null {
+		if (!link) return null;
+
+		return new URL(link, "https://placeholder.internal").searchParams.get(
+			"page_cursor",
+		);
 	}
 
 	async subscribeBalance(

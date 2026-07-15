@@ -28,6 +28,7 @@ import { WsInterceptor } from "src/common/interceptors/ws/ws.interceptor";
 import { DerivService } from "src/deriv/deriv.service";
 import { DerivOrgPoolService } from "src/deriv/deriv-org-pool.service";
 import { ClientNameValidationDto } from "src/deriv/dto/clientNameValidation.dto";
+import { ClientNicknameLookupDto } from "src/deriv/dto/clientNicknameLookup.dto";
 import { StatementDto } from "src/deriv/dto/statement.dto";
 import { SubscribeBalanceDto } from "src/deriv/dto/subscribeBalance.dto";
 import { TransferFundsDto } from "src/deriv/dto/transferFunds.dto";
@@ -160,7 +161,14 @@ export class DerivGateway
 		return this.derivService.validateClientName(
 			client.data.organizationId,
 			dto,
+			client.data.tokenId,
 		);
+	}
+
+	@RequirePermission(Permissions.READ)
+	@SubscribeMessage(DerivSocketEvent.ResolveClientNickname)
+	resolveClientNickname(@MessageBody() dto: ClientNicknameLookupDto) {
+		return this.derivService.resolveClientNickname(dto);
 	}
 
 	@RequirePermission(Permissions.PAYMENTS)
@@ -183,7 +191,7 @@ export class DerivGateway
 		@ConnectedSocket() client: AuthenticatedSocket,
 		@MessageBody() dto: StatementDto,
 	) {
-		return this.derivService.getStatment(
+		return this.derivService.getStatement(
 			client.data.organizationId,
 			dto,
 			client.data.tokenId,

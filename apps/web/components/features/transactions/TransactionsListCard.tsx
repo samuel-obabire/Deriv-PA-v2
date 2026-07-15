@@ -21,11 +21,7 @@ const TransactionsListCard = ({
 		transaction;
 	const formatedDate = getTZDate(createdAt);
 
-	const nairaEquivalent = calculateNairaEquivalent(
-		{ amount: Number(amount), action_type: type },
-		rate,
-		null,
-	);
+	const nairaEquivalent = calculateNairaEquivalent(Number(amount), type, rate);
 
 	return (
 		<div className="flex flex-col items-center">
