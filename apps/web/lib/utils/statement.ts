@@ -23,17 +23,29 @@ type RateForCalc = {
 	charge: number;
 };
 
-// Withdrawal transactions have no per-transaction rate source since the
-// wallet-transactions endpoint dropped the free-text notes the old Deriv
-// statement call used to carry it in — only deposits get a Naira equivalent.
+// withdrawalRate is the per-transaction rate captured at transfer time
+// (transactions.depositRate in our own DB) — the statement page has no such
+// source per transaction (Deriv's wallet-transactions endpoint carries no
+// rate), so it never passes one and withdrawals there stay null.
 export function calculateNairaEquivalent(
 	amount: number,
 	type: "deposit" | "withdrawal",
 	rate: RateForCalc,
+	withdrawalRate?: number | null,
 ): number | null {
-	if (type !== "deposit") return null;
-
 	const absAmount = Math.abs(amount);
+
+	if (type === "withdrawal") {
+		if (!withdrawalRate) return null;
+
+		const price = roundToNearest(
+			mul(absAmount, withdrawalRate, ROUND_HALF_UP),
+			25,
+		).toNumber();
+
+		return absAmount < rate.smallAmount ? price + rate.charge : price;
+	}
+
 	const price = roundToNearest(
 		mul(absAmount, rate.withdrawal, ROUND_HALF_UP),
 		5,

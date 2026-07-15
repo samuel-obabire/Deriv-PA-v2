@@ -17,11 +17,24 @@ const TransactionsListCard = ({
 	transaction,
 	rate,
 }: TransactionsListCardProps) => {
-	const { amount, createdAt, currency, clientName, clientId, status, type } =
-		transaction;
+	const {
+		amount,
+		createdAt,
+		currency,
+		clientName,
+		clientId,
+		status,
+		type,
+		depositRate,
+	} = transaction;
 	const formatedDate = getTZDate(createdAt);
 
-	const nairaEquivalent = calculateNairaEquivalent(Number(amount), type, rate);
+	const nairaEquivalent = calculateNairaEquivalent(
+		Number(amount),
+		type,
+		rate,
+		depositRate,
+	);
 
 	return (
 		<div className="flex flex-col items-center">
