@@ -3,7 +3,12 @@ import { getSessionCookie } from "better-auth/cookies";
 import { type NextRequest, NextResponse } from "next/server";
 import ROUTES from "./lib/constants/routes";
 
-const publicRoutes: string[] = [ROUTES.HOME, ROUTES.UPLOADTHING];
+const publicRoutes: string[] = [
+	ROUTES.HOME,
+	ROUTES.UPLOADTHING,
+	ROUTES.DERIV_CONNECT,
+	ROUTES.DERIV_CALLBACK,
+];
 
 export async function proxy(request: NextRequest) {
 	const { pathname, search } = request.nextUrl;
