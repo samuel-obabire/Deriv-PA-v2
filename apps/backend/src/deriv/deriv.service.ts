@@ -61,16 +61,18 @@ export class DerivService {
 			);
 		}
 
-		const [, clientData] = await Promise.all([
-			this.currencyTokenService
-				.getDecryptedOrgToken(orgId, tokenId)
-				.then((token) =>
-					this.derivRestClient.paymentAgentTransferValidation(token, data),
-				),
-			this.resolveClientName(orgId, data.to_nickname),
-		]);
+		const token = await this.currencyTokenService.getDecryptedOrgToken(
+			orgId,
+			tokenId,
+		);
+		const validation =
+			await this.derivRestClient.paymentAgentTransferValidation(token, data);
 
-		return clientData;
+		if (validation.data.client_real_name !== null) {
+			return { client_real_name: validation.data.client_real_name };
+		}
+
+		return this.resolveClientName(orgId, data.to_nickname);
 	}
 
 	async validateClientName(orgId: string, dto: ClientNameValidationDto) {
