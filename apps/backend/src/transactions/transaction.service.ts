@@ -84,7 +84,7 @@ export class TransactionService {
 		return cancelled ?? null;
 	}
 
-	async complete(id: string, clientName: string, refId: number) {
+	async complete(id: string, clientName: string | null, refId: number) {
 		await this.databaseService.client
 			.update(transaction)
 			.set({

@@ -71,7 +71,7 @@ const RecentTransfers = ({
 								>
 									<div className="flex flex-col gap-0.5 min-w-0">
 										<span className="text-sm font-medium truncate">
-											{transfer.clientName ?? transfer.clientId}
+											{transfer.clientName || transfer.clientId}
 										</span>
 										<span className="text-xs text-muted-foreground">
 											{formatDate(transfer.createdAt)}

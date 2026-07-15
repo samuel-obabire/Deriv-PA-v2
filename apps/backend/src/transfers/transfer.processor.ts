@@ -91,7 +91,11 @@ export class TransferProcessor extends WorkerHost {
 			throw error;
 		}
 
-		const { status, transaction_id: refId } = result.data;
+		const {
+			status,
+			transaction_id: refId,
+			client_real_name: transferRealName,
+		} = result.data;
 
 		if (status === "failed" || status === "rejected") {
 			try {
@@ -110,15 +114,18 @@ export class TransferProcessor extends WorkerHost {
 		// completion write fails below, do NOT mark as failed — the money
 		// moved (or may still move). Leaving the tx in PROCESSING signals that
 		// manual reconciliation is required.
-		const { client_real_name } = await this.derivService.resolveClientName(
-			orgId,
-			transferPayload.to_nickname,
-		);
+		const { client_real_name } =
+			transferRealName !== null
+				? { client_real_name: transferRealName }
+				: await this.derivService.resolveClientName(
+						orgId,
+						transferPayload.to_nickname,
+					);
 
 		try {
 			await this.transactionService.complete(
 				transactionId,
-				client_real_name ?? "",
+				client_real_name,
 				refId,
 			);
 		} catch (error) {

@@ -42,6 +42,7 @@ export type DerivPaymentAgentTransferResponse = {
 	data: {
 		status: DerivPaymentAgentTransferStatus;
 		transaction_id: number;
+		client_real_name: string | null;
 	};
 	metadata: DerivRestMetadata;
 };
