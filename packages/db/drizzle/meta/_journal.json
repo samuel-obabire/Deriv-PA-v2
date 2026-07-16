@@ -99,6 +99,13 @@
 			"when": 1784138367014,
 			"tag": "0013_curved_black_knight",
 			"breakpoints": true
+		},
+		{
+			"idx": 14,
+			"version": "7",
+			"when": 1784241632447,
+			"tag": "0014_daffy_raider",
+			"breakpoints": true
 		}
 	]
 }

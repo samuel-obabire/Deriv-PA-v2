@@ -38,6 +38,7 @@ const KycPageClient = ({
 	const [formData, setFormData] = useState<KycFormData>({
 		fullName: kycData?.fullName,
 		derivNickname: kycData?.derivNickname,
+		externalReferenceId: kycData?.externalReferenceId,
 		whatsappNumber: kycData?.whatsappNumber,
 		documentType: undefined,
 		idFrontKey: undefined,
@@ -88,6 +89,7 @@ const KycPageClient = ({
 					defaultValues={{
 						fullName: formData.fullName ?? "",
 						derivNickname: formData.derivNickname ?? "",
+						externalReferenceId: formData.externalReferenceId ?? "",
 					}}
 					onNext={handleNext}
 				/>

@@ -68,6 +68,7 @@ export const updateKycAction = async (
 					data: {
 						fullName: parsedData.fullName,
 						derivNickname: parsedData.derivNickname,
+						externalReferenceId: parsedData.externalReferenceId,
 						whatsappNumber: parsedData.whatsappNumber,
 						status: KYC_STATUS.PENDING_REVIEW,
 						documentType: parsedData.documentType,
@@ -96,6 +97,7 @@ export const updateKycAction = async (
 					data: {
 						fullName: parsedData.fullName,
 						derivNickname: parsedData.derivNickname,
+						externalReferenceId: parsedData.externalReferenceId,
 						whatsappNumber: parsedData.whatsappNumber,
 						status: KYC_STATUS.PENDING_REVIEW,
 					},

@@ -59,6 +59,7 @@ const KycReviewClient = ({ record }: Props) => {
 			<KycReviewSummary
 				fullName={record.fullName}
 				derivNickname={record.derivNickname}
+				externalReferenceId={record.externalReferenceId}
 				whatsappNumber={record.whatsappNumber}
 				documentTypeLabel={
 					record.documentType ? DOCUMENT_TYPE_LABELS[record.documentType] : null

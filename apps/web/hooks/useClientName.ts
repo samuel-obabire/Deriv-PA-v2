@@ -43,13 +43,16 @@ const useClientName = (
 			}
 
 			const [result, validationError] = await tryCatch(() =>
-				socketClient.validateClientName({
-					to_nickname: lookup.nickname as string,
-					currency: currency as CURRENCY,
-					amount: minAmount.toFixed(2),
-					notes: "",
-					request_id: crypto.randomUUID(),
-				}),
+				socketClient.validateClientName(
+					{
+						to_nickname: lookup.nickname as string,
+						currency: currency as CURRENCY,
+						amount: minAmount.toFixed(2),
+						notes: "",
+						request_id: crypto.randomUUID(),
+					},
+					externalReferenceId,
+				),
 			);
 			isFetchingRef.current = false;
 			if (!validationError && result && result.client_real_name !== null) {

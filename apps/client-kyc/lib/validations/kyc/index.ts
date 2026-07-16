@@ -8,6 +8,7 @@ const Identity = {
 	derivNickname: z
 		.string()
 		.min(2, "Deriv nickname must be at least 2 characters"),
+	externalReferenceId: z.string().min(1, "Client ID is required"),
 };
 
 const phoneSchema = z

@@ -1,7 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { WsException } from "@nestjs/websockets";
+import { KYC_STATUS } from "@repo/db/enums";
 import {
 	getClientKycRecordByDerivNickname,
+	getClientKycRecordByExternalReferenceId,
 	getDerivClientNicknameByExternalReferenceId,
 } from "@repo/db/queries";
 import { orgTokenKey } from "@repo/deriv";
@@ -76,7 +78,7 @@ export class DerivService {
 			return { client_real_name: validation.data.client_real_name };
 		}
 
-		return this.resolveClientName(orgId, data.to_nickname);
+		return this.resolveClientName(orgId, { derivNickname: data.to_nickname });
 	}
 
 	// Same dry-run REST call as validatePaymentAgentTransfer, minus the redis
@@ -87,7 +89,7 @@ export class DerivService {
 		dto: ClientNameValidationDto,
 		tokenId: string,
 	) {
-		const { data } = dto;
+		const { data, external_reference_id } = dto;
 
 		const token = await this.currencyTokenService.getDecryptedOrgToken(
 			orgId,
@@ -97,30 +99,73 @@ export class DerivService {
 		const validation =
 			await this.derivRestClient.paymentAgentTransferValidation(token, data);
 
-		return { client_real_name: validation.data.client_real_name };
+		if (validation.data.client_real_name !== null) {
+			return { client_real_name: validation.data.client_real_name };
+		}
+
+		return external_reference_id
+			? this.resolveClientName(orgId, {
+					externalReferenceId: external_reference_id,
+				})
+			: this.resolveClientName(orgId, { derivNickname: data.to_nickname });
 	}
 
-	// Client's real name is sourced from our own KYC records now, keyed by the
-	// Deriv nickname — Deriv no longer resolves this for us over the socket.
-	async resolveClientName(orgId: string, derivNickname: string) {
-		const record = await getClientKycRecordByDerivNickname(
-			{ organizationId: orgId, derivNickname },
-			this.databaseService.client,
-		);
+	// Client's real name is sourced from our own KYC records now — Deriv no
+	// longer resolves this for us over the socket. Callers key the lookup by
+	// whichever identifier they have on hand: the Deriv nickname, or the
+	// client's external_reference_id (more stable, since a nickname can change).
+	async resolveClientName(
+		orgId: string,
+		identifier: { derivNickname: string } | { externalReferenceId: string },
+	) {
+		const record =
+			"derivNickname" in identifier
+				? await getClientKycRecordByDerivNickname(
+						{
+							organizationId: orgId,
+							derivNickname: identifier.derivNickname,
+							status: KYC_STATUS.VERIFIED,
+						},
+						this.databaseService.client,
+					)
+				: await getClientKycRecordByExternalReferenceId(
+						{
+							organizationId: orgId,
+							externalReferenceId: identifier.externalReferenceId,
+							status: KYC_STATUS.VERIFIED,
+						},
+						this.databaseService.client,
+					);
 
 		return { client_real_name: record?.fullName ?? null };
 	}
 
-	// Global, not org-scoped — external_reference_id is the client's own
-	// unchangeable Deriv id, populated whenever they complete the Deriv-connect
-	// OAuth flow. A miss means that client never completed it.
-	async resolveClientNickname(dto: ClientNicknameLookupDto) {
+	// The nickname registry lookup is global, not org-scoped — external_reference_id
+	// is the client's own unchangeable Deriv id, populated whenever they complete
+	// the Deriv-connect OAuth flow. A miss there means that client never completed
+	// it, so we fall back to the org's own (VERIFIED) KYC record, keyed by the
+	// same external_reference_id, in case they submitted KYC with their Deriv
+	// nickname but never did the OAuth connect.
+	async resolveClientNickname(orgId: string, dto: ClientNicknameLookupDto) {
 		const record = await getDerivClientNicknameByExternalReferenceId(
 			dto.external_reference_id,
 			this.databaseService.client,
 		);
 
-		return { nickname: record?.nickname ?? null };
+		if (record) {
+			return { nickname: record.nickname };
+		}
+
+		const kycRecord = await getClientKycRecordByExternalReferenceId(
+			{
+				organizationId: orgId,
+				externalReferenceId: dto.external_reference_id,
+				status: KYC_STATUS.VERIFIED,
+			},
+			this.databaseService.client,
+		);
+
+		return { nickname: kycRecord?.derivNickname ?? null };
 	}
 
 	async getStatement(

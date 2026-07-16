@@ -117,10 +117,9 @@ export class TransferProcessor extends WorkerHost {
 		const { client_real_name } =
 			transferRealName !== null
 				? { client_real_name: transferRealName }
-				: await this.derivService.resolveClientName(
-						orgId,
-						transferPayload.to_nickname,
-					);
+				: await this.derivService.resolveClientName(orgId, {
+						derivNickname: transferPayload.to_nickname,
+					});
 
 		try {
 			await this.transactionService.complete(

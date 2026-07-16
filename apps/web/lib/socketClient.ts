@@ -31,6 +31,11 @@ type ValidatePaymentAgentTransferPayload = {
 	options: { ignoreDuplicatePayment?: boolean };
 };
 
+type ValidateClientNamePayload = {
+	data: PaymentAgentTransferInput;
+	external_reference_id?: string;
+};
+
 class SocketClient {
 	private subscriptions = new Map<
 		DerivSubcriptionEndpoint,
@@ -144,10 +149,16 @@ class SocketClient {
 		);
 	}
 
-	validateClientName(data: PaymentAgentTransferInput) {
+	validateClientName(
+		data: PaymentAgentTransferInput,
+		externalReferenceId?: string,
+	) {
 		return this.rawRequest<ClientNameValidationResult>(
 			DerivSocketEvent.ValidateClientName,
-			{ data },
+			{
+				data,
+				external_reference_id: externalReferenceId,
+			} satisfies ValidateClientNamePayload,
 		);
 	}
 
