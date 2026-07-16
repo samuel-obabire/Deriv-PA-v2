@@ -21,7 +21,12 @@ type Props = {
 const IdentityForm = ({ defaultValues, onNext }: Props) => {
 	const form = useForm<z.infer<typeof IdentitySchema>>({
 		resolver: zodResolver(IdentitySchema),
-		defaultValues: { fullName: "", derivNickname: "", ...defaultValues },
+		defaultValues: {
+			fullName: "",
+			derivNickname: "",
+			externalReferenceId: "",
+			...defaultValues,
+		},
 	});
 
 	return (
@@ -53,6 +58,23 @@ const IdentityForm = ({ defaultValues, onNext }: Props) => {
 							<Input
 								id="derivNickname"
 								placeholder="Your Deriv account nickname"
+								aria-invalid={fieldState.invalid}
+								{...field}
+							/>
+							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+						</Field>
+					)}
+				/>
+
+				<Controller
+					name="externalReferenceId"
+					control={form.control}
+					render={({ field, fieldState }) => (
+						<Field data-invalid={fieldState.invalid}>
+							<FieldLabel htmlFor="externalReferenceId">Client ID</FieldLabel>
+							<Input
+								id="externalReferenceId"
+								placeholder="Your Deriv client ID"
 								aria-invalid={fieldState.invalid}
 								{...field}
 							/>

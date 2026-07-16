@@ -171,8 +171,14 @@ export class DerivGateway
 
 	@RequirePermission(Permissions.READ)
 	@SubscribeMessage(DerivSocketEvent.ResolveClientNickname)
-	resolveClientNickname(@MessageBody() dto: ClientNicknameLookupDto) {
-		return this.derivService.resolveClientNickname(dto);
+	resolveClientNickname(
+		@ConnectedSocket() client: AuthenticatedSocket,
+		@MessageBody() dto: ClientNicknameLookupDto,
+	) {
+		return this.derivService.resolveClientNickname(
+			client.data.organizationId,
+			dto,
+		);
 	}
 
 	@RequirePermission(Permissions.PAYMENTS)

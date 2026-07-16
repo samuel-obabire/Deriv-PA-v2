@@ -8,6 +8,7 @@ import { KycReviewVideoPlaceholder } from "./KycReviewVideoPlaceholder";
 type Props = {
 	fullName: string;
 	derivNickname: string;
+	externalReferenceId: string;
 	whatsappNumber: string;
 	documentTypeLabel?: string | null;
 	idFrontUrl?: string | null;
@@ -19,6 +20,7 @@ type Props = {
 export const KycReviewSummary = ({
 	fullName,
 	derivNickname,
+	externalReferenceId,
 	whatsappNumber,
 	documentTypeLabel,
 	idFrontUrl,
@@ -33,6 +35,7 @@ export const KycReviewSummary = ({
 			<KycReviewSection title="Identity">
 				<KycReviewField label="Full name" value={fullName} />
 				<KycReviewField label="Deriv nickname" value={derivNickname} />
+				<KycReviewField label="Client ID" value={externalReferenceId} />
 			</KycReviewSection>
 
 			<KycReviewSection title="Contact">

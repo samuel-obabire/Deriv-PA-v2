@@ -31,6 +31,7 @@ const ReviewStep = ({
 			<KycReviewSummary
 				fullName={formData.fullName ?? ""}
 				derivNickname={formData.derivNickname ?? ""}
+				externalReferenceId={formData.externalReferenceId ?? ""}
 				whatsappNumber={formData.whatsappNumber ?? ""}
 				documentTypeLabel={
 					isNew && formData.documentType

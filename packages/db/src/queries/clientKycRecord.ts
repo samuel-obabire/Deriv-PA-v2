@@ -41,7 +41,12 @@ export const getClientKycRecordByDerivNickname = async (
 	{
 		organizationId,
 		derivNickname,
-	}: { organizationId: string; derivNickname: string },
+		status,
+	}: {
+		organizationId: string;
+		derivNickname: string;
+		status?: KYC_STATUS;
+	},
 	db: DB,
 ) => {
 	const [record] = await db
@@ -51,6 +56,33 @@ export const getClientKycRecordByDerivNickname = async (
 			and(
 				eq(clientKycRecord.organizationId, organizationId),
 				eq(clientKycRecord.derivNickname, derivNickname),
+				status ? eq(clientKycRecord.status, status) : undefined,
+			),
+		);
+
+	return record ?? null;
+};
+
+export const getClientKycRecordByExternalReferenceId = async (
+	{
+		organizationId,
+		externalReferenceId,
+		status,
+	}: {
+		organizationId: string;
+		externalReferenceId: string;
+		status?: KYC_STATUS;
+	},
+	db: DB,
+) => {
+	const [record] = await db
+		.select()
+		.from(clientKycRecord)
+		.where(
+			and(
+				eq(clientKycRecord.organizationId, organizationId),
+				eq(clientKycRecord.externalReferenceId, externalReferenceId),
+				status ? eq(clientKycRecord.status, status) : undefined,
 			),
 		);
 
@@ -185,6 +217,7 @@ export const deleteClientKycRecord = async (id: string, db: DB) => {
 const KYC_UNIQUE_CONSTRAINT_MESSAGES: Record<string, string> = {
 	kyc_record_org_email_unique: "A KYC record with this email already exists",
 	kyc_record_org_deriv_nickname: "This Deriv nickname is already registered",
+	kyc_record_org_external_reference_id: "This client ID is already registered",
 	kyc_record_org_whatsapp_unique:
 		"This WhatsApp number is already registered for this organisation",
 };

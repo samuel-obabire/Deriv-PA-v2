@@ -34,6 +34,7 @@ export const clientKycRecord = pgTable(
 		email: text("email").notNull(),
 		fullName: text("full_name").notNull(),
 		derivNickname: text("deriv_nickname").notNull(),
+		externalReferenceId: text("external_reference_id").notNull(),
 		whatsappNumber: text("whatsapp_number").notNull(),
 		status: kycStatusEnum("status").notNull().default(KYC_STATUS.UNVERIFIED),
 		documentType: kycDocumentTypeEnum("document_type"),
@@ -64,6 +65,10 @@ export const clientKycRecord = pgTable(
 		uniqueIndex("kyc_record_org_deriv_nickname").on(
 			table.organizationId,
 			table.derivNickname,
+		),
+		uniqueIndex("kyc_record_org_external_reference_id").on(
+			table.organizationId,
+			table.externalReferenceId,
 		),
 		index("kyc_record_org_idx").on(table.organizationId),
 		index("kyc_record_status_idx").on(table.status),

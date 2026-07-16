@@ -1,0 +1,2 @@
+ALTER TABLE "client_kyc_record" ADD COLUMN "external_reference_id" text NOT NULL;--> statement-breakpoint
+CREATE UNIQUE INDEX "kyc_record_org_external_reference_id" ON "client_kyc_record" USING btree ("organization_id","external_reference_id");
