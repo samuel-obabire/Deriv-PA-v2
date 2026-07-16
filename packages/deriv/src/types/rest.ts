@@ -160,7 +160,9 @@ export type DerivWalletTransactionsResponse = {
 		end_date_time: string | null;
 		transactions: DerivWalletTransaction[];
 	};
-	links: DerivWalletTransactionsLinks;
+	// Deriv's schema marks this required, but the live API has been observed
+	// omitting it entirely — don't trust it as always-present.
+	links?: DerivWalletTransactionsLinks;
 };
 
 // Confirmed against the documented error example — flat {status, code,
