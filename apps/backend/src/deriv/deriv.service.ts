@@ -149,10 +149,15 @@ export class DerivService {
 				)
 			: response.data.transactions;
 
+		// Deriv's schema marks `links` as required, but the live API doesn't
+		// always send it (observed omitted entirely, not just null) — treat it
+		// as the last page rather than crash.
+		const nextLink = response.links?.next ?? null;
+
 		return {
 			transactions,
-			nextCursor: this.extractPageCursor(response.links.next),
-			hasMore: response.links.next !== null,
+			nextCursor: this.extractPageCursor(nextLink),
+			hasMore: nextLink !== null,
 		};
 	}
 
