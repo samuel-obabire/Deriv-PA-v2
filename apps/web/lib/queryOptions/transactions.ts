@@ -45,7 +45,6 @@ export const transactionsQueryOptions = (
 			return res.data as TransactionsPage;
 		},
 		retry: 1,
-		staleTime: Infinity,
 		getNextPageParam: (lastPage: TransactionsPage) => lastPage.cursor,
 
 		select: (data) => {
