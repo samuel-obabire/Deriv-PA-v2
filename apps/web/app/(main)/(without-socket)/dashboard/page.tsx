@@ -1,3 +1,4 @@
+import { Spinner } from "@repo/ui";
 import { Suspense } from "react";
 import OrganizationManager from "@/components/features/dashboard/OrganizationManager";
 import { verifySession } from "@/lib/session";
@@ -10,15 +11,15 @@ const Dashboard = async () => {
 
 const DashBoardPage = () => {
 	return (
-		<div className="container space-y-6 mt-12 mb-10">
-			<header>
-				<h2 className="title">Create/Switch Organization</h2>
-				<p className="title-subtext">
+		<div className="container max-w-2xl py-8 space-y-8">
+			<header className="space-y-1">
+				<h1 className="title">Create/Switch Organization</h1>
+				<p className="text-sm text-muted-foreground">
 					All actions apply to your selected organization
 				</p>
 			</header>
 
-			<Suspense fallback={<div>Loading...</div>}>
+			<Suspense fallback={<Spinner className="mx-auto size-6" />}>
 				<Dashboard />
 			</Suspense>
 		</div>

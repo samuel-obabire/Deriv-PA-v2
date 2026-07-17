@@ -40,34 +40,44 @@ const OrganizationSwitcher = ({
 	};
 
 	return (
-		<Select
-			value={activeOrgId ?? ""}
-			onValueChange={handleSwitch}
-			disabled={isSwitching || isPending}
-		>
-			<SelectTrigger className="text-16-medium! w-full max-w-md text-left! no-ring">
-				{isPending || isSwitching ? (
-					<Spinner />
-				) : (
-					<Building2 className="size-4 text-muted-foreground" />
-				)}
-				<SelectValue placeholder="Switch organization" />
-			</SelectTrigger>
+		<div className="space-y-1.5">
+			<span className="text-12-semibold uppercase tracking-wide text-muted-foreground">
+				Active organization
+			</span>
 
-			<SelectContent position="popper" align="start" className="text-32-normal">
-				{orgs?.map((org) => (
-					<SelectItem
-						key={org.id}
-						value={org.id}
-						className="py-2 text-16-medium!"
-					>
-						<span className="font-semibold leading-tight text-foreground">
-							{org.name}
-						</span>
-					</SelectItem>
-				))}
-			</SelectContent>
-		</Select>
+			<Select
+				value={activeOrgId ?? ""}
+				onValueChange={handleSwitch}
+				disabled={isSwitching || isPending}
+			>
+				<SelectTrigger className="text-16-medium! w-full text-left! no-ring">
+					{isPending || isSwitching ? (
+						<Spinner />
+					) : (
+						<Building2 className="size-4 text-muted-foreground" />
+					)}
+					<SelectValue placeholder="Switch organization" />
+				</SelectTrigger>
+
+				<SelectContent
+					position="popper"
+					align="start"
+					className="text-32-normal"
+				>
+					{orgs?.map((org) => (
+						<SelectItem
+							key={org.id}
+							value={org.id}
+							className="py-2 text-16-medium!"
+						>
+							<span className="font-semibold leading-tight text-foreground">
+								{org.name}
+							</span>
+						</SelectItem>
+					))}
+				</SelectContent>
+			</Select>
+		</div>
 	);
 };
 
