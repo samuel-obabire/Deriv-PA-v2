@@ -12,3 +12,19 @@ export const STATEMENT_ACTION_TYPE = [
 ] as const satisfies readonly DerivWalletTransactionCategory[];
 
 export type StatementActionType = (typeof STATEMENT_ACTION_TYPE)[number];
+
+// Deriv types metadata.transaction_status as a bare `string`, not an enum —
+// this is the known set observed in practice (including "reverted", which
+// has no equivalent in our own TRANSACTION_STATUS). Display-only: treat any
+// value outside this list as unrecognized rather than assuming it can't happen.
+export const DERIV_WALLET_TRANSACTION_STATUS = [
+	"pending",
+	"processing",
+	"complete",
+	"failed",
+	"cancelled",
+	"reverted",
+] as const;
+
+export type DerivWalletTransactionStatus =
+	(typeof DERIV_WALLET_TRANSACTION_STATUS)[number];

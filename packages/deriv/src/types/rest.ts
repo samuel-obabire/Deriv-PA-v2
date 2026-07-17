@@ -1,4 +1,5 @@
 import type { DerivCurrency } from "./currency";
+import type { DerivWalletTransactionStatus } from "./statement";
 
 // Deriv REST API types. Deriv is moving some endpoints off the WebSocket API
 // (see ./ws.ts for that protocol) onto plain HTTPS calls — this file is where
@@ -126,7 +127,7 @@ export type DerivWalletTransactionsRequest = {
 // absent for cashier deposits, since the source is the system) — modeled as
 // optional rather than assuming both sides are always present.
 export type DerivWalletTransactionMetadata = {
-	transaction_status: string;
+	transaction_status: DerivWalletTransactionStatus;
 	transaction_gross_amount: string;
 	transaction_net_amount: string;
 	transaction_currency: string;

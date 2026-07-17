@@ -12,6 +12,7 @@ import {
 } from "@repo/ui";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { useEffect, useState } from "react";
+import { StatementStatusBadge } from "@/components/ui/statement-status-badge";
 import useClientName, { type ClientNameError } from "@/hooks/useClientName";
 import {
 	adjustUKDateInText,
@@ -46,16 +47,19 @@ const StatementCardFront = ({ transaction, onFlip }: FrontProps) => {
 			<Card className="mx-2 my-1 flex min-h-48 flex-col justify-between sm:mx-3 sm:my-2 sm:min-h-52">
 				<CardHeader className="py-2 pt-5">
 					<div className="flex items-center justify-between">
-						{category === "deposit" ? (
-							<ArrowDownLeft className="size-5 text-green-500 sm:size-6" />
-						) : (
-							<ArrowUpRight className="size-5 text-blue-500 sm:size-6" />
-						)}
-						<CardTitle
-							className={`text-sm sm:text-base ${category === "deposit" ? "text-green-500" : "text-blue-600"}`}
-						>
-							{actionLabel}
-						</CardTitle>
+						<div className="flex items-center gap-2">
+							{category === "deposit" ? (
+								<ArrowDownLeft className="size-5 text-green-500 sm:size-6" />
+							) : (
+								<ArrowUpRight className="size-5 text-blue-500 sm:size-6" />
+							)}
+							<CardTitle
+								className={`text-sm sm:text-base ${category === "deposit" ? "text-green-500" : "text-blue-600"}`}
+							>
+								{actionLabel}
+							</CardTitle>
+						</div>
+						<StatementStatusBadge status={metadata.transaction_status} />
 					</div>
 				</CardHeader>
 
@@ -166,7 +170,8 @@ const StatementCardBack = ({
 					</span>
 				</div>
 
-				{nairaEquivalent !== null ? (
+				{nairaEquivalent !== null &&
+				transaction.metadata.transaction_status === "complete" ? (
 					<div className="flex items-center justify-between gap-2 text-xs sm:text-sm">
 						<span className="shrink-0">Naira Equivalent</span>
 						<Copy
