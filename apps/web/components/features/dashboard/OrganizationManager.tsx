@@ -12,33 +12,38 @@ import CreateOrganizationForm from "./CreateOrganizationForm";
 import OrganizationSwitcher from "./OrganizationSwitcher";
 
 const OrganizationManager = () => {
-	const { data: activeOrganization, isRefetching } = useActiveOrganization();
+	const {
+		data: activeOrganization,
+		isRefetching,
+		refetch: refetchActiveOrg,
+	} = useActiveOrganization();
 
-	const { data: orgs, refetch } = useListOrganizations();
+	const { data: orgs, refetch: refetchOrgList } = useListOrganizations();
 
 	const router = useRouter();
 
-	const onOrgCreate = async (newOrgId: string) => {
-		await organization.setActive({ organizationId: newOrgId });
+	const syncActiveOrganization = async (orgId: string) => {
+		// disableSignal prevents better-auth's cookie-cached refetch of
+		// activeOrganization from racing and possibly overwriting the
+		// disableCookieCache refetched data.
+		await organization.setActive(
+			{ organizationId: orgId },
+			{ disableSignal: true },
+		);
 
 		await Promise.all([
-			setUserActiveOrganization({ orgId: newOrgId }),
-			refetch({ query: { disableCookieCache: true } }),
+			setUserActiveOrganization({ orgId }),
+			refetchOrgList({ query: { disableCookieCache: true } }),
+			refetchActiveOrg({ query: { disableCookieCache: true } }),
 		]);
 
 		router.refresh();
 	};
 
-	const onOrgSwitch = async (newActiveOrgId: string) => {
-		await organization.setActive({ organizationId: newActiveOrgId });
+	const onOrgCreate = (newOrgId: string) => syncActiveOrganization(newOrgId);
 
-		await Promise.all([
-			setUserActiveOrganization({ orgId: newActiveOrgId }),
-			refetch({ query: { disableCookieCache: true } }),
-		]);
-
-		router.refresh();
-	};
+	const onOrgSwitch = (newActiveOrgId: string) =>
+		syncActiveOrganization(newActiveOrgId);
 
 	return (
 		<div className="max-[500px]:mx-auto max-w-md space-y-4">

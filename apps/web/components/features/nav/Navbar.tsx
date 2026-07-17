@@ -2,6 +2,7 @@
 
 import { User } from "@/lib/auth";
 import { RoleNames } from "@/lib/permissions";
+import ActiveOrganizationBadge from "./ActiveOrganizationBadge";
 import CurrencySwitcher from "./CurrencySwitcher";
 import SideBar from "./sidebar";
 
@@ -11,6 +12,8 @@ const Navbar = ({ role, user }: { role: RoleNames; user: User }) => {
 			<div className="lg:hidden">
 				<SideBar role={role} user={user} />
 			</div>
+
+			<ActiveOrganizationBadge />
 
 			<div className="ml-auto">
 				<CurrencySwitcher />
