@@ -6,7 +6,7 @@ import {
 	getClientKycRecordByExternalReferenceId,
 	getDerivClientNicknameByExternalReferenceId,
 } from "@repo/db/queries";
-import { orgTokenKey } from "@repo/deriv";
+import { DerivResponseData, orgTokenKey } from "@repo/deriv";
 import { Namespace } from "socket.io";
 import { CurrencyTokenService } from "src/currency/currency-token.service";
 import { DatabaseService } from "src/database/database.service";
@@ -31,24 +31,28 @@ export class DerivService {
 		private readonly derivRestClient: DerivRestClient,
 	) {}
 
-	async authorize({ orgId, tokenId }: { tokenId: string; orgId: string }) {
-		if (this.derivOrgPoolService.checkOrgExist(orgId, tokenId)) return;
-
-		const plainToken = await this.currencyTokenService.getDecryptedOrgToken(
-			orgId,
-			tokenId,
-		);
-
-		// Single-use per connection — resolved fresh every time we need to open
-		// a new org socket, never cached/reused across connections.
-		const socketUrl =
-			await this.derivOptionsRestClient.getSocketUrl(plainToken);
-
-		this.derivOrgPoolService.addToPool({
-			orgId,
-			tokenId,
-			url: socketUrl,
-		});
+	// Deriv balance has moved to their REST API, so we no longer open a live
+	// Deriv WS connection (and its "authorize" handshake) on connect. Left
+	// commented out rather than deleted in case a WS-backed endpoint is
+	// needed again — see subscribeBalance below for the REST-migration stub.
+	async authorize(_args: { tokenId: string; orgId: string }) {
+		// if (this.derivOrgPoolService.checkOrgExist(orgId, tokenId)) return;
+		//
+		// const plainToken = await this.currencyTokenService.getDecryptedOrgToken(
+		// 	orgId,
+		// 	tokenId,
+		// );
+		//
+		// // Single-use per connection — resolved fresh every time we need to open
+		// // a new org socket, never cached/reused across connections.
+		// const socketUrl =
+		// 	await this.derivOptionsRestClient.getSocketUrl(plainToken);
+		//
+		// this.derivOrgPoolService.addToPool({
+		// 	orgId,
+		// 	tokenId,
+		// 	url: socketUrl,
+		// });
 	}
 
 	async validatePaymentAgentTransfer(
@@ -216,28 +220,46 @@ export class DerivService {
 		);
 	}
 
+	// Deriv balance now lives on their REST API — see authorize above. Until
+	// that REST integration is wired up here, stub a 0 balance instead of
+	// subscribing over a Deriv WS connection that's no longer opened. Old
+	// WS-subscription code left commented out in case it's needed again.
 	async subscribeBalance(
 		orgId: string,
 		subscribeBalanceDto: SubscribeBalanceDto,
 		tokenId: string,
 		server: Namespace,
 	) {
-		const orgSocket = this.derivOrgPoolService.getOrganizationSocket(
-			orgId,
-			tokenId,
-		);
+		// const orgSocket = this.derivOrgPoolService.getOrganizationSocket(
+		// 	orgId,
+		// 	tokenId,
+		// );
+		//
+		// return orgSocket.subscribe({
+		// 	name: "balance",
+		// 	payload: subscribeBalanceDto,
+		// 	onData: (data) => {
+		// 		server.to(orgTokenKey(orgId, tokenId)).emit("balance", data);
+		// 	},
+		// 	onError: (error) => {
+		// 		server.to(orgTokenKey(orgId, tokenId)).emit("error", error);
+		// 		orgSocket.disconnect();
+		// 	},
+		// });
 
-		return orgSocket.subscribe({
-			name: "balance",
-			payload: subscribeBalanceDto,
-			onData: (data) => {
-				server.to(orgTokenKey(orgId, tokenId)).emit("balance", data);
+		server.to(orgTokenKey(orgId, tokenId)).emit("balance", {
+			balance: {
+				balance: 0,
+				currency: "",
+				loginid: "",
 			},
-			onError: (error) => {
-				server.to(orgTokenKey(orgId, tokenId)).emit("error", error);
-				orgSocket.disconnect();
+			msg_type: "balance",
+			req_id: 0,
+			echo_req: {
+				balance: subscribeBalanceDto.balance,
+				subscribe: subscribeBalanceDto.subscribe,
 			},
-		});
+		} satisfies DerivResponseData<"balance">);
 	}
 
 	private transferLockKey(orgId: string, transferTo: string) {
