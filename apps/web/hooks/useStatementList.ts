@@ -58,6 +58,7 @@ const useStatementList = () => {
 				limit: LIMIT,
 				...filters,
 			});
+
 			if (fetchGenerationRef.current !== generation) return;
 			setTransactions(result?.transactions ?? []);
 			setCursor(result?.nextCursor ?? null);
