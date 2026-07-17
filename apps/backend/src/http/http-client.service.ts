@@ -17,6 +17,7 @@ export class HttpClientService {
 	private logger = new Logger(HttpClientService.name, { timestamp: true });
 
 	async request<T>(url: string, options?: RequestInit): Promise<T> {
+		const method = options?.method ?? "GET";
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
@@ -45,7 +46,7 @@ export class HttpClientService {
 			return (await res.json()) as T;
 		} catch (err) {
 			this.logger.error(
-				`HttpException ${err instanceof Error ? err.message : JSON.stringify(err)}`,
+				`HttpException ${method} ${url} ${err instanceof Error ? err.message : JSON.stringify(err)}`,
 			);
 
 			if (err instanceof Error && err.name === "AbortError") {

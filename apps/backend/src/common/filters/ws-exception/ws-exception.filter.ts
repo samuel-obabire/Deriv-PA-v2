@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, HttpException, Logger } from "@nestjs/common";
 import { BaseWsExceptionFilter, WsException } from "@nestjs/websockets";
 import { ZodValidationException } from "nestjs-zod";
-import { Socket } from "socket.io";
+import type { AuthenticatedSocket } from "src/deriv/types";
 
 type WsErrorResponse = {
 	success: false;
@@ -15,7 +15,7 @@ export class WsExceptionFilter extends BaseWsExceptionFilter {
 	});
 
 	catch(exception: unknown, host: ArgumentsHost) {
-		const client = host.switchToWs().getClient() as Socket;
+		const client = host.switchToWs().getClient() as AuthenticatedSocket;
 		const args = host.getArgs();
 
 		let error: WsErrorResponse["error"];
@@ -42,7 +42,11 @@ export class WsExceptionFilter extends BaseWsExceptionFilter {
 			error = { message: "Internal server error" };
 		}
 
-		this.logger.error(`WsException [${client.id}]: ${JSON.stringify(error)}`);
+		const { organizationId, tokenId } = client.data ?? {};
+
+		this.logger.error(
+			`WsException [${client.id}] org=${organizationId} tokenId=${tokenId}: ${JSON.stringify(error)}`,
+		);
 
 		const payload: WsErrorResponse = { success: false, error };
 
