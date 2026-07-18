@@ -9,6 +9,7 @@ import {
 	ShieldCheck,
 	SlidersHorizontal,
 	UserCheck,
+	UserPlus,
 	Users,
 } from "lucide-react";
 import ROUTES from "@/lib/constants/routes";
@@ -80,6 +81,12 @@ export const sidebarConfig: SidebarGroup[] = [
 				title: "Invitations",
 				href: ROUTES.KYC_INVITATIONS,
 				icon: ClipboardCheck,
+				permission: { resource: "kyc", action: "manage" },
+			},
+			{
+				title: "Create Record",
+				href: ROUTES.KYC_CREATE,
+				icon: UserPlus,
 				permission: { resource: "kyc", action: "manage" },
 			},
 			{
