@@ -1,11 +1,10 @@
 "use client";
 
+import type { DerivCurrency } from "@repo/deriv";
 import { useEffect, useRef, useState } from "react";
 
-import useAccessToken from "@/hooks/useAccessToken";
 import useCurrency from "@/hooks/useCurrency";
 import useInfiniteScrollSentinel from "@/hooks/useInfiniteScrollSentinel";
-import useSocket from "@/hooks/useSocket";
 import useStatement, { StatementOptions } from "@/hooks/useStatement";
 import type { StatementTransaction } from "@/lib/utils/statement";
 
@@ -16,6 +15,9 @@ export type FilteredStatementOptions = Pick<
 	"action_type" | "date_from" | "date_to"
 >;
 
+const buildFetchKey = (currency: string, f: FilteredStatementOptions) =>
+	`${currency}|${f.action_type}|${f.date_from}|${f.date_to}`;
+
 const useStatementList = () => {
 	const [transactions, setTransactions] = useState<StatementTransaction[]>([]);
 	const [cursor, setCursor] = useState<string | null>(null);
@@ -23,8 +25,6 @@ const useStatementList = () => {
 	const [filters, setFilters] = useState<FilteredStatementOptions>({});
 
 	const { selectedCurrency } = useCurrency();
-	const { socketClient } = useSocket();
-	const { tokenCurrency } = useAccessToken();
 
 	const prevFetchKeyRef = useRef<string | null>(null);
 	const fetchGenerationRef = useRef(0);
@@ -36,17 +36,12 @@ const useStatementList = () => {
 	const { ref: sentinelRef, inView } = useInfiniteScrollSentinel();
 
 	useEffect(() => {
-		if (!socketClient || !selectedCurrency) return;
+		if (!selectedCurrency) return;
 
-		// Wait until the token matches the selected currency before fetching,
-		// so we never fetch via the wrong account's socket during a currency switch.
-		// Pure reconnects (same currency/filters) are caught by prevFetchKeyRef and never
-		// trigger a reload.
-		if (tokenCurrency !== selectedCurrency) return;
-
-		const fetchKey = `${selectedCurrency}|${filters.action_type}|${filters.date_from}|${filters.date_to}`;
+		// Pure reconnects (same currency/filters) are caught by prevFetchKeyRef
+		// and never trigger a reload.
+		const fetchKey = buildFetchKey(selectedCurrency, filters);
 		if (prevFetchKeyRef.current === fetchKey) return;
-		prevFetchKeyRef.current = fetchKey;
 
 		setTransactions([]);
 		setCursor(null);
@@ -55,32 +50,42 @@ const useStatementList = () => {
 
 		(async () => {
 			const result = await getStatementRef.current({
+				currency: selectedCurrency as DerivCurrency,
 				limit: LIMIT,
 				...filters,
 			});
 
 			if (fetchGenerationRef.current !== generation) return;
+
+			// Only mark this currency/filter combination as settled once its
+			// reset fetch has actually landed. Until then, `cursor`/`hasMore`
+			// in this render still belong to the previous combination — if we
+			// flipped prevFetchKeyRef synchronously above, the infinite-scroll
+			// effect below (which re-runs in this same commit) could pair the
+			// new currency with a stale cursor from the old one.
+			prevFetchKeyRef.current = fetchKey;
 			setTransactions(result?.transactions ?? []);
 			setCursor(result?.nextCursor ?? null);
 			setHasMore(result?.hasMore ?? false);
 		})();
-	}, [socketClient, tokenCurrency, selectedCurrency, filters]);
+	}, [selectedCurrency, filters]);
 
 	useEffect(() => {
-		if (
-			!inView ||
-			!selectedCurrency ||
-			!socketClient ||
-			isLoading ||
-			!hasMore ||
-			!cursor
-		)
+		if (!inView || !selectedCurrency || isLoading || !hasMore || !cursor)
 			return;
+
+		// Guard against the same-commit race where this effect re-runs right
+		// after a currency/filter change, before the reset fetch above has
+		// landed — `cursor`/`hasMore` in that render still belong to the
+		// previous combination.
+		const fetchKey = buildFetchKey(selectedCurrency, filters);
+		if (prevFetchKeyRef.current !== fetchKey) return;
 
 		const generation = fetchGenerationRef.current;
 
 		(async () => {
 			const result = await getStatementRef.current({
+				currency: selectedCurrency as DerivCurrency,
 				limit: LIMIT,
 				cursor,
 				...filters,
@@ -94,15 +99,7 @@ const useStatementList = () => {
 			setCursor(result?.nextCursor ?? null);
 			setHasMore(result?.hasMore ?? false);
 		})();
-	}, [
-		inView,
-		selectedCurrency,
-		socketClient,
-		isLoading,
-		hasMore,
-		cursor,
-		filters,
-	]);
+	}, [inView, selectedCurrency, isLoading, hasMore, cursor, filters]);
 
 	const applyFilters = (f: FilteredStatementOptions) => {
 		setFilters(f);
@@ -113,8 +110,8 @@ const useStatementList = () => {
 		isLoading,
 		sentinelRef,
 		currency: selectedCurrency,
-		isConnecting: !socketClient,
-		isEmpty: !!socketClient && !isLoading && transactions.length === 0,
+		isConnecting: !selectedCurrency,
+		isEmpty: !!selectedCurrency && !isLoading && transactions.length === 0,
 		filters,
 		applyFilters,
 	};

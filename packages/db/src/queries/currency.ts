@@ -24,7 +24,32 @@ export const getAllOrganizationCurrencies = async (
 	return currencies;
 };
 
-export const getOneOrganizationCurrency = async (
+type BaseOrganizationCurrency = {
+	id: string;
+	code: CURRENCY;
+	label: string;
+	organizationId: string;
+	createdAt: Date;
+	updatedAt: Date;
+};
+
+export function getOneOrganizationCurrency(
+	args: {
+		organizationId: string;
+		currencyCode: string;
+		options: { includeToken: true };
+	},
+	db: DB,
+): Promise<BaseOrganizationCurrency & { token: string }>;
+export function getOneOrganizationCurrency(
+	args: {
+		organizationId: string;
+		currencyCode: string;
+		options?: { includeToken?: false };
+	},
+	db: DB,
+): Promise<BaseOrganizationCurrency>;
+export async function getOneOrganizationCurrency(
 	{
 		organizationId,
 		currencyCode,
@@ -37,7 +62,7 @@ export const getOneOrganizationCurrency = async (
 		};
 	},
 	db: DB,
-) => {
+) {
 	const selection = options?.includeToken
 		? {
 				...baseSelection,
@@ -63,7 +88,7 @@ export const getOneOrganizationCurrency = async (
 	}
 
 	return fetchedCurrency;
-};
+}
 
 export const updateOrganizationCurrencyData = async (
 	{

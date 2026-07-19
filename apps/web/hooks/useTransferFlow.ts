@@ -7,10 +7,11 @@ import {
 	TransferData,
 } from "@/components/features/funds-transfer/types";
 import { hasRoleStatement } from "@/components/features/nav/sidebar/utils";
+import { scheduleTransfer } from "@/lib/actions/transfers/scheduleTransfer";
+import { validateTransfer } from "@/lib/actions/transfers/validateTransfer";
 import { useSession } from "@/lib/auth-client";
 import { buildTransferDescription } from "@/lib/utils/transfer";
 import useCurrency from "./useCurrency";
-import useSocket from "./useSocket";
 
 const initialState: State = {
 	step: 1,
@@ -61,7 +62,6 @@ const transferReducer = (state: State, action: Action): State => {
 const useTransferFlow = () => {
 	const [state, dispatch] = useReducer(transferReducer, initialState);
 
-	const { socketClient } = useSocket();
 	const { selectedCurrency } = useCurrency();
 	const { data: session } = useSession();
 
@@ -82,8 +82,6 @@ const useTransferFlow = () => {
 	};
 
 	const onValidation = async (transferData: TransferData) => {
-		if (!socketClient) throw new Error("Socket disconnected");
-
 		setPending(true);
 
 		// Reused as Deriv's request_id when the real transfer submits later —
@@ -91,17 +89,19 @@ const useTransferFlow = () => {
 		// check and Deriv's anti-replay check.
 		const idempotencyKey = crypto.randomUUID();
 
-		const [validationResult, error] = await tryCatch(() =>
-			socketClient.validatePaymentAgentTransfer(
-				{
+		const [response, error] = await tryCatch(() =>
+			validateTransfer({
+				data: {
 					to_nickname: transferData.clientAccount,
 					amount: transferData.amount,
 					currency: selectedCurrency as CURRENCY,
 					notes: transferData.description ?? "",
 					request_id: idempotencyKey,
 				},
-				{ ignoreDuplicatePayment: state.options.ignoreDuplicatePayment },
-			),
+				options: {
+					ignoreDuplicatePayment: state.options.ignoreDuplicatePayment,
+				},
+			}),
 		);
 
 		setPending(false);
@@ -115,7 +115,16 @@ const useTransferFlow = () => {
 			return;
 		}
 
-		// if (validationResult.client_real_name === null) {
+		if (!response.success) {
+			dispatch({
+				type: "setError",
+				payload: response.error?.message || "Unable to complete your request",
+			});
+
+			return;
+		}
+
+		// if (response.data?.client_real_name === null) {
 		// 	dispatch({
 		// 		type: "setError",
 		// 		payload: "Client name could not be validated",
@@ -130,7 +139,7 @@ const useTransferFlow = () => {
 			type: "setData",
 			payload: {
 				...transferData,
-				clientName: validationResult.client_real_name || "",
+				clientName: response.data?.client_real_name || "",
 			},
 		});
 	};
@@ -139,8 +148,6 @@ const useTransferFlow = () => {
 		depositRate: number,
 		onSuccess?: (transactionId: string) => void,
 	) => {
-		if (!socketClient) throw new Error("Socket disconnected");
-
 		const { idempotencyKey } = state.options;
 		if (!idempotencyKey) return;
 
@@ -154,22 +161,22 @@ const useTransferFlow = () => {
 			depositRate,
 		);
 
-		const [result, error] = await tryCatch(() =>
-			socketClient.transferFunds(
-				{
+		const [response, error] = await tryCatch(() =>
+			scheduleTransfer({
+				data: {
 					to_nickname: state.transferData.clientAccount,
 					amount: state.transferData.amount,
 					currency: selectedCurrency as CURRENCY,
 					notes: derivNote,
 					request_id: idempotencyKey,
 				},
-				{
+				options: {
 					idempotencyKey,
 					ignoreDuplicatePayment: state.options.ignoreDuplicatePayment,
 					notes: state.transferData.description,
 					depositRate,
 				},
-			),
+			}),
 		);
 
 		setPending(false);
@@ -185,9 +192,20 @@ const useTransferFlow = () => {
 			return;
 		}
 
+		if (!response.success) {
+			dispatch({
+				type: "setError",
+				payload:
+					response.error?.message ||
+					"Something went wrong. Please review statement before retrying",
+			});
+
+			return;
+		}
+
 		dispatch({ type: "setStep", payload: 3 });
 
-		if (result.id) onSuccess?.(result.id);
+		if (response.data?.id) onSuccess?.(response.data.id);
 	};
 
 	const onReset = () => {

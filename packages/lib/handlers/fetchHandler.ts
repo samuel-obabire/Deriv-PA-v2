@@ -5,12 +5,13 @@ import type { ErrorResponse } from "../types";
 const fetchHandler = async <T>(
 	url: string,
 	options?: RequestInit,
+	ttl = 9000,
 ): Promise<T> => {
 	const controller = new AbortController();
 
 	const timerId = setTimeout(() => {
 		controller.abort();
-	}, 9000);
+	}, ttl);
 
 	try {
 		const res = await fetch(url, {

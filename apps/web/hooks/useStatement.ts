@@ -1,34 +1,31 @@
 "use client";
 
-import { type StatementQuery, type StatementResult } from "@repo/deriv";
+import { type StatementResult } from "@repo/deriv";
 import { tryCatch } from "@repo/utils";
 import { useCallback, useState } from "react";
 
-import useSocket from "@/hooks/useSocket";
+import { type StatementRequest, statementApi } from "@/lib/api/statement";
 
-export type StatementOptions = StatementQuery;
+export type StatementOptions = StatementRequest;
 
 const useStatement = () => {
 	const [isLoading, setIsLoading] = useState(false);
-	const { socketClient } = useSocket();
 
 	const getStatement = useCallback(
 		async (options: StatementOptions): Promise<StatementResult | null> => {
-			if (!socketClient) return null;
-
 			setIsLoading(true);
 
 			const [result, error] = await tryCatch(() =>
-				socketClient.getStatement(options),
+				statementApi.getStatement(options),
 			);
 
 			setIsLoading(false);
 
-			if (error) return null;
+			if (error || !result.success) return null;
 
-			return result;
+			return result.data ?? null;
 		},
-		[socketClient],
+		[],
 	);
 
 	return [isLoading, getStatement] as const;

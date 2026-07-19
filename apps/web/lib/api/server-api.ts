@@ -1,3 +1,7 @@
+import type {
+	ClientNameValidationResult,
+	PaymentAgentTransferInput,
+} from "@repo/deriv";
 import fetchHandler from "@repo/lib/handlers/fetch";
 import { TokenPayload } from "@repo/utils";
 import { ActionResponse } from "../../types/global";
@@ -20,6 +24,33 @@ function serverFetch<T extends object, R>(
 	});
 }
 
+type TransferOptions = {
+	ignoreDuplicatePayment?: boolean;
+};
+
+export type ValidateTransferPayload = {
+	organizationId: string;
+	tokenId: string;
+	data: PaymentAgentTransferInput;
+	options: TransferOptions;
+};
+
+export type ScheduleTransferPayload = {
+	organizationId: string;
+	tokenId: string;
+	userId: string;
+	data: PaymentAgentTransferInput;
+	options: TransferOptions & {
+		idempotencyKey: string;
+		notes?: string;
+		depositRate: number;
+	};
+};
+
+export type ScheduledTransfer = {
+	id: string;
+};
+
 export const serverApi = {
 	getToken(payload: TokenPayload) {
 		return serverFetch<TokenPayload, ActionResponse<{ accessToken: string }>>(
@@ -35,5 +66,23 @@ export const serverApi = {
 			"POST",
 			{ userId },
 		);
+	},
+
+	validatePaymentAgentTransfer(payload: ValidateTransferPayload) {
+		return serverFetch<
+			ValidateTransferPayload,
+			ActionResponse<ClientNameValidationResult>
+		>(
+			`${clientEnv.NEXT_PUBLIC_SERVER_URL}/transfers/validate`,
+			"POST",
+			payload,
+		);
+	},
+
+	scheduleTransfer(payload: ScheduleTransferPayload) {
+		return serverFetch<
+			ScheduleTransferPayload,
+			ActionResponse<ScheduledTransfer>
+		>(`${clientEnv.NEXT_PUBLIC_SERVER_URL}/transfers`, "POST", payload);
 	},
 };
