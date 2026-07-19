@@ -1,5 +1,7 @@
 import { KYC_DOCUMENT_TYPE } from "@repo/db/enums";
 
+export const KYC_INVITE_TOKEN_COOKIE = "kyc_invite_token";
+
 type DocumentTypeConfig = {
 	label: string;
 	hasBackView: boolean;
