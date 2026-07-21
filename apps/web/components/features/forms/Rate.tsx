@@ -50,7 +50,11 @@ const RateForm = ({ onSubmit, rate }: RateFormProps) => {
 	return (
 		<Card className="w-full">
 			<CardContent>
-				<form id="signin-form" onSubmit={form.handleSubmit(handleSubmit)}>
+				<form
+					id="signin-form"
+					onSubmit={form.handleSubmit(handleSubmit)}
+					autoComplete="off"
+				>
 					<FieldGroup>
 						<Controller
 							name="deposit"

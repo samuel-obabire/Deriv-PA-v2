@@ -20,7 +20,11 @@ const ContactForm = ({ defaultValues, onBack, onNext }: Props) => {
 	});
 
 	return (
-		<form id="contact-form" onSubmit={form.handleSubmit(onNext)}>
+		<form
+			id="contact-form"
+			onSubmit={form.handleSubmit(onNext)}
+			autoComplete="off"
+		>
 			<FieldGroup>
 				<Controller
 					name="whatsappNumber"

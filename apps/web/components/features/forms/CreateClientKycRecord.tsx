@@ -58,6 +58,7 @@ const CreateClientKycRecordForm = ({
 			id="create-kyc-record-form"
 			onSubmit={form.handleSubmit(handleSubmit)}
 			className="space-y-8"
+			autoComplete="off"
 		>
 			<FieldGroup>
 				<div className="grid gap-5 sm:grid-cols-2">

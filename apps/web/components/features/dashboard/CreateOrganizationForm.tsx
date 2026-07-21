@@ -78,6 +78,7 @@ const CreateOrganizationForm = ({
 				handleCreate();
 			}}
 			className="flex items-center gap-1.5"
+			autoComplete="off"
 		>
 			<Input
 				type="text"

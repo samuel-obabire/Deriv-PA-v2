@@ -8,11 +8,13 @@ import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
+	cn,
 	Field,
 	FieldError,
 	FieldGroup,
 	FieldLabel,
 	Input,
+	Paste,
 	Switch,
 } from "@repo/ui";
 import { div, mul, sub } from "@repo/utils";
@@ -138,14 +140,24 @@ const TransferToClientForm = ({
 						render={({ field, fieldState }) => (
 							<Field data-invalid={fieldState.invalid}>
 								<FieldLabel htmlFor="clientAccount">Client Account</FieldLabel>
-								<Input
-									{...field}
-									className={formInputClass}
-									id="clientAccount"
-									aria-invalid={fieldState.invalid}
-									placeholder="Enter client account"
-									autoComplete="off"
-								/>
+								<div className="relative">
+									<Input
+										{...field}
+										className={cn(formInputClass, "pr-9!")}
+										id="clientAccount"
+										aria-invalid={fieldState.invalid}
+										placeholder="Enter client account"
+										autoComplete="off"
+									/>
+									<Paste
+										className="absolute top-1/2 right-1.5 -translate-y-1/2"
+										onPaste={(value) =>
+											form.setValue("clientAccount", value, {
+												shouldValidate: true,
+											})
+										}
+									/>
+								</div>
 								{fieldState.invalid && (
 									<FieldError errors={[fieldState.error]} />
 								)}

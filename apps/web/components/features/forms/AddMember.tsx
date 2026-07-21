@@ -55,7 +55,11 @@ const AddMemberForm = ({ onSubmit }: AddMemberFormProps) => {
 	return (
 		<Card className="w-full">
 			<CardContent>
-				<form id="add-member-form" onSubmit={form.handleSubmit(handleSubmit)}>
+				<form
+					id="add-member-form"
+					onSubmit={form.handleSubmit(handleSubmit)}
+					autoComplete="off"
+				>
 					<FieldGroup>
 						<Controller
 							name="email"

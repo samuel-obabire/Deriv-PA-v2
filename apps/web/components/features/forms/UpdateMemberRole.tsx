@@ -70,7 +70,11 @@ const UpdateMemberRoleForm = ({
 	return (
 		<Card className="w-full">
 			<CardContent>
-				<form id="update-role-form" onSubmit={form.handleSubmit(handleSubmit)}>
+				<form
+					id="update-role-form"
+					onSubmit={form.handleSubmit(handleSubmit)}
+					autoComplete="off"
+				>
 					<FieldGroup>
 						<Controller
 							name="role"

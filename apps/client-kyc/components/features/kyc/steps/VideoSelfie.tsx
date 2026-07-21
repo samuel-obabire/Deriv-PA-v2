@@ -30,6 +30,7 @@ const VideoSelfie = ({ defaultValues, onBack, onNext }: Props) => {
 		<form
 			id="selfie-form"
 			onSubmit={form.handleSubmit((data) => onNext(data, previewUrl))}
+			autoComplete="off"
 		>
 			<FieldGroup>
 				<div className="space-y-3 text-sm text-muted-foreground">

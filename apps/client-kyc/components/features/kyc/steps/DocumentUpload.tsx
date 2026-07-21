@@ -61,7 +61,7 @@ const DocumentUpload = ({ defaultValues, onBack, onNext }: Props) => {
 	});
 
 	return (
-		<form id="document-form" onSubmit={handleSubmit}>
+		<form id="document-form" onSubmit={handleSubmit} autoComplete="off">
 			<FieldGroup>
 				<Controller
 					name="documentType"

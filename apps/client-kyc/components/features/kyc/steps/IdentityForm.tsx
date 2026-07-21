@@ -30,7 +30,11 @@ const IdentityForm = ({ defaultValues, onNext }: Props) => {
 	});
 
 	return (
-		<form id="identity-form" onSubmit={form.handleSubmit(onNext)}>
+		<form
+			id="identity-form"
+			onSubmit={form.handleSubmit(onNext)}
+			autoComplete="off"
+		>
 			<FieldGroup>
 				<Controller
 					name="fullName"
