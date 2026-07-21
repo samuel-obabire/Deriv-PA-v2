@@ -63,7 +63,11 @@ const Signup = ({ onSubmit }: SignupProps) => {
 			</CardHeader>
 
 			<CardContent>
-				<form id="signup-form" onSubmit={form.handleSubmit(handleSubmit)}>
+				<form
+					id="signup-form"
+					onSubmit={form.handleSubmit(handleSubmit)}
+					autoComplete="off"
+				>
 					<FieldGroup>
 						<Controller
 							name="name"

@@ -62,6 +62,7 @@ const CreateKycInvitationForm = ({
 				<form
 					id="create-kyc-invitation-form"
 					onSubmit={form.handleSubmit(handleSubmit)}
+					autoComplete="off"
 				>
 					<FieldGroup>
 						<Controller

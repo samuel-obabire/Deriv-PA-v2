@@ -81,11 +81,15 @@ const PendingRequestsList = ({ pendingPromise }: Props) => {
 						<Card key={req.id}>
 							<CardHeader>
 								<div className="flex items-center justify-between gap-4">
-									<div>
-										<CardTitle className="text-base">{req.userName}</CardTitle>
-										<CardDescription>{req.userEmail}</CardDescription>
+									<div className="min-w-0">
+										<CardTitle className="truncate text-base">
+											{req.userName}
+										</CardTitle>
+										<CardDescription className="truncate">
+											{req.userEmail}
+										</CardDescription>
 									</div>
-									<div className="flex gap-2">
+									<div className="flex shrink-0 gap-2">
 										<Button
 											variant="outline"
 											size="xs"
