@@ -133,11 +133,22 @@ export const createClientKycRecord = async (
 	data: InsertClientKycRecord,
 	db: DB,
 ) => {
-	const [created] = await db.insert(clientKycRecord).values(data).returning();
+	try {
+		const [created] = await db.insert(clientKycRecord).values(data).returning();
 
-	if (!created) throw new Error("Failed to create KYC record");
+		if (!created) throw new Error("Failed to create KYC record");
 
-	return created;
+		return created;
+	} catch (err) {
+		if (isUniqueConstraintError(err)) {
+			const constraint = getUniqueConstraintName(err);
+			throw new Error(
+				(constraint && KYC_UNIQUE_CONSTRAINT_MESSAGES[constraint]) ??
+					"A record with these details already exists",
+			);
+		}
+		throw err;
+	}
 };
 
 export const createKycRecordAndBurnInvitation = async (
