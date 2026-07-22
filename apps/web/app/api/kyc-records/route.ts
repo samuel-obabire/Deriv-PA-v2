@@ -41,6 +41,7 @@ export const GET = async (req: NextRequest) => {
 		email,
 		externalReferenceId,
 		derivNickname,
+		name,
 	} = actionResult.params;
 
 	const fn = getClientKycRecordsByOrg(organizationId, db, {
@@ -48,6 +49,7 @@ export const GET = async (req: NextRequest) => {
 		email,
 		externalReferenceId,
 		derivNickname,
+		name,
 		...(cursorDate &&
 			cursorId && {
 				cursor: {

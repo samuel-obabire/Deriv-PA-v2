@@ -5,7 +5,7 @@ import { createContext, PropsWithChildren, useState } from "react";
 
 export type KycRecordFilters = Pick<
 	KycRecordPaginationOption,
-	"email" | "externalReferenceId" | "derivNickname"
+	"email" | "externalReferenceId" | "derivNickname" | "name"
 >;
 
 type KycRecordFiltersContextValue = {

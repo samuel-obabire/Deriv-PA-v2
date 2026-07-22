@@ -15,6 +15,7 @@ export type KycRecordPaginationOption = {
 	email?: string;
 	externalReferenceId?: string;
 	derivNickname?: string;
+	name?: string;
 	limit?: number;
 	cursor?: PaginationCursor;
 };
