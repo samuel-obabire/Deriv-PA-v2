@@ -20,3 +20,16 @@ export const TransactionQuerySchema = z.object({
 });
 
 export type TransactionQuerySchemaType = z.infer<typeof TransactionQuerySchema>;
+
+export const KycRecordQuerySchema = z.object({
+	email: optional(z.string().trim().min(1)),
+	externalReferenceId: optional(z.string().trim().min(1)),
+	derivNickname: optional(z.string().trim().min(1)),
+
+	limit: optional(z.coerce.number().int().positive()),
+
+	cursorDate: optional(z.coerce.date()),
+	cursorId: optional(z.string()),
+});
+
+export type KycRecordQuerySchemaType = z.infer<typeof KycRecordQuerySchema>;

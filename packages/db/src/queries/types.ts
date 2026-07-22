@@ -10,3 +10,11 @@ export type TransactionPaginationOption = {
 	limit?: number;
 	cursor?: PaginationCursor;
 };
+
+export type KycRecordPaginationOption = {
+	email?: string;
+	externalReferenceId?: string;
+	derivNickname?: string;
+	limit?: number;
+	cursor?: PaginationCursor;
+};

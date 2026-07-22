@@ -21,6 +21,8 @@ const ROUTES = {
 	KYC_CREATE: "/kyc/create",
 	KYC: "/kyc",
 	KYC_REVIEW: (recordId: string) => `/kyc/review/${recordId}`,
+	KYC_RECORDS: "/kyc/records",
+	KYC_RECORD_DETAIL: (recordId: string) => `/kyc/records/${recordId}`,
 
 	GET_ACCESS_TOKEN: `${clientEnv.NEXT_PUBLIC_URL}/api/token`,
 };
