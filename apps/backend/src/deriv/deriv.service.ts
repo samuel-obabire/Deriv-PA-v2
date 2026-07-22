@@ -1,16 +1,18 @@
 import { Injectable } from "@nestjs/common";
-import { WsException } from "@nestjs/websockets";
 import { KYC_STATUS } from "@repo/db/enums";
 import {
 	getClientKycRecordByDerivNickname,
 	getClientKycRecordByExternalReferenceId,
 	getDerivClientNicknameByExternalReferenceId,
 } from "@repo/db/queries";
+import type { DuplicateTransferDetails } from "@repo/deriv";
 import { DerivResponseData, orgTokenKey } from "@repo/deriv";
 import { Namespace } from "socket.io";
+import { AppWsException } from "src/common/exceptions/app-ws.exception";
 import { CurrencyTokenService } from "src/currency/currency-token.service";
 import { DatabaseService } from "src/database/database.service";
 import { RedisService } from "src/iam/redis/redis.service";
+import { TransactionService } from "src/transactions/transaction.service";
 import { DerivOptionsRestClient } from "./deriv-options-rest-client";
 import { DerivOrgPoolService } from "./deriv-org-pool.service";
 import { DerivRestClient } from "./deriv-rest-client";
@@ -29,6 +31,7 @@ export class DerivService {
 		private readonly databaseService: DatabaseService,
 		private readonly derivOptionsRestClient: DerivOptionsRestClient,
 		private readonly derivRestClient: DerivRestClient,
+		private readonly transactionService: TransactionService,
 	) {}
 
 	// Deriv balance has moved to their REST API, so we no longer open a live
@@ -66,8 +69,27 @@ export class DerivService {
 		const lockExists = await this.redisService.checkLockExists(lockKey);
 
 		if (lockExists && !options.ignoreDuplicatePayment) {
-			throw new WsException(
+			const recentTransfer =
+				await this.transactionService.findMostRecentForClient(
+					orgId,
+					data.to_nickname,
+				);
+
+			throw new AppWsException<DuplicateTransferDetails>(
 				"Duplicate detected! Your Organisation has sent a payment to this account within last 30 minutes",
+				recentTransfer
+					? {
+							recentTransfer: {
+								id: recentTransfer.id,
+								amount: recentTransfer.amount,
+								currency: recentTransfer.currency,
+								status: recentTransfer.status,
+								clientName: recentTransfer.clientName,
+								clientId: recentTransfer.clientId,
+								createdAt: recentTransfer.createdAt.toISOString(),
+							},
+						}
+					: undefined,
 			);
 		}
 

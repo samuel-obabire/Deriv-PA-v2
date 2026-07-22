@@ -1,12 +1,20 @@
+import type { DuplicateTransferDetails } from "@repo/deriv";
+
 export type Step = 1 | 2 | 3;
+
+export type TransferErrorState = {
+	message: string;
+	details?: DuplicateTransferDetails;
+};
 
 export type Action =
 	| { type: "setStep"; payload: Step }
 	| { type: "setData"; payload: State["transferData"] }
-	| { type: "setError"; payload: string }
+	| { type: "setError"; payload: TransferErrorState }
 	| { type: "setPending"; payload: boolean }
 	| { type: "setIdempotencyKey"; payload: string }
 	| { type: "setIgnoreDuplicatePayment"; payload: boolean }
+	| { type: "clearError" }
 	| { type: "reset" };
 
 export type TransferData = {
@@ -20,7 +28,7 @@ export type TransferData = {
 export type State = {
 	step: Step;
 	transferData: TransferData;
-	errorMessage?: string;
+	error?: TransferErrorState;
 	isPending: boolean;
 	options: {
 		idempotencyKey?: string;

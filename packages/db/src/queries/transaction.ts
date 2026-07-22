@@ -21,6 +21,26 @@ export const getRecentTransfersByOrg = async (
 		.limit(limit);
 };
 
+export const getMostRecentTransferForClient = async (
+	organizationId: string,
+	clientId: string,
+	db: DB,
+) => {
+	const [row] = await db
+		.select()
+		.from(transaction)
+		.where(
+			and(
+				eq(transaction.organizationId, organizationId),
+				eq(transaction.clientId, clientId),
+			),
+		)
+		.orderBy(desc(transaction.createdAt))
+		.limit(1);
+
+	return row ?? null;
+};
+
 export const getTransactions = async ({
 	organizationId,
 	paginationOptions,

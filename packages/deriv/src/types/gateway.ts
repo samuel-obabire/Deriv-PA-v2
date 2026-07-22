@@ -50,3 +50,15 @@ export type ClientNicknameLookupQuery = {
 export type ClientNicknameLookupResult = {
 	nickname: string | null;
 };
+
+export type DuplicateTransferDetails = {
+	recentTransfer: {
+		id: string;
+		amount: string;
+		currency: string;
+		status: string;
+		clientName: string | null;
+		clientId: string;
+		createdAt: string;
+	};
+};

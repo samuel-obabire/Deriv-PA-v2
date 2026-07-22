@@ -1,11 +1,9 @@
 import { InjectQueue } from "@nestjs/bullmq";
-import {
-	BadRequestException,
-	ConflictException,
-	Injectable,
-} from "@nestjs/common";
+import { ConflictException, Injectable } from "@nestjs/common";
 import { CURRENCY } from "@repo/db/enums";
+import type { DuplicateTransferDetails } from "@repo/deriv";
 import { Queue } from "bullmq";
+import { AppWsException } from "src/common/exceptions/app-ws.exception";
 import { TransferFundsDto } from "src/deriv/dto/transferFunds.dto";
 import { RedisService } from "src/iam/redis/redis.service";
 import { TransactionService } from "src/transactions/transaction.service";
@@ -45,8 +43,27 @@ export class TransferQueueService {
 		);
 
 		if (!acquired && !options.ignoreDuplicatePayment) {
-			throw new BadRequestException(
+			const recentTransfer =
+				await this.transactionService.findMostRecentForClient(
+					orgId,
+					data.to_nickname,
+				);
+
+			throw new AppWsException<DuplicateTransferDetails>(
 				"Duplicate detected! Your Organisation has sent a payment to this account within last 30 minutes",
+				recentTransfer
+					? {
+							recentTransfer: {
+								id: recentTransfer.id,
+								amount: recentTransfer.amount,
+								currency: recentTransfer.currency,
+								status: recentTransfer.status,
+								clientName: recentTransfer.clientName,
+								clientId: recentTransfer.clientId,
+								createdAt: recentTransfer.createdAt.toISOString(),
+							},
+						}
+					: undefined,
 			);
 		} else if (!acquired && options.ignoreDuplicatePayment) {
 			await this.redisService.setExpiry(lockKey, ttlSeconds);

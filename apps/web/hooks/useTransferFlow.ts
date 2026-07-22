@@ -1,13 +1,16 @@
 import { CURRENCY } from "@repo/db/enums";
+import type { DuplicateTransferDetails } from "@repo/deriv";
 import { tryCatch } from "@repo/utils";
 import { useReducer } from "react";
 import {
 	Action,
 	State,
 	TransferData,
+	TransferErrorState,
 } from "@/components/features/funds-transfer/types";
 import { hasRoleStatement } from "@/components/features/nav/sidebar/utils";
 import { useSession } from "@/lib/auth-client";
+import { SocketRequestError } from "@/lib/socketError";
 import { buildTransferDescription } from "@/lib/utils/transfer";
 import useCurrency from "./useCurrency";
 import useSocket from "./useSocket";
@@ -21,11 +24,27 @@ const initialState: State = {
 		ngnAmount: "",
 		description: "",
 	},
-	errorMessage: "",
+	error: undefined,
 	isPending: false,
 	options: {
 		ignoreDuplicatePayment: false,
 	},
+};
+
+const toTransferErrorState = (
+	error: unknown,
+	fallbackMessage: string,
+): TransferErrorState => {
+	if (error instanceof SocketRequestError) {
+		return {
+			message: error.message || fallbackMessage,
+			details: error.details as DuplicateTransferDetails | undefined,
+		};
+	}
+
+	return {
+		message: error instanceof Error ? error.message : fallbackMessage,
+	};
 };
 
 const transferReducer = (state: State, action: Action): State => {
@@ -38,7 +57,9 @@ const transferReducer = (state: State, action: Action): State => {
 				transferData: { ...state.transferData, ...action.payload },
 			};
 		case "setError":
-			return { ...state, errorMessage: action.payload };
+			return { ...state, error: action.payload };
+		case "clearError":
+			return { ...state, error: undefined };
 		case "setPending":
 			return { ...state, isPending: action.payload };
 		case "setIdempotencyKey":
@@ -109,20 +130,11 @@ const useTransferFlow = () => {
 		if (error) {
 			dispatch({
 				type: "setError",
-				payload: error.message || "Unable to complete your request",
+				payload: toTransferErrorState(error, "Unable to complete your request"),
 			});
 
 			return;
 		}
-
-		// if (validationResult.client_real_name === null) {
-		// 	dispatch({
-		// 		type: "setError",
-		// 		payload: "Client name could not be validated",
-		// 	});
-
-		// 	return;
-		// }
 
 		dispatch({ type: "setIdempotencyKey", payload: idempotencyKey });
 		dispatch({ type: "setStep", payload: 2 });
@@ -177,9 +189,10 @@ const useTransferFlow = () => {
 		if (error) {
 			dispatch({
 				type: "setError",
-				payload:
-					error.message ||
+				payload: toTransferErrorState(
+					error,
 					"Something went wrong. Please review statement before retrying",
+				),
 			});
 
 			return;
@@ -200,7 +213,7 @@ const useTransferFlow = () => {
 	};
 
 	const clearError = () => {
-		dispatch({ type: "setError", payload: "" });
+		dispatch({ type: "clearError" });
 	};
 
 	return {
