@@ -12,15 +12,27 @@ export const CreateKycInviteSchema = z.object({
 
 export const CreateClientKycRecordSchema = z.object({
 	fullName: z.string().min(5, "Full name must be at least 5 characters"),
-	email: z.email("Enter a valid email address"),
+	email: z
+		.string()
+		.optional()
+		.refine((val) => !val || z.email().safeParse(val).success, {
+			message: "Enter a valid email address",
+		})
+		.transform((val) => (val === "" ? undefined : val)),
 	derivNickname: z
 		.string()
 		.min(2, "Deriv nickname must be at least 2 characters"),
 	externalReferenceId: z.string().min(6, "Client ID is required"),
 	whatsappNumber: z
 		.string()
-		.min(7, "Enter a valid WhatsApp number")
-		.regex(/^\+?[0-9\s-]+$/, "Enter a valid WhatsApp number"),
+		.optional()
+		.refine((val) => !val || val.length >= 7, {
+			message: "Enter a valid WhatsApp number",
+		})
+		.refine((val) => !val || /^\+?[0-9\s-]+$/.test(val), {
+			message: "Enter a valid WhatsApp number",
+		})
+		.transform((val) => (val === "" ? undefined : val)),
 });
 
 export const GetKycSignedUrlSchema = z.object({
