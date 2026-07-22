@@ -39,7 +39,7 @@ const KycPageClient = ({
 		fullName: kycData?.fullName,
 		derivNickname: kycData?.derivNickname,
 		externalReferenceId: kycData?.externalReferenceId,
-		whatsappNumber: kycData?.whatsappNumber,
+		whatsappNumber: kycData?.whatsappNumber ?? undefined,
 		documentType: undefined,
 		idFrontKey: undefined,
 		idFrontPreview: undefined,

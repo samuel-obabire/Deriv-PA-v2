@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { transaction } from "@repo/db";
 import { CURRENCY, TRANSACTION_STATUS, TRANSACTION_TYPE } from "@repo/db/enums";
+import { getMostRecentTransferForClient } from "@repo/db/queries";
 import { and, eq } from "drizzle-orm";
 import { DatabaseService } from "src/database/database.service";
 
@@ -27,6 +28,14 @@ export class TransactionService {
 			.limit(1);
 
 		return row ?? null;
+	}
+
+	async findMostRecentForClient(organizationId: string, clientId: string) {
+		return getMostRecentTransferForClient(
+			organizationId,
+			clientId,
+			this.databaseService.client,
+		);
 	}
 
 	async createPending(input: CreateTransactionInput) {

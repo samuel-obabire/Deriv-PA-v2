@@ -13,6 +13,7 @@ import {
 } from "@repo/deriv";
 import { Socket } from "socket.io-client";
 import { SocketResponse } from "../types/global";
+import { SocketRequestError } from "./socketError";
 
 type Listener<T> = (data: T) => void;
 
@@ -58,7 +59,12 @@ class SocketClient {
 		this.socket.emit(event, data, (response: SocketResponse) => {
 			this.socket.off("disconnect", onDisconnect);
 			if (!response.success) {
-				reject(new Error(response.error.message));
+				reject(
+					new SocketRequestError(
+						response.error.message,
+						response.error.details,
+					),
+				);
 			} else {
 				resolve(response.data);
 			}

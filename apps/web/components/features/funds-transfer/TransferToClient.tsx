@@ -4,6 +4,7 @@ import { Rate } from "@repo/db";
 import useCurrency from "@/hooks/useCurrency";
 import { NewTransferData } from "@/hooks/useRecentTransfers";
 import useTransferFlow from "@/hooks/useTransferFlow";
+import RecentTransferSummary from "./RecentTransferSummary";
 import TransferDetails from "./TransferDetails";
 import TransferError from "./TransferError";
 import TransferResult from "./TransferResult";
@@ -87,13 +88,19 @@ const TransferToClient = ({
 		<div>
 			{renderStep()}
 
-			{state.errorMessage && (
+			{state.error && (
 				<TransferError
-					message={state.errorMessage}
-					open={!!state.errorMessage}
+					message={state.error.message}
+					open={!!state.error}
 					title="Transfer Error"
 					onOpenChange={clearError}
-				/>
+				>
+					{state.error.details?.recentTransfer && (
+						<RecentTransferSummary
+							transfer={state.error.details.recentTransfer}
+						/>
+					)}
+				</TransferError>
 			)}
 		</div>
 	);

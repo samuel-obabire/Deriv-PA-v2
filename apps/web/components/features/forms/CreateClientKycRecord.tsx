@@ -18,11 +18,11 @@ import { ActionResponse } from "@/types/global";
 
 type CreateClientKycRecordFormProps = {
 	onSubmit: (
-		data: z.infer<typeof CreateClientKycRecordSchema>,
+		data: z.output<typeof CreateClientKycRecordSchema>,
 	) => Promise<ActionResponse>;
 };
 
-const defaultValues: z.infer<typeof CreateClientKycRecordSchema> = {
+const defaultValues: z.input<typeof CreateClientKycRecordSchema> = {
 	fullName: "",
 	email: "",
 	derivNickname: "",
@@ -33,13 +33,17 @@ const defaultValues: z.infer<typeof CreateClientKycRecordSchema> = {
 const CreateClientKycRecordForm = ({
 	onSubmit,
 }: CreateClientKycRecordFormProps) => {
-	const form = useForm<z.infer<typeof CreateClientKycRecordSchema>>({
+	const form = useForm<
+		z.input<typeof CreateClientKycRecordSchema>,
+		unknown,
+		z.output<typeof CreateClientKycRecordSchema>
+	>({
 		resolver: zodResolver(CreateClientKycRecordSchema),
 		defaultValues,
 	});
 
 	const handleSubmit = async (
-		data: z.infer<typeof CreateClientKycRecordSchema>,
+		data: z.output<typeof CreateClientKycRecordSchema>,
 	) => {
 		const [result, error] = await tryCatch(() => onSubmit(data));
 

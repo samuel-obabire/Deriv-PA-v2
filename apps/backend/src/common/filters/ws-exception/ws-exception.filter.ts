@@ -1,11 +1,12 @@
 import { ArgumentsHost, Catch, HttpException, Logger } from "@nestjs/common";
 import { BaseWsExceptionFilter, WsException } from "@nestjs/websockets";
 import { ZodValidationException } from "nestjs-zod";
+import { AppWsException } from "src/common/exceptions/app-ws.exception";
 import type { AuthenticatedSocket } from "src/deriv/types";
 
 type WsErrorResponse = {
 	success: false;
-	error: { message: string } | Record<string, unknown>;
+	error: { message: string; details?: unknown } | Record<string, unknown>;
 };
 
 @Catch()
@@ -23,6 +24,13 @@ export class WsExceptionFilter extends BaseWsExceptionFilter {
 			error = {
 				message: "Validation failed",
 				errors: (exception.getZodError() as { errors: unknown[] }).errors,
+			};
+		} else if (exception instanceof AppWsException) {
+			error = {
+				message: exception.message,
+				...(exception.details !== undefined
+					? { details: exception.details }
+					: {}),
 			};
 		} else if (exception instanceof WsException) {
 			const rawError = exception.getError();

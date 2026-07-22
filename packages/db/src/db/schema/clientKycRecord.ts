@@ -31,11 +31,11 @@ export const clientKycRecord = pgTable(
 		organizationId: text("organization_id")
 			.notNull()
 			.references(() => organization.id, { onDelete: "cascade" }),
-		email: text("email").notNull(),
+		email: text("email"),
 		fullName: text("full_name").notNull(),
 		derivNickname: text("deriv_nickname").notNull(),
 		externalReferenceId: text("external_reference_id").notNull(),
-		whatsappNumber: text("whatsapp_number").notNull(),
+		whatsappNumber: text("whatsapp_number"),
 		status: kycStatusEnum("status").notNull().default(KYC_STATUS.UNVERIFIED),
 		documentType: kycDocumentTypeEnum("document_type"),
 		idFrontKey: text("id_front_key"),
