@@ -1,4 +1,4 @@
-import { and, desc, eq, lt, or, type SQLWrapper } from "drizzle-orm";
+import { and, desc, eq, ilike, lt, or, type SQLWrapper } from "drizzle-orm";
 import { clientKycInvitation, clientKycRecord } from "../db/schema";
 import type {
 	ClientKycRecordUpdateData,
@@ -102,6 +102,7 @@ export const getClientKycRecordsByOrg = async (
 		email,
 		externalReferenceId,
 		derivNickname,
+		name,
 	} = paginationOptions ?? {};
 
 	const conditions: (SQLWrapper | undefined)[] = [
@@ -132,6 +133,10 @@ export const getClientKycRecordsByOrg = async (
 
 	if (derivNickname) {
 		conditions.push(eq(clientKycRecord.derivNickname, derivNickname));
+	}
+
+	if (name) {
+		conditions.push(ilike(clientKycRecord.fullName, `%${name}%`));
 	}
 
 	return db

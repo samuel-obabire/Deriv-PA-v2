@@ -25,6 +25,7 @@ export const KycRecordQuerySchema = z.object({
 	email: optional(z.string().trim().min(1)),
 	externalReferenceId: optional(z.string().trim().min(1)),
 	derivNickname: optional(z.string().trim().min(1)),
+	name: optional(z.string().trim().min(1)),
 
 	limit: optional(z.coerce.number().int().positive()),
 

@@ -10,6 +10,8 @@ const KycRecordsFilterDialog = ({
 	onExternalReferenceIdChange,
 	derivNickname,
 	onDerivNicknameChange,
+	name,
+	onNameChange,
 	onApply,
 	onReset,
 	activeFilterCount,
@@ -20,6 +22,8 @@ const KycRecordsFilterDialog = ({
 	onExternalReferenceIdChange: (val: string) => void;
 	derivNickname: string;
 	onDerivNicknameChange: (val: string) => void;
+	name: string;
+	onNameChange: (val: string) => void;
 	onApply: () => void;
 	onReset: () => void;
 	activeFilterCount: number;
@@ -46,6 +50,24 @@ const KycRecordsFilterDialog = ({
 			onCancel={onReset}
 		>
 			<div className="space-y-5">
+				<div className="space-y-2">
+					<Label
+						htmlFor="kyc-record-name"
+						className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+					>
+						Name
+					</Label>
+					<Input
+						id="kyc-record-name"
+						placeholder="e.g. John Doe"
+						value={name}
+						onChange={(e) => onNameChange(e.target.value)}
+						autoComplete="off"
+					/>
+				</div>
+
+				<Separator />
+
 				<div className="space-y-2">
 					<Label
 						htmlFor="kyc-record-email"

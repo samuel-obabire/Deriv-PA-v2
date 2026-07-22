@@ -173,15 +173,6 @@ export class DerivService {
 	// same external_reference_id, in case they submitted KYC with their Deriv
 	// nickname but never did the OAuth connect.
 	async resolveClientNickname(orgId: string, dto: ClientNicknameLookupDto) {
-		const record = await getDerivClientNicknameByExternalReferenceId(
-			dto.external_reference_id,
-			this.databaseService.client,
-		);
-
-		if (record) {
-			return { nickname: record.nickname };
-		}
-
 		const kycRecord = await getClientKycRecordByExternalReferenceId(
 			{
 				organizationId: orgId,
@@ -191,7 +182,16 @@ export class DerivService {
 			this.databaseService.client,
 		);
 
-		return { nickname: kycRecord?.derivNickname ?? null };
+		if (kycRecord?.derivNickname) {
+			return { nickname: kycRecord.derivNickname };
+		}
+
+		const record = await getDerivClientNicknameByExternalReferenceId(
+			dto.external_reference_id,
+			this.databaseService.client,
+		);
+
+		return { nickname: record?.nickname ?? null };
 	}
 
 	async getStatement(

@@ -13,6 +13,7 @@ export function KycRecordsFilter() {
 	const [derivNickname, setDerivNickname] = useState(
 		filters.derivNickname ?? "",
 	);
+	const [name, setName] = useState(filters.name ?? "");
 
 	const onApply = () => {
 		applyFilters({
@@ -21,6 +22,7 @@ export function KycRecordsFilter() {
 				? externalReferenceId.trim()
 				: undefined,
 			derivNickname: derivNickname.trim() ? derivNickname.trim() : undefined,
+			name: name.trim() ? name.trim() : undefined,
 		});
 	};
 
@@ -28,6 +30,7 @@ export function KycRecordsFilter() {
 		setEmail("");
 		setExternalReferenceId("");
 		setDerivNickname("");
+		setName("");
 		applyFilters({});
 	};
 
@@ -35,6 +38,7 @@ export function KycRecordsFilter() {
 		filters.email,
 		filters.externalReferenceId,
 		filters.derivNickname,
+		filters.name,
 	].filter(Boolean).length;
 
 	return (
@@ -48,6 +52,8 @@ export function KycRecordsFilter() {
 				onExternalReferenceIdChange={setExternalReferenceId}
 				derivNickname={derivNickname}
 				onDerivNicknameChange={setDerivNickname}
+				name={name}
+				onNameChange={setName}
 				activeFilterCount={activeFilterCount}
 			/>
 		</div>
