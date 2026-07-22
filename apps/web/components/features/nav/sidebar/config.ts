@@ -11,6 +11,7 @@ import {
 	UserCheck,
 	UserPlus,
 	Users,
+	UsersRound,
 } from "lucide-react";
 import ROUTES from "@/lib/constants/routes";
 import { SidebarGroup } from "./types";
@@ -93,6 +94,12 @@ export const sidebarConfig: SidebarGroup[] = [
 				title: "Review",
 				href: ROUTES.KYC,
 				icon: ShieldCheck,
+				permission: { resource: "kyc", action: "manage" },
+			},
+			{
+				title: "Records",
+				href: ROUTES.KYC_RECORDS,
+				icon: UsersRound,
 				permission: { resource: "kyc", action: "manage" },
 			},
 		],

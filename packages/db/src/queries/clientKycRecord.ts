@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, lt, or, type SQLWrapper } from "drizzle-orm";
 import { clientKycInvitation, clientKycRecord } from "../db/schema";
 import type {
 	ClientKycRecordUpdateData,
@@ -10,6 +10,8 @@ import {
 	getUniqueConstraintName,
 	isUniqueConstraintError,
 } from "../utils/pgErrors";
+import { PAGE_LIMIT } from "./pagination";
+import type { KycRecordPaginationOption } from "./types";
 
 export const getClientKycRecordById = async (id: string, db: DB) => {
 	const [record] = await db
@@ -92,11 +94,52 @@ export const getClientKycRecordByExternalReferenceId = async (
 export const getClientKycRecordsByOrg = async (
 	organizationId: string,
 	db: DB,
+	paginationOptions?: KycRecordPaginationOption,
 ) => {
+	const {
+		limit = PAGE_LIMIT,
+		cursor,
+		email,
+		externalReferenceId,
+		derivNickname,
+	} = paginationOptions ?? {};
+
+	const conditions: (SQLWrapper | undefined)[] = [
+		eq(clientKycRecord.organizationId, organizationId),
+	];
+
+	if (cursor) {
+		conditions.push(
+			or(
+				lt(clientKycRecord.createdAt, cursor.createdAt),
+				and(
+					eq(clientKycRecord.createdAt, cursor.createdAt),
+					lt(clientKycRecord.id, cursor.id),
+				),
+			),
+		);
+	}
+
+	if (email) {
+		conditions.push(eq(clientKycRecord.email, email));
+	}
+
+	if (externalReferenceId) {
+		conditions.push(
+			eq(clientKycRecord.externalReferenceId, externalReferenceId),
+		);
+	}
+
+	if (derivNickname) {
+		conditions.push(eq(clientKycRecord.derivNickname, derivNickname));
+	}
+
 	return db
 		.select()
 		.from(clientKycRecord)
-		.where(eq(clientKycRecord.organizationId, organizationId));
+		.where(and(...conditions))
+		.orderBy(desc(clientKycRecord.createdAt), desc(clientKycRecord.id))
+		.limit(limit);
 };
 
 export const getClientKycRecordsPendingReview = async (

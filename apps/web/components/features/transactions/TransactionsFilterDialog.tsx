@@ -162,6 +162,7 @@ const TransactionsFilterDialog = ({
 						placeholder="Exact amount"
 						value={amount}
 						onChange={(e) => onAmountChange(e.target.value)}
+						autoComplete="off"
 					/>
 				</div>
 
@@ -179,6 +180,7 @@ const TransactionsFilterDialog = ({
 						placeholder="e.g. client_eee"
 						value={clientId}
 						onChange={(e) => onClientIdChange(e.target.value)}
+						autoComplete="off"
 					/>
 				</div>
 			</div>
