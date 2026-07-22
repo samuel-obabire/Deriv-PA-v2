@@ -2,6 +2,7 @@
 
 import "server-only";
 
+import { KYC_STATUS } from "@repo/db/enums";
 import {
 	getClientKycRecordById,
 	updateClientKycRecord,
@@ -9,7 +10,9 @@ import {
 import { UnauthorizedError } from "@repo/lib/errors";
 import handleError from "@repo/lib/http-errors";
 import { tryCatch } from "@repo/utils";
+import { revalidatePath } from "next/cache";
 import * as z from "zod";
+import ROUTES from "@/lib/constants/routes";
 import { db } from "@/lib/db";
 import action from "@/lib/handlers/action";
 import { hasKycPermission } from "@/lib/kyc-permission";
@@ -60,12 +63,11 @@ export const editClientKycRecordAction = async (
 				id: recordId,
 				data: {
 					fullName,
-					// `undefined` is dropped from a Drizzle update set, so an
-					// intentionally cleared field must be `null` to persist.
-					email: email ?? null,
+					email,
 					derivNickname,
 					externalReferenceId,
-					whatsappNumber: whatsappNumber ?? null,
+					whatsappNumber,
+					status: KYC_STATUS.VERIFIED,
 				},
 			},
 			db,
@@ -73,6 +75,8 @@ export const editClientKycRecordAction = async (
 	);
 
 	if (updateError) return handleError(updateError);
+
+	revalidatePath(ROUTES.KYC_RECORDS);
 
 	return { success: true };
 };
