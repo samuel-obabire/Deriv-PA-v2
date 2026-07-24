@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
 	index,
 	pgEnum,
@@ -64,7 +65,7 @@ export const clientKycRecord = pgTable(
 		),
 		uniqueIndex("kyc_record_org_deriv_nickname").on(
 			table.organizationId,
-			table.derivNickname,
+			sql`lower(${table.derivNickname})`,
 		),
 		uniqueIndex("kyc_record_org_external_reference_id").on(
 			table.organizationId,

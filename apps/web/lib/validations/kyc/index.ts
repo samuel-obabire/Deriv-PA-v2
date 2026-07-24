@@ -29,12 +29,16 @@ const kycWhatsappNumberField = z
 	})
 	.transform((val) => (val === "" ? undefined : val));
 
+const kycDerivNicknameField = z
+	.string()
+	.min(2, "Deriv nickname must be at least 2 characters")
+	.toLowerCase()
+	.trim();
+
 export const CreateClientKycRecordSchema = z.object({
 	fullName: z.string().min(5, "Full name must be at least 5 characters"),
 	email: kycEmailField,
-	derivNickname: z
-		.string()
-		.min(2, "Deriv nickname must be at least 2 characters"),
+	derivNickname: kycDerivNicknameField,
 	externalReferenceId: z.string().min(6, "Client ID is required"),
 	whatsappNumber: kycWhatsappNumberField,
 });
@@ -43,9 +47,7 @@ export const EditClientKycRecordSchema = z.object({
 	recordId: z.uuid(),
 	fullName: z.string().min(5, "Full name must be at least 5 characters"),
 	email: kycEmailField,
-	derivNickname: z
-		.string()
-		.min(2, "Deriv nickname must be at least 2 characters"),
+	derivNickname: kycDerivNicknameField,
 	externalReferenceId: z.string().min(6, "Client ID is required"),
 	whatsappNumber: kycWhatsappNumberField,
 });
