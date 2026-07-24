@@ -1,4 +1,13 @@
-import { and, desc, eq, ilike, lt, or, type SQLWrapper } from "drizzle-orm";
+import {
+	and,
+	desc,
+	eq,
+	ilike,
+	lt,
+	or,
+	type SQLWrapper,
+	sql,
+} from "drizzle-orm";
 import { clientKycInvitation, clientKycRecord } from "../db/schema";
 import type {
 	ClientKycRecordUpdateData,
@@ -57,7 +66,7 @@ export const getClientKycRecordByDerivNickname = async (
 		.where(
 			and(
 				eq(clientKycRecord.organizationId, organizationId),
-				eq(clientKycRecord.derivNickname, derivNickname),
+				sql`lower(${clientKycRecord.derivNickname}) = lower(${derivNickname})`,
 				status ? eq(clientKycRecord.status, status) : undefined,
 			),
 		);
@@ -132,7 +141,9 @@ export const getClientKycRecordsByOrg = async (
 	}
 
 	if (derivNickname) {
-		conditions.push(eq(clientKycRecord.derivNickname, derivNickname));
+		conditions.push(
+			sql`lower(${clientKycRecord.derivNickname}) = lower(${derivNickname})`,
+		);
 	}
 
 	if (name) {
