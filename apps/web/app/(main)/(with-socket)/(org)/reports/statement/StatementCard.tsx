@@ -99,9 +99,9 @@ const StatementCardFront = ({ transaction, onFlip }: FrontProps) => {
 							</span>
 						</div>
 
-						<div className="flex items-center justify-between text-xs sm:text-sm">
-							<span className="font-medium">{counterpartyLabel}</span>
-							<span className="text-muted-foreground">
+						<div className="flex min-w-0 items-center justify-between gap-2 text-xs sm:text-sm">
+							<span className="shrink-0 font-medium">{counterpartyLabel}</span>
+							<span className="truncate text-muted-foreground">
 								{counterpartyClientId ?? "—"}
 							</span>
 						</div>
@@ -186,11 +186,17 @@ const StatementCardBack = ({
 					</div>
 				) : null}
 
-				<div className="flex items-center justify-between gap-2 text-xs sm:text-sm">
+				<div className="flex min-w-0 items-center justify-between gap-2 text-xs sm:text-sm">
 					<span className="shrink-0 font-medium">{counterpartyLabel}</span>
-					<span className="text-muted-foreground">
-						{counterpartyClientId ?? "—"}
-					</span>
+					{counterpartyClientId ? (
+						<Copy value={counterpartyClientId} className="min-w-0">
+							<span className="truncate text-muted-foreground">
+								{counterpartyClientId}
+							</span>
+						</Copy>
+					) : (
+						<span className="text-muted-foreground">—</span>
+					)}
 				</div>
 
 				<div className="flex items-center justify-between gap-2 text-xs sm:text-sm">
