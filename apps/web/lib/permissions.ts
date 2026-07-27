@@ -30,6 +30,7 @@ const auditor = ac.newRole({
 const cashier = ac.newRole({
 	payment: ["create", "update"],
 	statement: ["view"],
+	kyc: ["manage"],
 	...memberAc.statements,
 });
 
