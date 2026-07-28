@@ -13,8 +13,6 @@ import { CurrencyTokenService } from "src/currency/currency-token.service";
 import { DatabaseService } from "src/database/database.service";
 import { RedisService } from "src/iam/redis/redis.service";
 import { TransactionService } from "src/transactions/transaction.service";
-import { DerivOptionsRestClient } from "./deriv-options-rest-client";
-import { DerivOrgPoolService } from "./deriv-org-pool.service";
 import { DerivRestClient } from "./deriv-rest-client";
 import { ClientNameValidationDto } from "./dto/clientNameValidation.dto";
 import { ClientNicknameLookupDto } from "./dto/clientNicknameLookup.dto";
@@ -25,11 +23,9 @@ import { TransferValidationDto } from "./dto/transferValidation.dto";
 @Injectable()
 export class DerivService {
 	constructor(
-		private readonly derivOrgPoolService: DerivOrgPoolService,
 		private readonly currencyTokenService: CurrencyTokenService,
 		private readonly redisService: RedisService,
 		private readonly databaseService: DatabaseService,
-		private readonly derivOptionsRestClient: DerivOptionsRestClient,
 		private readonly derivRestClient: DerivRestClient,
 		private readonly transactionService: TransactionService,
 	) {}
@@ -107,15 +103,27 @@ export class DerivService {
 		return this.resolveClientName(orgId, { derivNickname: data.to_nickname });
 	}
 
-	// Same dry-run REST call as validatePaymentAgentTransfer, minus the redis
-	// duplicate-payment lock — this never sends money, it only confirms the
-	// nickname is still live on Deriv's side.
+	// Our own KYC records are checked first since they're free and instant;
+	// the Deriv dry-run REST call only runs as a fallback when we
+	// have no verified record for the client.
 	async validateClientName(
 		orgId: string,
 		dto: ClientNameValidationDto,
 		tokenId: string,
 	) {
 		const { data, external_reference_id } = dto;
+
+		const dbResult = external_reference_id
+			? await this.resolveClientName(orgId, {
+					externalReferenceId: external_reference_id,
+				})
+			: await this.resolveClientName(orgId, {
+					derivNickname: data.to_nickname,
+				});
+
+		if (dbResult.client_real_name !== null) {
+			return dbResult;
+		}
 
 		const token = await this.currencyTokenService.getDecryptedOrgToken(
 			orgId,
@@ -125,15 +133,7 @@ export class DerivService {
 		const validation =
 			await this.derivRestClient.paymentAgentTransferValidation(token, data);
 
-		if (validation.data.client_real_name !== null) {
-			return { client_real_name: validation.data.client_real_name };
-		}
-
-		return external_reference_id
-			? this.resolveClientName(orgId, {
-					externalReferenceId: external_reference_id,
-				})
-			: this.resolveClientName(orgId, { derivNickname: data.to_nickname });
+		return { client_real_name: validation.data.client_real_name };
 	}
 
 	// Client's real name is sourced from our own KYC records now — Deriv no

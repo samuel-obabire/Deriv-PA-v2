@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
 	bigint,
 	index,
@@ -59,6 +60,7 @@ export const transaction = pgTable(
 	(table) => [
 		index("transaction_org_idx").on(table.organizationId),
 		index("transaction_client_idx").on(table.clientId),
+		index("transaction_client_lower_idx").on(sql`lower(${table.clientId})`),
 		index("transaction_org_created_idx").on(
 			table.organizationId,
 			table.createdAt,

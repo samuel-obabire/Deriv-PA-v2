@@ -1,0 +1,1 @@
+CREATE INDEX "transaction_client_lower_idx" ON "transactions" USING btree (lower("client_id"));
