@@ -1,4 +1,14 @@
-import { and, desc, eq, gte, lt, lte, or, type SQLWrapper } from "drizzle-orm";
+import {
+	and,
+	desc,
+	eq,
+	gte,
+	lt,
+	lte,
+	or,
+	type SQLWrapper,
+	sql,
+} from "drizzle-orm";
 import { transaction } from "../db/schema";
 import { DB } from "../types";
 import { PAGE_LIMIT } from "./pagination";
@@ -94,7 +104,9 @@ export const getTransactions = async ({
 	}
 
 	if (clientId) {
-		conditions.push(eq(transaction.clientId, clientId));
+		const lowerClientId = sql`lower(${transaction.clientId}) = lower(${clientId})`;
+
+		conditions.push(lowerClientId);
 	}
 
 	const transactions = await db

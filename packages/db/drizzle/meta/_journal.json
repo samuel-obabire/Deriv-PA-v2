@@ -120,6 +120,13 @@
 			"when": 1784932019478,
 			"tag": "0016_charming_aaron_stack",
 			"breakpoints": true
+		},
+		{
+			"idx": 17,
+			"version": "7",
+			"when": 1785278238469,
+			"tag": "0017_quiet_gauntlet",
+			"breakpoints": true
 		}
 	]
 }
