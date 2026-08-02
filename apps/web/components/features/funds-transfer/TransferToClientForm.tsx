@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Rate } from "@repo/db";
 import {
-	Button,
 	Card,
 	Collapsible,
 	CollapsibleContent,
@@ -22,7 +21,12 @@ import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
+import {
+	formatAmountInput,
+	sanitizeAmountInput,
+} from "@/lib/utils/formatCurrency";
 import { createTransferToClientSchema } from "@/lib/validations/deriv/transfer-to-client";
+import TransferSubmitButton from "./TransferSubmitButton";
 import { TransferData } from "./types";
 
 type TransferToClientFormProps = {
@@ -97,7 +101,7 @@ const TransferToClientForm = ({
 	};
 
 	const handleNgnAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const val = e.target.value;
+		const val = sanitizeAmountInput(e.target.value);
 		setNgnAmount(val);
 		if (!val) {
 			form.setValue("amount", "", { shouldValidate: true });
@@ -194,7 +198,7 @@ const TransferToClientForm = ({
 											className="h-auto! border-0! bg-transparent! p-0! text-3xl! font-semibold! tracking-tight! text-foreground shadow-none! focus-visible:ring-0! placeholder:text-muted-foreground/40"
 											id="ngnAmount"
 											placeholder="0.00"
-											value={ngnAmount}
+											value={formatAmountInput(ngnAmount)}
 											onChange={handleNgnAmountChange}
 											autoComplete="off"
 										/>
@@ -310,15 +314,13 @@ const TransferToClientForm = ({
 				</Collapsible>
 			)}
 
-			<Button
-				className="w-full rounded-xl shadow-sm shadow-primary/20 transition-shadow hover:shadow-md hover:shadow-primary/25"
-				size="lg"
-				form="transfer-to-client-form"
-				type="submit"
-				disabled={isPending}
-			>
-				Transfer
-			</Button>
+			<TransferSubmitButton
+				usdAmount={form.watch("amount") ?? "0"}
+				ngnAmount={ngnAmount}
+				formId="transfer-to-client-form"
+				isPending={isPending}
+				onConfirm={form.handleSubmit(handleSubmit)}
+			/>
 		</div>
 	);
 };
