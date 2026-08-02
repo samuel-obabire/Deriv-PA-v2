@@ -9,3 +9,16 @@ export const formatUSD = (amount: number | string) =>
 		style: "decimal",
 		currency: "USD",
 	}).format(Number(amount));
+
+export const sanitizeAmountInput = (value: string) => {
+	const [integerPart = "", ...rest] = value.replace(/[^\d.]/g, "").split(".");
+	return rest.length ? `${integerPart}.${rest.join("")}` : integerPart;
+};
+
+export const formatAmountInput = (value: string) => {
+	const [integerPart = "", decimalPart] = value.split(".");
+	const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	return decimalPart !== undefined
+		? `${formattedInteger}.${decimalPart}`
+		: formattedInteger;
+};
