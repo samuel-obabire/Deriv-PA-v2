@@ -14,6 +14,7 @@ import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { StatementStatusBadge } from "@/components/ui/statement-status-badge";
 import useClientName, { type ClientNameError } from "@/hooks/useClientName";
+import { middleTruncate } from "@/lib/utils/middleTruncate";
 import {
 	adjustUKDateInText,
 	calculateNairaEquivalent,
@@ -102,7 +103,7 @@ const StatementCardFront = ({ transaction, onFlip }: FrontProps) => {
 						<div className="flex min-w-0 items-center justify-between gap-2 text-xs sm:text-sm">
 							<span className="shrink-0 font-medium">{counterpartyLabel}</span>
 							<span className="truncate text-muted-foreground">
-								{counterpartyClientId ?? "—"}
+								{middleTruncate(counterpartyClientId ?? "—")}
 							</span>
 						</div>
 					</div>
@@ -191,7 +192,7 @@ const StatementCardBack = ({
 					{counterpartyClientId ? (
 						<Copy value={counterpartyClientId} className="min-w-0">
 							<span className="truncate text-muted-foreground">
-								{counterpartyClientId}
+								{middleTruncate(counterpartyClientId)}
 							</span>
 						</Copy>
 					) : (
