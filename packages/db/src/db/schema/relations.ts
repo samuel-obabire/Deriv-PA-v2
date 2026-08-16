@@ -4,6 +4,7 @@ import { account } from "./account";
 import { clientKycInvitation } from "./clientKycInvitation";
 import { clientKycRecord } from "./clientKycRecord";
 import { currency } from "./currency";
+import { dailySummary } from "./dailySummary";
 import { elevatedAccessGrant } from "./elevatedAccessGrant";
 import { invitation } from "./invitation";
 import { member } from "./member";
@@ -93,6 +94,13 @@ export const currencyRelation = relations(currency, ({ one }) => ({
 export const rateRelation = relations(rate, ({ one }) => ({
 	organization: one(organization, {
 		fields: [rate.id],
+		references: [organization.id],
+	}),
+}));
+
+export const dailySummaryRelations = relations(dailySummary, ({ one }) => ({
+	organization: one(organization, {
+		fields: [dailySummary.organizationId],
 		references: [organization.id],
 	}),
 }));

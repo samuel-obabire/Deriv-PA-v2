@@ -5,11 +5,13 @@ import {
 	gte,
 	lt,
 	lte,
+	notInArray,
 	or,
 	type SQLWrapper,
 	sql,
 } from "drizzle-orm";
 import { transaction } from "../db/schema";
+import { TRANSACTION_STATUS } from "../enums";
 import { DB } from "../types";
 import { PAGE_LIMIT } from "./pagination";
 import { TransactionPaginationOption } from "./types";
@@ -117,4 +119,38 @@ export const getTransactions = async ({
 		.limit(limit);
 
 	return transactions;
+};
+
+export const getOrganizationTransactionSummary = async (
+	organizationId: string,
+	range: { start: Date; end: Date },
+	db: DB,
+) => {
+	const notDead = notInArray(transaction.status, [
+		TRANSACTION_STATUS.FAILED,
+		TRANSACTION_STATUS.CANCELLED,
+	]);
+	const completed = eq(transaction.status, TRANSACTION_STATUS.COMPLETED);
+	const cancelled = eq(transaction.status, TRANSACTION_STATUS.CANCELLED);
+	const failed = eq(transaction.status, TRANSACTION_STATUS.FAILED);
+
+	const [row] = await db
+		.select({
+			totalCount: sql<number>`count(*) filter (where ${notDead})::int`,
+			totalAmount: sql<string>`coalesce(sum(${transaction.amount}) filter (where ${notDead}), 0)`,
+			totalSuccessful: sql<number>`count(*) filter (where ${completed})::int`,
+			totalSuccessfulAmount: sql<string>`coalesce(sum(${transaction.amount}) filter (where ${completed}), 0)`,
+			totalCancelled: sql<number>`count(*) filter (where ${cancelled})::int`,
+			totalFailed: sql<number>`count(*) filter (where ${failed})::int`,
+		})
+		.from(transaction)
+		.where(
+			and(
+				eq(transaction.organizationId, organizationId),
+				gte(transaction.createdAt, range.start),
+				lt(transaction.createdAt, range.end),
+			),
+		);
+
+	return row;
 };
