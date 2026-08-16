@@ -6,9 +6,11 @@ import { DerivModule } from "src/deriv/deriv.module";
 import { IamModule } from "src/iam/iam.module";
 import redisConfig from "src/iam/redis/redis.config";
 import { TransactionsModule } from "src/transactions/transactions.module";
-import { TRANSFERS } from "./constants";
+import { TRANSFER_RECONCILIATION, TRANSFERS } from "./constants";
 import { TransferProcessor } from "./transfer.processor";
 import { TransferQueueService } from "./transfer-queue.service";
+import { TransferReconciliationProcessor } from "./transfer-reconciliation.processor";
+import { TransferReconciliationQueueService } from "./transfer-reconciliation-queue.service";
 import { TransfersController } from "./transfers.controller";
 
 @Module({
@@ -28,13 +30,25 @@ import { TransfersController } from "./transfers.controller";
 				removeOnFail: 3000,
 			},
 		}),
+		BullModule.registerQueue({
+			name: TRANSFER_RECONCILIATION,
+			defaultJobOptions: {
+				removeOnComplete: 1000,
+				removeOnFail: 3000,
+			},
+		}),
 		DerivModule,
 		CurrencyModule,
 		TransactionsModule,
 		IamModule,
 	],
 	controllers: [TransfersController],
-	providers: [TransferQueueService, TransferProcessor],
+	providers: [
+		TransferQueueService,
+		TransferProcessor,
+		TransferReconciliationQueueService,
+		TransferReconciliationProcessor,
+	],
 	exports: [TransferQueueService],
 })
 export class TransfersModule {}

@@ -49,6 +49,24 @@ export type DerivPaymentAgentTransferResponse = {
 	metadata: DerivRestMetadata;
 };
 
+// GET /payment-agents/v1/transfer/{request_id} — status-check counterpart to
+// the transfer POST above. Adds "requested" (a transient state the POST
+// response never reports) to the POST's status enum, so it gets its own type
+// rather than reusing DerivPaymentAgentTransferStatus. Never returns
+// client_real_name, unlike the POST response, so reconciliation callers must
+// resolve the name themselves.
+export type DerivPaymentAgentTransferCheckStatus =
+	| DerivPaymentAgentTransferStatus
+	| "requested";
+
+export type DerivPaymentAgentTransferStatusResponse = {
+	data: {
+		status: DerivPaymentAgentTransferCheckStatus;
+		transaction_id: number | null;
+	};
+	metadata: DerivRestMetadata;
+};
+
 export type DerivPaymentAgentTransferValidationResponse = {
 	data: {
 		status: DerivPaymentAgentTransferValidationStatus;

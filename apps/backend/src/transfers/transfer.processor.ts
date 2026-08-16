@@ -8,6 +8,7 @@ import { DerivRestClient } from "src/deriv/deriv-rest-client";
 import { HttpRequestError } from "src/http/http-client.service";
 import { TransactionService } from "src/transactions/transaction.service";
 import { EXECUTE_TRANSFER, TRANSFERS } from "./constants";
+import { TransferReconciliationQueueService } from "./transfer-reconciliation-queue.service";
 
 export type TransferJobData = {
 	orgId: string;
@@ -25,6 +26,7 @@ export class TransferProcessor extends WorkerHost {
 		private readonly derivRestClient: DerivRestClient,
 		private readonly derivService: DerivService,
 		private readonly transactionService: TransactionService,
+		private readonly transferReconciliationQueueService: TransferReconciliationQueueService,
 	) {
 		super();
 	}
@@ -83,10 +85,14 @@ export class TransferProcessor extends WorkerHost {
 			// Unknown outcome: network failure, timeout/abort, or a 5xx from
 			// Deriv's own infrastructure. We do NOT know whether the transfer
 			// executed on Deriv's side — leave the tx in PROCESSING rather
-			// than guessing, and flag it for manual reconciliation.
+			// than guessing, and schedule reconciliation checks against Deriv's
+			// transfer-status endpoint to resolve it automatically.
 			this.logger.error(
-				`CRITICAL: Deriv REST transfer request failed for tx ${transactionId} — outcome unknown, manual reconciliation required`,
+				`Deriv REST transfer request failed for tx ${transactionId} — outcome unknown, scheduling reconciliation`,
 				error,
+			);
+			await this.transferReconciliationQueueService.enqueueReconciliation(
+				job.data,
 			);
 			throw error;
 		}
