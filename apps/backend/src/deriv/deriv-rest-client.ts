@@ -3,6 +3,7 @@ import type { ConfigType } from "@nestjs/config";
 import type {
 	DerivPaymentAgentTransferRequest,
 	DerivPaymentAgentTransferResponse,
+	DerivPaymentAgentTransferStatusResponse,
 	DerivPaymentAgentTransferValidationResponse,
 	DerivWalletTransactionsRequest,
 	DerivWalletTransactionsResponse,
@@ -34,6 +35,21 @@ export class DerivRestClient {
 					Authorization: `Bearer ${token}`,
 				},
 				body: JSON.stringify({ data: payload }),
+			},
+		);
+	}
+
+	// GET /payment-agents/v1/transfer/{request_id} used by reconciliation to
+	// poll the outcome of a transfer whose initial POST result was unknown
+	paymentAgentTransferStatus(token: string, requestId: string) {
+		return this.httpClient.request<DerivPaymentAgentTransferStatusResponse>(
+			`${this.config.baseUrl}/payment-agents/v1/transfer/${requestId}`,
+			{
+				method: "GET",
+				headers: {
+					"Deriv-App-ID": this.config.appId,
+					Authorization: `Bearer ${token}`,
+				},
 			},
 		);
 	}
