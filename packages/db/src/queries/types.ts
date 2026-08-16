@@ -11,6 +11,18 @@ export type TransactionPaginationOption = {
 	cursor?: PaginationCursor;
 };
 
+export type DailySummaryCursor = {
+	id: string;
+	businessDate: Date;
+};
+
+export type DailySummaryPaginationOption = {
+	date_from?: Date;
+	date_to?: Date;
+	limit?: number;
+	cursor?: DailySummaryCursor;
+};
+
 export type KycRecordPaginationOption = {
 	email?: string;
 	externalReferenceId?: string;

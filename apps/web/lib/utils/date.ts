@@ -10,3 +10,17 @@ export const formatDate = (date: Date) => {
 export const getTZDate = (date: Date) => {
 	return formatDate(date);
 };
+
+export const formatBusinessDate = (date: Date | string) => {
+	const source = new Date(date);
+	const calendarDate = new Date(
+		source.getUTCFullYear(),
+		source.getUTCMonth(),
+		source.getUTCDate(),
+	);
+
+	return format(calendarDate, "PP");
+};
+
+export const toBusinessDateUTC = (date: Date): Date =>
+	new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));

@@ -14,6 +14,7 @@ const statement = {
 	access_request: ["view", "approve", "reject", "revoke"],
 	statement: ["view"],
 	kyc: ["manage"],
+	summary: ["view"],
 } as const;
 
 const ac = createAccessControl(statement);
@@ -48,6 +49,7 @@ const admin = ac.newRole({
 	access_request: ["view", "approve", "reject", "revoke"],
 	statement: ["view"],
 	kyc: ["manage"],
+	summary: ["view"],
 	...adminAc.statements,
 });
 
@@ -58,6 +60,7 @@ const owner = ac.newRole({
 	statement: ["view"],
 	access_request: ["view", "approve", "reject", "revoke"],
 	kyc: ["manage"],
+	summary: ["view"],
 	...ownerAc.statements,
 });
 

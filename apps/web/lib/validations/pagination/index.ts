@@ -34,3 +34,17 @@ export const KycRecordQuerySchema = z.object({
 });
 
 export type KycRecordQuerySchemaType = z.infer<typeof KycRecordQuerySchema>;
+
+export const DailySummaryQuerySchema = z.object({
+	date_from: optional(z.coerce.date()),
+	date_to: optional(z.coerce.date()),
+
+	limit: optional(z.coerce.number().int().positive()),
+
+	cursorBusinessDate: optional(z.coerce.date()),
+	cursorId: optional(z.string()),
+});
+
+export type DailySummaryQuerySchemaType = z.infer<
+	typeof DailySummaryQuerySchema
+>;

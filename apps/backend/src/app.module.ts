@@ -7,6 +7,7 @@ import { AppService } from "./app.service";
 import { CommonModule } from "./common/common.module";
 import { LoggingMiddleware } from "./common/middleware/logging/logging.middleware";
 import { envSchema } from "./common/validation";
+import { DailySummaryModule } from "./daily-summary/daily-summary.module";
 import { DatabaseModule } from "./database/database.module";
 import { DerivModule } from "./deriv/deriv.module";
 import { DerivGatewayModule } from "./deriv-gateway/deriv-gateway.module";
@@ -33,6 +34,7 @@ import { TransfersModule } from "./transfers/transfers.module";
 		ScheduleModule.forRoot(),
 		TaskModule,
 		TransfersModule,
+		DailySummaryModule,
 	],
 	providers: [
 		AppService,

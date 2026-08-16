@@ -36,7 +36,7 @@ export const sidebarConfig: SidebarGroup[] = [
 				title: "Summary",
 				href: ROUTES.SUMMARY,
 				icon: BarChart3,
-				permission: { resource: "ac", action: "read" },
+				permission: { resource: "summary", action: "view" },
 			},
 			{
 				title: "Statement",
