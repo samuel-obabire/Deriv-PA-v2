@@ -16,7 +16,7 @@ export class DailySummaryScheduler implements OnModuleInit {
 		await this.queue.upsertJobScheduler(
 			DAILY_SUMMARY_SCHEDULER_ID,
 			{
-				pattern: "0 1 * * *",
+				pattern: "5 0 * * *",
 				tz: LAGOS_TZ,
 			},
 			{
