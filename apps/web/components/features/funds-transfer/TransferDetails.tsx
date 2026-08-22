@@ -26,10 +26,10 @@ const TransferDetails = ({
 					Transfer Amount
 				</p>
 				<p className="text-5xl font-bold tracking-tight">
-					{formatUSD(data.amount)} <span className="text-2xl">{currency}</span>
-				</p>
-				<p className="text-sm text-muted-foreground mt-1">
 					{formatNaira(Number(data.ngnAmount))}
+				</p>
+				<p className="text-lg font-medium text-muted-foreground mt-1">
+					{formatUSD(data.amount)} {currency}
 				</p>
 			</Card>
 
