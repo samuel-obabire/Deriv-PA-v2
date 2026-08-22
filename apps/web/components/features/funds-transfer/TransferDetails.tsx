@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Card } from "@repo/ui";
-import { formatNaira, formatUSD } from "@/lib/utils/formatCurrency";
+import { formatAmountInput, formatUSD } from "@/lib/utils/formatCurrency";
 import { TransferData } from "./types";
 
 type TransferDetailsProps = {
@@ -26,7 +26,7 @@ const TransferDetails = ({
 					Transfer Amount
 				</p>
 				<p className="text-5xl font-bold tracking-tight">
-					{formatNaira(Number(data.ngnAmount))}
+					₦ {formatAmountInput(data.ngnAmount)}
 				</p>
 				<p className="text-lg font-medium text-muted-foreground mt-1">
 					{formatUSD(data.amount)} {currency}
