@@ -13,7 +13,7 @@ export const SetActiveOrgSchema = z.object({
 });
 
 export const AddMemberSchema = z.object({
-	email: z.email("Please enter a valid email address"),
+	email: z.email("Please enter a valid email address").toLowerCase(),
 	role: z.enum(ASSIGNABLE_ROLES),
 });
 
