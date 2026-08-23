@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ClipboardPaste } from "lucide-react";
+import { Check } from "lucide-react";
 import { useState } from "react";
 
 import { cn } from "../../lib/utils";
@@ -35,7 +35,7 @@ const Paste = ({ onPaste, className }: Props) => {
 			tabIndex={0}
 			aria-label="Paste from clipboard"
 			className={cn(
-				"inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md text-muted-foreground opacity-60 transition-colors hover:bg-muted hover:text-foreground hover:opacity-100",
+				"inline-flex size-6   cursor-pointer items-center justify-center rounded-md text-muted-foreground opacity-60 transition-colors hover:bg-muted hover:text-foreground hover:opacity-100",
 				className,
 			)}
 			onClick={handlePaste}
@@ -43,8 +43,8 @@ const Paste = ({ onPaste, className }: Props) => {
 		>
 			{pasted ? (
 				<Check className="size-3.5 text-green-500" />
-			) : (
-				<ClipboardPaste className="size-3.5" />
+			) : ( <span className="text-16-medium font-bold">PASTE</span>
+				
 			)}
 		</button>
 	);
