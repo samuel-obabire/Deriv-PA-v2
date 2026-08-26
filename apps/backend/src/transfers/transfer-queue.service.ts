@@ -78,6 +78,7 @@ export class TransferQueueService {
 			idempotencyKey: options.idempotencyKey,
 			depositRate: options.depositRate,
 			notes: options.notes,
+			ngnAmount: options.ngnAmount,
 		});
 
 		await this.transferQueue.add(

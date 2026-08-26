@@ -1,4 +1,8 @@
-import { notesField, paymentAgentTransferSchema } from "@repo/deriv";
+import {
+	notesField,
+	paymentAgentTransferSchema,
+	twoDpNumber,
+} from "@repo/deriv";
 import { createZodDto } from "nestjs-zod";
 import * as z from "zod";
 
@@ -12,6 +16,7 @@ const TransferFundsSchema = z.object({
 		notes: notesField.optional(),
 		// Rate in effect when the transfer was submitted.
 		depositRate: z.number().int().positive(),
+		ngnAmount: twoDpNumber,
 	}),
 });
 

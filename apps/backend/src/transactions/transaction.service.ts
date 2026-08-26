@@ -8,6 +8,7 @@ import { DatabaseService } from "src/database/database.service";
 export interface CreateTransactionInput {
 	clientId: string;
 	amount: string;
+	ngnAmount: string;
 	currency: CURRENCY;
 	organizationId: string;
 	staffId: string;
@@ -44,6 +45,7 @@ export class TransactionService {
 			.values({
 				clientId: input.clientId,
 				amount: input.amount,
+				ngnAmount: input.ngnAmount,
 				currency: input.currency,
 				organizationId: input.organizationId,
 				status: TRANSACTION_STATUS.PENDING,

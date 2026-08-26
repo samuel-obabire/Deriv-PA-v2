@@ -180,6 +180,7 @@ const useTransferFlow = () => {
 					ignoreDuplicatePayment: state.options.ignoreDuplicatePayment,
 					notes: state.transferData.description,
 					depositRate,
+					ngnAmount: state.transferData.ngnAmount,
 				},
 			),
 		);

@@ -24,6 +24,7 @@ type TransferFundsPayload = {
 		ignoreDuplicatePayment?: boolean;
 		notes?: string;
 		depositRate: number;
+		ngnAmount: string;
 	};
 };
 

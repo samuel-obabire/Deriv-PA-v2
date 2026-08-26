@@ -1,0 +1,2 @@
+ALTER TABLE "daily_summary" ADD COLUMN "total_ngn_amount" numeric(18, 2) DEFAULT '0' NOT NULL;--> statement-breakpoint
+ALTER TABLE "transactions" ADD COLUMN "ngn_amount" numeric(18, 2) DEFAULT '0' NOT NULL;

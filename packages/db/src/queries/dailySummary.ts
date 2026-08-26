@@ -16,6 +16,7 @@ export const upsertDailySummary = async (
 			set: {
 				totalAmount: values.totalAmount,
 				totalSuccessfulAmount: values.totalSuccessfulAmount,
+				totalNgnAmount: values.totalNgnAmount,
 				totalCount: values.totalCount,
 				totalSuccessful: values.totalSuccessful,
 				totalCancelled: values.totalCancelled,

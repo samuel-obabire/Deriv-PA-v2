@@ -28,6 +28,9 @@ export const dailySummary = pgTable(
 		})
 			.notNull()
 			.default("0"),
+		totalNgnAmount: numeric("total_ngn_amount", { precision: 18, scale: 2 })
+			.notNull()
+			.default("0"),
 		totalCount: integer("total_count").notNull().default(0),
 		totalSuccessful: integer("total_successful").notNull().default(0),
 		totalCancelled: integer("total_cancelled").notNull().default(0),
