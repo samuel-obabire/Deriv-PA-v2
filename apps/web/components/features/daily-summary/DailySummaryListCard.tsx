@@ -1,7 +1,7 @@
 import { DailySummary } from "@repo/db";
 import { Badge, Card, CardContent, CardHeader } from "@repo/ui";
 import { formatBusinessDate } from "@/lib/utils/date";
-import { formatUSD } from "@/lib/utils/formatCurrency";
+import { formatNaira, formatUSD } from "@/lib/utils/formatCurrency";
 
 type DailySummaryListCardProps = {
 	summary: DailySummary;
@@ -12,6 +12,7 @@ const DailySummaryListCard = ({ summary }: DailySummaryListCardProps) => {
 		businessDate,
 		totalAmount,
 		totalSuccessfulAmount,
+		totalNgnAmount,
 		totalCount,
 		totalSuccessful,
 		totalCancelled,
@@ -36,6 +37,13 @@ const DailySummaryListCard = ({ summary }: DailySummaryListCardProps) => {
 					<div className="flex items-center justify-between text-xs sm:text-sm">
 						<span className="text-muted-foreground">Successful Amount</span>
 						<span>{formatUSD(totalSuccessfulAmount)}</span>
+					</div>
+
+					<div className="flex items-center justify-between text-xs sm:text-sm">
+						<span className="text-muted-foreground">Total NGN Amount</span>
+						<span className="font-semibold">
+							{formatNaira(Number(totalNgnAmount))}
+						</span>
 					</div>
 
 					<div className="flex flex-wrap items-center gap-2 pt-1">

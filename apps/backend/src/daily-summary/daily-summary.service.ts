@@ -25,6 +25,7 @@ export class DailySummaryService {
 				businessDate,
 				totalAmount: summary.totalAmount,
 				totalSuccessfulAmount: summary.totalSuccessfulAmount,
+				totalNgnAmount: summary.totalNgnAmount,
 				totalCount: summary.totalCount,
 				totalSuccessful: summary.totalSuccessful,
 				totalCancelled: summary.totalCancelled,

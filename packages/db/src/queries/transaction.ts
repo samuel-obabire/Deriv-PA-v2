@@ -138,6 +138,7 @@ export const getOrganizationTransactionSummary = async (
 		.select({
 			totalCount: sql<number>`count(*) filter (where ${notDead})::int`,
 			totalAmount: sql<string>`coalesce(sum(${transaction.amount}) filter (where ${notDead}), 0)`,
+			totalNgnAmount: sql<string>`coalesce(sum(${transaction.ngnAmount}) filter (where ${notDead}), 0)`,
 			totalSuccessful: sql<number>`count(*) filter (where ${completed})::int`,
 			totalSuccessfulAmount: sql<string>`coalesce(sum(${transaction.amount}) filter (where ${completed}), 0)`,
 			totalCancelled: sql<number>`count(*) filter (where ${cancelled})::int`,

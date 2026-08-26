@@ -37,6 +37,9 @@ export const transaction = pgTable(
 			.references(() => organization.id),
 		staffId: text("staff_id").references(() => user.id),
 		amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
+		ngnAmount: numeric("ngn_amount", { precision: 18, scale: 2 })
+			.notNull()
+			.default("0"),
 		type: transactionTypeEnum("type").notNull(),
 		currency: currencyEnum("currency").notNull(),
 		status: transactionStatusEnum("status")
