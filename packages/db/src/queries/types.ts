@@ -6,6 +6,7 @@ export type TransactionPaginationOption = {
 	date_to?: Date;
 	status?: TRANSACTION_STATUS;
 	amount?: number;
+	ngnAmount?: number;
 	clientId?: string;
 	limit?: number;
 	cursor?: PaginationCursor;

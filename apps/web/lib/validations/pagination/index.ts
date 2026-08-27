@@ -11,6 +11,7 @@ export const TransactionQuerySchema = z.object({
 	status: optional(z.enum(TRANSACTION_STATUS)),
 
 	amount: optional(z.coerce.number().positive()),
+	ngnAmount: optional(z.coerce.number().positive()),
 	clientId: optional(z.string().trim().min(1)),
 
 	limit: optional(z.coerce.number().int().positive()),

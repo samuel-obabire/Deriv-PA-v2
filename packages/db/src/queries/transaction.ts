@@ -69,6 +69,7 @@ export const getTransactions = async ({
 		date_to,
 		status,
 		amount,
+		ngnAmount,
 		clientId,
 	} = paginationOptions ?? {};
 
@@ -103,6 +104,10 @@ export const getTransactions = async ({
 	if (amount) {
 		// amount is a numeric(12,2) column stored/returned as a fixed 2dp string
 		conditions.push(eq(transaction.amount, amount.toFixed(2)));
+	}
+
+	if (ngnAmount) {
+		conditions.push(eq(transaction.ngnAmount, ngnAmount.toFixed(2)));
 	}
 
 	if (clientId) {

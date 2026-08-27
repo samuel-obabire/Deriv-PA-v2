@@ -28,6 +28,8 @@ const TransactionsFilterDialog = ({
 	onStatusChange,
 	amount,
 	onAmountChange,
+	ngnAmount,
+	onNgnAmountChange,
 	clientId,
 	onClientIdChange,
 	onApply,
@@ -40,6 +42,8 @@ const TransactionsFilterDialog = ({
 	onStatusChange: (val: string) => void;
 	amount: string;
 	onAmountChange: (val: string) => void;
+	ngnAmount: string;
+	onNgnAmountChange: (val: string) => void;
 	clientId: string;
 	onClientIdChange: (val: string) => void;
 	onApply: () => void;
@@ -154,14 +158,33 @@ const TransactionsFilterDialog = ({
 						htmlFor="transaction-amount"
 						className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
 					>
-						Amount
+						USD Amount
 					</Label>
 					<Input
 						id="transaction-amount"
 						type="text"
-						placeholder="Exact amount"
+						placeholder="Exact USD amount"
 						value={amount}
 						onChange={(e) => onAmountChange(e.target.value)}
+						autoComplete="off"
+					/>
+				</div>
+
+				<Separator />
+
+				<div className="space-y-2">
+					<Label
+						htmlFor="transaction-ngn-amount"
+						className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+					>
+						NGN Amount
+					</Label>
+					<Input
+						id="transaction-ngn-amount"
+						type="text"
+						placeholder="Exact NGN amount"
+						value={ngnAmount}
+						onChange={(e) => onNgnAmountChange(e.target.value)}
 						autoComplete="off"
 					/>
 				</div>
