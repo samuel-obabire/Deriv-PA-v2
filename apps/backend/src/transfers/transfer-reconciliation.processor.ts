@@ -15,11 +15,6 @@ import type { TransferJobData } from "./transfer.processor";
 // the shape this endpoint's error responses use.
 const REQUEST_ID_NOT_FOUND = "RequestIDNotFound";
 
-// A RequestIDNotFound on the first few checks likely just means Deriv hasn't
-// propagated the transfer into their lookup system yet. Only past this many
-// attempts do we treat it as proof the transfer never happened.
-const REQUEST_ID_NOT_FOUND_FAIL_THRESHOLD = 8;
-
 @Processor(TRANSFER_RECONCILIATION, { concurrency: 1 })
 export class TransferReconciliationProcessor extends WorkerHost {
 	private readonly logger = new Logger(TransferReconciliationProcessor.name);
@@ -56,18 +51,11 @@ export class TransferReconciliationProcessor extends WorkerHost {
 				error instanceof HttpRequestError &&
 				error.message === REQUEST_ID_NOT_FOUND
 			) {
-				if (attemptNumber >= REQUEST_ID_NOT_FOUND_FAIL_THRESHOLD) {
-					this.logger.error(
-						`Deriv has no record of tx ${transactionId} (request_id ${transferPayload.request_id}) after ${attemptNumber} reconciliation attempts — marking failed`,
-					);
-					await this.transactionService.fail(transactionId);
-					return;
-				}
-
-				this.logger.warn(
-					`Deriv has no record yet of tx ${transactionId} (attempt ${attemptNumber}/${REQUEST_ID_NOT_FOUND_FAIL_THRESHOLD}) — retrying`,
+				this.logger.error(
+					`Deriv has no record of tx ${transactionId} (request_id ${transferPayload.request_id})... marking failed`,
 				);
-				throw error;
+				await this.transactionService.fail(transactionId);
+				return;
 			}
 
 			// Network failure, timeout, or a 5xx from Deriv's infrastructure —

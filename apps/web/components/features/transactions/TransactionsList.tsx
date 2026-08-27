@@ -15,7 +15,7 @@ type TransactionsListProp = {
 	rate: Rate;
 	filters: Pick<
 		TransactionPaginationOption,
-		"date_from" | "date_to" | "status" | "amount" | "clientId"
+		"date_from" | "date_to" | "status" | "amount" | "ngnAmount" | "clientId"
 	>;
 };
 

@@ -19,6 +19,9 @@ export function TransactionsFilter() {
 	const [amount, setAmount] = useState<string>(
 		filters.amount?.toString() ?? "",
 	);
+	const [ngnAmount, setNgnAmount] = useState<string>(
+		filters.ngnAmount?.toString() ?? "",
+	);
 	const [clientId, setClientId] = useState<string>(filters.clientId ?? "");
 
 	const onApply = () => {
@@ -27,6 +30,7 @@ export function TransactionsFilter() {
 			date_from: date?.dateFrom,
 			date_to: date?.dateTo,
 			amount: amount ? Number(amount) : undefined,
+			ngnAmount: ngnAmount ? Number(ngnAmount) : undefined,
 			clientId: clientId.trim() ? clientId.trim() : undefined,
 		});
 	};
@@ -35,6 +39,7 @@ export function TransactionsFilter() {
 		setDate(undefined);
 		setStatus(undefined);
 		setAmount("");
+		setNgnAmount("");
 		setClientId("");
 		applyFilters({});
 	};
@@ -51,6 +56,7 @@ export function TransactionsFilter() {
 		filters.status,
 		filters.date_from,
 		filters.amount,
+		filters.ngnAmount,
 		filters.clientId,
 	].filter(Boolean).length;
 
@@ -65,6 +71,8 @@ export function TransactionsFilter() {
 				onDateChange={handleDateChange}
 				amount={amount}
 				onAmountChange={setAmount}
+				ngnAmount={ngnAmount}
+				onNgnAmountChange={setNgnAmount}
 				clientId={clientId}
 				onClientIdChange={setClientId}
 				activeFilterCount={activeFilterCount}

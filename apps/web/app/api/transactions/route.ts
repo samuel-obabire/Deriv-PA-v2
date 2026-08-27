@@ -42,6 +42,7 @@ export const GET = async (req: NextRequest) => {
 		date_to,
 		status,
 		amount,
+		ngnAmount,
 		clientId,
 	} = actionResult.params;
 
@@ -54,6 +55,7 @@ export const GET = async (req: NextRequest) => {
 			date_to,
 			status,
 			amount,
+			ngnAmount,
 			clientId,
 			...(cursorDate &&
 				cursorId && {
