@@ -3,8 +3,10 @@ import {
 	desc,
 	eq,
 	gte,
+	isNotNull,
 	lt,
 	lte,
+	ne,
 	notInArray,
 	or,
 	type SQLWrapper,
@@ -71,6 +73,7 @@ export const getTransactions = async ({
 		amount,
 		ngnAmount,
 		clientId,
+		hasNotes,
 	} = paginationOptions ?? {};
 
 	const conditions: (SQLWrapper | undefined)[] = [
@@ -114,6 +117,12 @@ export const getTransactions = async ({
 		const lowerClientId = sql`lower(${transaction.clientId}) = lower(${clientId})`;
 
 		conditions.push(lowerClientId);
+	}
+
+	if (hasNotes) {
+		conditions.push(
+			and(isNotNull(transaction.notes), ne(transaction.notes, "")),
+		);
 	}
 
 	const transactions = await db

@@ -8,6 +8,7 @@ export type TransactionPaginationOption = {
 	amount?: number;
 	ngnAmount?: number;
 	clientId?: string;
+	hasNotes?: boolean;
 	limit?: number;
 	cursor?: PaginationCursor;
 };

@@ -1,7 +1,8 @@
 import type { TransactionFilters } from "@/context/TransactionFiltersProvider";
 
 export const buildTransactionSearchParams = (filters: TransactionFilters) => {
-	const { date_from, date_to, status, amount, ngnAmount, clientId } = filters;
+	const { date_from, date_to, status, amount, ngnAmount, clientId, hasNotes } =
+		filters;
 
 	const searchParams = new URLSearchParams();
 
@@ -11,6 +12,7 @@ export const buildTransactionSearchParams = (filters: TransactionFilters) => {
 	if (amount) searchParams.append("amount", amount.toString());
 	if (ngnAmount) searchParams.append("ngnAmount", ngnAmount.toString());
 	if (clientId) searchParams.append("clientId", clientId);
+	if (hasNotes) searchParams.append("hasNotes", "true");
 
 	return searchParams.toString();
 };

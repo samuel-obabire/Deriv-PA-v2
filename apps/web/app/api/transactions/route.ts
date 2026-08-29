@@ -44,6 +44,7 @@ export const GET = async (req: NextRequest) => {
 		amount,
 		ngnAmount,
 		clientId,
+		hasNotes,
 	} = actionResult.params;
 
 	const fn = getTransactions({
@@ -57,6 +58,7 @@ export const GET = async (req: NextRequest) => {
 			amount,
 			ngnAmount,
 			clientId,
+			hasNotes,
 			...(cursorDate &&
 				cursorId && {
 					cursor: {
