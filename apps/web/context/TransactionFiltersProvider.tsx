@@ -5,7 +5,13 @@ import { createContext, PropsWithChildren, useState } from "react";
 
 export type TransactionFilters = Pick<
 	TransactionPaginationOption,
-	"date_from" | "date_to" | "status" | "amount" | "ngnAmount" | "clientId"
+	| "date_from"
+	| "date_to"
+	| "status"
+	| "amount"
+	| "ngnAmount"
+	| "clientId"
+	| "hasNotes"
 >;
 
 type TransactionFiltersContextValue = {

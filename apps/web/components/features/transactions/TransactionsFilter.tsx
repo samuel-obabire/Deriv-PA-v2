@@ -23,6 +23,7 @@ export function TransactionsFilter() {
 		filters.ngnAmount?.toString() ?? "",
 	);
 	const [clientId, setClientId] = useState<string>(filters.clientId ?? "");
+	const [hasNotes, setHasNotes] = useState<boolean>(!!filters.hasNotes);
 
 	const onApply = () => {
 		applyFilters({
@@ -32,6 +33,7 @@ export function TransactionsFilter() {
 			amount: amount ? Number(amount) : undefined,
 			ngnAmount: ngnAmount ? Number(ngnAmount) : undefined,
 			clientId: clientId.trim() ? clientId.trim() : undefined,
+			hasNotes: hasNotes ? true : undefined,
 		});
 	};
 
@@ -41,6 +43,7 @@ export function TransactionsFilter() {
 		setAmount("");
 		setNgnAmount("");
 		setClientId("");
+		setHasNotes(false);
 		applyFilters({});
 	};
 
@@ -58,6 +61,7 @@ export function TransactionsFilter() {
 		filters.amount,
 		filters.ngnAmount,
 		filters.clientId,
+		filters.hasNotes,
 	].filter(Boolean).length;
 
 	return (
@@ -75,6 +79,8 @@ export function TransactionsFilter() {
 				onNgnAmountChange={setNgnAmount}
 				clientId={clientId}
 				onClientIdChange={setClientId}
+				hasNotes={hasNotes}
+				onHasNotesChange={setHasNotes}
 				activeFilterCount={activeFilterCount}
 			/>
 		</div>

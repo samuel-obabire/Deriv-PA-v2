@@ -13,6 +13,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 	Separator,
+	Switch,
 } from "@repo/ui";
 import { endOfDay, format } from "date-fns";
 import { SlidersHorizontal } from "lucide-react";
@@ -32,6 +33,8 @@ const TransactionsFilterDialog = ({
 	onNgnAmountChange,
 	clientId,
 	onClientIdChange,
+	hasNotes,
+	onHasNotesChange,
 	onApply,
 	onReset,
 	activeFilterCount,
@@ -46,6 +49,8 @@ const TransactionsFilterDialog = ({
 	onNgnAmountChange: (val: string) => void;
 	clientId: string;
 	onClientIdChange: (val: string) => void;
+	hasNotes: boolean;
+	onHasNotesChange: (val: boolean) => void;
 	onApply: () => void;
 	onReset: () => void;
 	activeFilterCount: number;
@@ -204,6 +209,22 @@ const TransactionsFilterDialog = ({
 						value={clientId}
 						onChange={(e) => onClientIdChange(e.target.value)}
 						autoComplete="off"
+					/>
+				</div>
+
+				<Separator />
+
+				<div className="flex items-center justify-between gap-2">
+					<Label
+						htmlFor="transaction-has-notes"
+						className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+					>
+						Has Notes
+					</Label>
+					<Switch
+						id="transaction-has-notes"
+						checked={hasNotes}
+						onCheckedChange={onHasNotesChange}
 					/>
 				</div>
 			</div>

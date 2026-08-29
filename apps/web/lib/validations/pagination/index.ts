@@ -13,6 +13,7 @@ export const TransactionQuerySchema = z.object({
 	amount: optional(z.coerce.number().positive()),
 	ngnAmount: optional(z.coerce.number().positive()),
 	clientId: optional(z.string().trim().min(1)),
+	hasNotes: optional(z.coerce.boolean()),
 
 	limit: optional(z.coerce.number().int().positive()),
 
