@@ -25,11 +25,9 @@ import { Search } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
-import { TransactionStatusBadge } from "@/components/ui/transaction-status-badge";
 import { TransferStatusCheckResponse } from "@/lib/api/server-api";
 import { transactionService } from "@/lib/api/transaction-service";
 import { getTZDate } from "@/lib/utils/date";
-import { middleTruncate } from "@/lib/utils/middleTruncate";
 import { formatAmount } from "@/lib/utils/statement";
 import { TransferStatusLookupSchema } from "@/lib/validations/deriv/transfer-status";
 
@@ -167,44 +165,43 @@ const TransferStatusResult = ({
 	const { transaction, status } = result;
 
 	return (
-		<Card>
-			<CardHeader className="pb-2">
-				<div className="flex items-start justify-between">
-					<div>
-						{transaction.clientName ? (
-							<p className="font-medium">{transaction.clientName}</p>
-						) : (
-							<Copy value={transaction.clientId}>
-								<span className="font-medium">{transaction.clientId}</span>
-							</Copy>
-						)}
-						<Copy
-							value={transaction.id}
-							className="text-xs text-muted-foreground"
-						>
-							<span>{middleTruncate(transaction.id)}</span>
-						</Copy>
+		<div className="space-y-10">
+			<Card>
+				<CardHeader className="pb-2">
+					<div className="flex items-start justify-between">
+						<div>
+							{transaction.clientName ? (
+								<p className="font-medium">{transaction.clientName}</p>
+							) : (
+								<Copy value={transaction.clientId}>
+									<span className="font-medium">{transaction.clientId}</span>
+								</Copy>
+							)}
+							<Copy
+								value={transaction.id}
+								className="text-xs text-muted-foreground"
+							></Copy>
+						</div>
 					</div>
-					<TransactionStatusBadge status={transaction.status} />
-				</div>
-			</CardHeader>
+				</CardHeader>
 
-			<CardContent className="space-y-2">
-				<div className="flex items-center justify-between text-sm">
-					<span className="text-muted-foreground">Amount</span>
-					<span className="font-semibold">
-						{formatAmount(Number(transaction.amount), transaction.currency)}
-					</span>
-				</div>
+				<CardContent className="space-y-2">
+					<div className="flex items-center justify-between text-sm">
+						<span className="text-muted-foreground">Amount</span>
+						<span className="font-semibold">
+							{formatAmount(Number(transaction.amount), transaction.currency)}
+						</span>
+					</div>
 
-				<div className="flex items-center justify-between text-sm">
-					<span className="text-muted-foreground">Date</span>
-					<span>{getTZDate(transaction.createdAt)}</span>
-				</div>
+					<div className="flex items-center justify-between text-sm">
+						<span className="text-muted-foreground">Date</span>
+						<span>{getTZDate(transaction.createdAt)}</span>
+					</div>
 
-				<StatusOutcome status={status} />
-			</CardContent>
-		</Card>
+					<StatusOutcome status={status} />
+				</CardContent>
+			</Card>
+		</div>
 	);
 };
 
