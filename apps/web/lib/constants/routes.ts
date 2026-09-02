@@ -10,6 +10,7 @@ const ROUTES = {
 	TRANSFER_INTERNAL: "/transfer",
 	STATEMENT: "/reports/statement",
 	TRANSFER_HISTORY: "/reports/transfer-history",
+	TRANSFER_STATUS: "/reports/transfer-status",
 	SUMMARY: "/summary",
 	SETTINGS_RATES: "/settings/rate",
 	ORGANIZATION: "/organization",

@@ -1,12 +1,21 @@
 import { Rate, Transaction } from "@repo/db";
-import { Card, CardContent, CardHeader, Copy } from "@repo/ui";
+import { TRANSACTION_STATUS, TRANSACTION_TYPE } from "@repo/db/enums";
+import { Button, Card, CardContent, CardHeader, Copy } from "@repo/ui";
+import Link from "next/link";
 import { TransactionStatusBadge } from "@/components/ui/transaction-status-badge";
+import ROUTES from "@/lib/constants/routes";
 import { getTZDate } from "@/lib/utils/date";
+import { middleTruncate } from "@/lib/utils/middleTruncate";
 import {
 	calculateNairaEquivalent,
 	formatAmount,
 	formatNairaValue,
 } from "@/lib/utils/statement";
+
+const UNSETTLED_STATUSES: string[] = [
+	TRANSACTION_STATUS.PENDING,
+	TRANSACTION_STATUS.PROCESSING,
+];
 
 type TransactionsListCardProps = {
 	transaction: Transaction;
@@ -62,6 +71,13 @@ const TransactionsListCard = ({
 				</CardHeader>
 				<CardContent className="space-y-1.5">
 					<div className="flex items-center justify-between text-xs sm:text-sm">
+						<span className="text-muted-foreground">Transaction ID</span>
+						<Copy value={transaction.id}>
+							<span>{middleTruncate(transaction.id)}</span>
+						</Copy>
+					</div>
+
+					<div className="flex items-center justify-between text-xs sm:text-sm">
 						<span className="text-muted-foreground">Date</span>
 						<span>{formatedDate}</span>
 					</div>
@@ -86,6 +102,15 @@ const TransactionsListCard = ({
 							<span className="truncate text-right">{notes}</span>
 						</div>
 					)}
+
+					{type === TRANSACTION_TYPE.WITHDRAWAL &&
+						UNSETTLED_STATUSES.includes(status) && (
+							<Button asChild variant="link" size="sm" className="h-auto p-0">
+								<Link href={`${ROUTES.TRANSFER_STATUS}?id=${transaction.id}`}>
+									Check status
+								</Link>
+							</Button>
+						)}
 				</CardContent>
 			</Card>
 		</div>

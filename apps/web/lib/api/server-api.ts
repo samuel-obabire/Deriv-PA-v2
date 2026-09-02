@@ -1,3 +1,5 @@
+import type { Transaction } from "@repo/db";
+import type { TransferStatusCheckOutcome } from "@repo/deriv";
 import fetchHandler from "@repo/lib/handlers/fetch";
 import { TokenPayload } from "@repo/utils";
 import { ActionResponse } from "../../types/global";
@@ -20,6 +22,19 @@ function serverFetch<T extends object, R>(
 	});
 }
 
+function serverGet<R>(url: string) {
+	return fetchHandler<R>(url, {
+		headers: {
+			Authorization: `Bearer ${serverEnv.BACKEND_API_TOKEN}`,
+		},
+	});
+}
+
+export type TransferStatusCheckResponse = {
+	transaction: Transaction;
+	status: TransferStatusCheckOutcome;
+};
+
 export const serverApi = {
 	getToken(payload: TokenPayload) {
 		return serverFetch<TokenPayload, ActionResponse<{ accessToken: string }>>(
@@ -34,6 +49,12 @@ export const serverApi = {
 			`${clientEnv.NEXT_PUBLIC_SERVER_URL}/authentication/revoke-token`,
 			"POST",
 			{ userId },
+		);
+	},
+
+	checkTransferStatus(transactionId: string, organizationId: string) {
+		return serverGet<ActionResponse<TransferStatusCheckResponse>>(
+			`${clientEnv.NEXT_PUBLIC_SERVER_URL}/transfers/${transactionId}/status?orgId=${organizationId}`,
 		);
 	},
 };

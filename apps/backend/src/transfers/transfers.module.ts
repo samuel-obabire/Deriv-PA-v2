@@ -11,6 +11,7 @@ import { TransferProcessor } from "./transfer.processor";
 import { TransferQueueService } from "./transfer-queue.service";
 import { TransferReconciliationProcessor } from "./transfer-reconciliation.processor";
 import { TransferReconciliationQueueService } from "./transfer-reconciliation-queue.service";
+import { TransferStatusService } from "./transfer-status.service";
 import { TransfersController } from "./transfers.controller";
 
 @Module({
@@ -48,6 +49,7 @@ import { TransfersController } from "./transfers.controller";
 		TransferProcessor,
 		TransferReconciliationQueueService,
 		TransferReconciliationProcessor,
+		TransferStatusService,
 	],
 	exports: [TransferQueueService],
 })
