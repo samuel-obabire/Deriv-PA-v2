@@ -3,17 +3,11 @@ import { Logger } from "@nestjs/common";
 import { Job } from "bullmq";
 import { CurrencyTokenService } from "src/currency/currency-token.service";
 import { DerivService } from "src/deriv/deriv.service";
+import { isRequestIdNotFoundError } from "src/deriv/deriv-errors";
 import { DerivRestClient } from "src/deriv/deriv-rest-client";
-import { HttpRequestError } from "src/http/http-client.service";
 import { TransactionService } from "src/transactions/transaction.service";
 import { RECONCILE_TRANSFER, TRANSFER_RECONCILIATION } from "./constants";
 import type { TransferJobData } from "./transfer.processor";
-
-// Deriv's own code string for "no transfer matches this request_id" — the
-// HttpClientService folds errors[0].code into HttpRequestError.message
-// whenever the error body carries no detail.message/message field, which is
-// the shape this endpoint's error responses use.
-const REQUEST_ID_NOT_FOUND = "RequestIDNotFound";
 
 @Processor(TRANSFER_RECONCILIATION, { concurrency: 1 })
 export class TransferReconciliationProcessor extends WorkerHost {
@@ -47,10 +41,7 @@ export class TransferReconciliationProcessor extends WorkerHost {
 				transferPayload.request_id,
 			);
 		} catch (error) {
-			if (
-				error instanceof HttpRequestError &&
-				error.message === REQUEST_ID_NOT_FOUND
-			) {
+			if (isRequestIdNotFoundError(error)) {
 				this.logger.error(
 					`Deriv has no record of tx ${transactionId} (request_id ${transferPayload.request_id})... marking failed`,
 				);

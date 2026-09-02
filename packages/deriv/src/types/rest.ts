@@ -67,6 +67,18 @@ export type DerivPaymentAgentTransferStatusResponse = {
 	metadata: DerivRestMetadata;
 };
 
+// "deriv_unavailable" covers both a non-RequestIDNotFound error response and
+// a network/timeout failure, since Deriv gives no reliable way to tell those apart.
+export type TransferStatusCheckOutcome =
+	| {
+			outcome: "resolved";
+			derivStatus: DerivPaymentAgentTransferCheckStatus;
+			derivTransactionId: number | null;
+	  }
+	| { outcome: "not_found" }
+	| { outcome: "deriv_unavailable" }
+	| { outcome: "no_deriv_transfer" };
+
 export type DerivPaymentAgentTransferValidationResponse = {
 	data: {
 		status: DerivPaymentAgentTransferValidationStatus;
