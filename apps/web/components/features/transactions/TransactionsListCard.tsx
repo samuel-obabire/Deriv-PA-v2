@@ -5,7 +5,6 @@ import Link from "next/link";
 import { TransactionStatusBadge } from "@/components/ui/transaction-status-badge";
 import ROUTES from "@/lib/constants/routes";
 import { getTZDate } from "@/lib/utils/date";
-import { middleTruncate } from "@/lib/utils/middleTruncate";
 import {
 	calculateNairaEquivalent,
 	formatAmount,
@@ -67,13 +66,6 @@ const TransactionsListCard = ({
 					</div>
 				</CardHeader>
 				<CardContent className="space-y-1.5">
-					<div className="flex items-center justify-between text-xs sm:text-sm">
-						<span className="text-muted-foreground">Transaction ID</span>
-						<Copy value={transaction.id}>
-							<span>{middleTruncate(transaction.id)}</span>
-						</Copy>
-					</div>
-
 					<div className="flex items-center justify-between text-xs sm:text-sm">
 						<span className="text-muted-foreground">Date</span>
 						<span>{formatedDate}</span>
