@@ -12,10 +12,7 @@ import {
 	formatNairaValue,
 } from "@/lib/utils/statement";
 
-const UNSETTLED_STATUSES: string[] = [
-	TRANSACTION_STATUS.PENDING,
-	TRANSACTION_STATUS.PROCESSING,
-];
+const UNSETTLED_STATUSES: string[] = [TRANSACTION_STATUS.PROCESSING];
 
 type TransactionsListCardProps = {
 	transaction: Transaction;
