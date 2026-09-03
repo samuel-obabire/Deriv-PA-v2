@@ -177,10 +177,6 @@ const TransferStatusResult = ({
 									<span className="font-medium">{transaction.clientId}</span>
 								</Copy>
 							)}
-							<Copy
-								value={transaction.id}
-								className="text-xs text-muted-foreground"
-							></Copy>
 						</div>
 					</div>
 				</CardHeader>
