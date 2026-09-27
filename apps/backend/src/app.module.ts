@@ -7,6 +7,7 @@ import { AppService } from "./app.service";
 import { CommonModule } from "./common/common.module";
 import { LoggingMiddleware } from "./common/middleware/logging/logging.middleware";
 import { envSchema } from "./common/validation";
+import { CustomerRecordModule } from "./customer-record/customer-record.module";
 import { DailySummaryModule } from "./daily-summary/daily-summary.module";
 import { DatabaseModule } from "./database/database.module";
 import { DerivModule } from "./deriv/deriv.module";
@@ -35,6 +36,7 @@ import { TransfersModule } from "./transfers/transfers.module";
 		TaskModule,
 		TransfersModule,
 		DailySummaryModule,
+		CustomerRecordModule,
 	],
 	providers: [
 		AppService,
