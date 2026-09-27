@@ -146,13 +146,15 @@ export class TransferProcessor extends WorkerHost {
 
 		// Side effect: Create customer record if not created already
 		try {
-			await this.customerRecordService.enqueueCustomerRecord({
-				clientName: client_real_name,
-				nickname: transferPayload.to_nickname,
-				orgId,
-				tokenId,
-				requestId: transferPayload.request_id,
-			});
+			if (client_real_name) {
+				await this.customerRecordService.enqueueCustomerRecord({
+					clientName: client_real_name,
+					nickname: transferPayload.to_nickname,
+					orgId,
+					tokenId,
+					requestId: transferPayload.request_id,
+				});
+			}
 		} catch (error) {
 			this.logger.error(
 				"Transfer completed, but failed to enqueue customer-record",
