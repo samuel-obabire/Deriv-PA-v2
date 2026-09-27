@@ -3,6 +3,7 @@ import { Logger } from "@nestjs/common";
 import type { DerivPaymentAgentTransferRequest } from "@repo/deriv";
 import { Job } from "bullmq";
 import { CurrencyTokenService } from "src/currency/currency-token.service";
+import { CustomerRecordService } from "src/customer-record/customer-record.service";
 import { DerivService } from "src/deriv/deriv.service";
 import { DerivRestClient } from "src/deriv/deriv-rest-client";
 import { HttpRequestError } from "src/http/http-client.service";
@@ -15,6 +16,7 @@ export type TransferJobData = {
 	tokenId: string;
 	transactionId: string;
 	transferPayload: DerivPaymentAgentTransferRequest;
+	idempotencyKey: string;
 };
 
 @Processor(TRANSFERS)
@@ -27,6 +29,7 @@ export class TransferProcessor extends WorkerHost {
 		private readonly derivService: DerivService,
 		private readonly transactionService: TransactionService,
 		private readonly transferReconciliationQueueService: TransferReconciliationQueueService,
+		private readonly customerRecordService: CustomerRecordService,
 	) {
 		super();
 	}
@@ -139,6 +142,22 @@ export class TransferProcessor extends WorkerHost {
 				error,
 			);
 			throw error;
+		}
+
+		// Side effect: Create customer record if not created already
+		try {
+			await this.customerRecordService.enqueueCustomerRecord({
+				clientName: client_real_name,
+				nickname: transferPayload.to_nickname,
+				orgId,
+				tokenId,
+				requestId: transferPayload.request_id,
+			});
+		} catch (error) {
+			this.logger.error(
+				"Transfer completed, but failed to enqueue customer-record",
+				error,
+			);
 		}
 
 		return result;

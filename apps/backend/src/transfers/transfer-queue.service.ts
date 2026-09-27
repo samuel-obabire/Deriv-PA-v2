@@ -88,6 +88,7 @@ export class TransferQueueService {
 				tokenId,
 				transactionId: inserted.id,
 				transferPayload: data,
+				idempotencyKey: inserted.idempotencyKey,
 			} satisfies TransferJobData,
 			{
 				delay: DEFAULT_DELAY_MS,
